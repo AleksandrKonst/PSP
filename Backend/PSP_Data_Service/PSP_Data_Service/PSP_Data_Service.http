@@ -1,0 +1,6 @@
+@PSP_Data_Service_HostAddress = http://localhost:5217
+
+GET {{PSP_Data_Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
