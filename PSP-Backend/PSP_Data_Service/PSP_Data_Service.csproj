@@ -27,14 +27,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Flight_Info\Controllers\" />
-      <Folder Include="Flight_Info\DTO\" />
-      <Folder Include="Flight_Info\Repositories\" />
-      <Folder Include="Flight_Info\Services\" />
+      <Folder Include="ARM\" />
+      <Folder Include="Models\" />
       <Folder Include="Passenger_Info\Controllers\" />
-      <Folder Include="Passenger_Info\DTO\" />
-      <Folder Include="Passenger_Info\Repositories\" />
       <Folder Include="Passenger_Info\Services\" />
+      <Folder Include="Ticket_Info\" />
     </ItemGroup>
 
 </Project>
