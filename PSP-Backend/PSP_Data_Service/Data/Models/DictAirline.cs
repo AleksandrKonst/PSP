@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using NpgsqlTypes;
+﻿using NpgsqlTypes;
 
-namespace PSP_Data_Service.Models;
+namespace PSP_Data_Service.Data.Models;
 
 /// <summary>
 /// Авиакомпании

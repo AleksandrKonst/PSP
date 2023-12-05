@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using PSP_Data_Service.Data.Models;
 
-namespace PSP_Data_Service.Models;
+namespace PSP_Data_Service.Data;
 
 public partial class PspDataContext : DbContext
 {
