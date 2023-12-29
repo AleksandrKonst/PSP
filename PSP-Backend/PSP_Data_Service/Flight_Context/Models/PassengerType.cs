@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Типы пассажиров
 /// </summary>
-public partial class DictPassengerType
+public partial class PassengerType
 {
     /// <summary>
     /// Код типа пассажира

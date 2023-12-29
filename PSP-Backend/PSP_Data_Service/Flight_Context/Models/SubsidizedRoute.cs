@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Субсидированные направления
 /// </summary>
-public partial class DictSubsidizedRoute
+public partial class SubsidizedRoute
 {
     /// <summary>
     /// Идентификатор субсидированного направления
@@ -55,9 +55,9 @@ public partial class DictSubsidizedRoute
     /// </summary>
     public List<string>? InteriorCities { get; set; }
 
-    public virtual DictCity CityFinishIataCodeNavigation { get; set; } = null!;
+    public virtual City CityFinishIataCodeNavigation { get; set; } = null!;
 
-    public virtual DictCity CityStartIataCodeNavigation { get; set; } = null!;
+    public virtual City CityStartIataCodeNavigation { get; set; } = null!;
 
-    public virtual ICollection<DataCouponEvent> DataCouponEvents { get; set; } = new List<DataCouponEvent>();
+    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 }

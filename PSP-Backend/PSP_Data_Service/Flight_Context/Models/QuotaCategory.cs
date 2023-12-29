@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Категории квотирования
 /// </summary>
-public partial class DictQuotaCategory
+public partial class QuotaCategory
 {
     /// <summary>
     /// Код категории квотирования
@@ -30,7 +30,7 @@ public partial class DictQuotaCategory
     /// </summary>
     public short RoundTripQuota { get; set; }
 
-    public virtual ICollection<ConPassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<ConPassengerQuotaCount>();
+    public virtual ICollection<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<PassengerQuotaCount>();
 
-    public virtual ICollection<DataCouponEvent> DataCouponEvents { get; set; } = new List<DataCouponEvent>();
+    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 }

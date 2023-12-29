@@ -1,46 +1,45 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PSP_Data_Service.Data.Models;
 
-namespace PSP_Data_Service.Data;
+namespace PSP_Data_Service.Flight_Context.Models;
 
-public partial class PspDataContext : DbContext
+public partial class FlightDataContext : DbContext
 {
-    public PspDataContext()
+    public FlightDataContext()
     {
     }
 
-    public PspDataContext(DbContextOptions<PspDataContext> options)
+    public FlightDataContext(DbContextOptions<FlightDataContext> options)
         : base(options)
     {
     }
 
-    public virtual DbSet<ConFlightPart> ConFlightParts { get; set; }
+    public virtual DbSet<PartOfFlight> ConFlightParts { get; set; }
 
-    public virtual DbSet<ConPassengerQuotaCount> ConPassengerQuotaCounts { get; set; }
+    public virtual DbSet<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; }
 
-    public virtual DbSet<DataCouponEvent> DataCouponEvents { get; set; }
+    public virtual DbSet<CouponEvent> DataCouponEvents { get; set; }
 
-    public virtual DbSet<DataPassenger> DataPassengers { get; set; }
+    public virtual DbSet<Passenger> DataPassengers { get; set; }
 
-    public virtual DbSet<DictAirline> DictAirlines { get; set; }
+    public virtual DbSet<Airline> DictAirlines { get; set; }
 
-    public virtual DbSet<DictAirport> DictAirports { get; set; }
+    public virtual DbSet<Airport> DictAirports { get; set; }
 
-    public virtual DbSet<DictCity> DictCities { get; set; }
+    public virtual DbSet<City> DictCities { get; set; }
 
-    public virtual DbSet<DictDocumentType> DictDocumentTypes { get; set; }
+    public virtual DbSet<DocumentType> DictDocumentTypes { get; set; }
 
-    public virtual DbSet<DictFlight> DictFlights { get; set; }
+    public virtual DbSet<Flight> DictFlights { get; set; }
 
-    public virtual DbSet<DictGender> DictGenders { get; set; }
+    public virtual DbSet<GenderType> DictGenders { get; set; }
 
-    public virtual DbSet<DictPassengerType> DictPassengerTypes { get; set; }
+    public virtual DbSet<PassengerType> DictPassengerTypes { get; set; }
 
-    public virtual DbSet<DictQuotaCategory> DictQuotaCategories { get; set; }
+    public virtual DbSet<QuotaCategory> DictQuotaCategories { get; set; }
 
-    public virtual DbSet<DictSubsidizedRoute> DictSubsidizedRoutes { get; set; }
+    public virtual DbSet<SubsidizedRoute> DictSubsidizedRoutes { get; set; }
 
-    public virtual DbSet<DictTicketType> DictTicketTypes { get; set; }
+    public virtual DbSet<TicketType> DictTicketTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -48,7 +47,7 @@ public partial class PspDataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ConFlightPart>(entity =>
+        modelBuilder.Entity<PartOfFlight>(entity =>
         {
             entity.HasKey(e => new { e.FlightCode, e.FlightPart }).HasName("data_flight_parts_pk");
 
@@ -91,7 +90,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("data_flight_parts_flight_fk");
         });
 
-        modelBuilder.Entity<ConPassengerQuotaCount>(entity =>
+        modelBuilder.Entity<PassengerQuotaCount>(entity =>
         {
             entity.HasKey(e => new { e.PassengerId, e.QuotaCategoriesCode, e.QuotaYear }).HasName("data_passenger_quota_count_pk");
 
@@ -133,7 +132,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("data_passenger_quota_count_category_fk");
         });
 
-        modelBuilder.Entity<DataCouponEvent>(entity =>
+        modelBuilder.Entity<CouponEvent>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("data_coupon_events_pk");
 
@@ -201,7 +200,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("data_coupon_events_ticket_fk");
         });
 
-        modelBuilder.Entity<DataPassenger>(entity =>
+        modelBuilder.Entity<Passenger>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("data_passenger_pk");
 
@@ -251,13 +250,13 @@ public partial class PspDataContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("data_passenger_document_type_fk");
 
-            entity.HasOne(d => d.GenderNavigation).WithMany(p => p.DataPassengers)
+            entity.HasOne(d => d.GenderTypeNavigation).WithMany(p => p.DataPassengers)
                 .HasForeignKey(d => d.Gender)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("data_passenger_gender_fk");
         });
 
-        modelBuilder.Entity<DictAirline>(entity =>
+        modelBuilder.Entity<Airline>(entity =>
         {
             entity.HasKey(e => e.IataCode).HasName("dict_airlines_pkey");
 
@@ -299,7 +298,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("transportation_periods");
         });
 
-        modelBuilder.Entity<DictAirport>(entity =>
+        modelBuilder.Entity<Airport>(entity =>
         {
             entity.HasKey(e => e.IataCode).HasName("dict_airports_pkey");
 
@@ -332,7 +331,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("dict_airports_fkey_city_iata_code");
         });
 
-        modelBuilder.Entity<DictCity>(entity =>
+        modelBuilder.Entity<City>(entity =>
         {
             entity.HasKey(e => e.IataCode).HasName("dict_cities_pkey");
 
@@ -348,7 +347,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<DictDocumentType>(entity =>
+        modelBuilder.Entity<DocumentType>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_document_types_pkey");
 
@@ -364,7 +363,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("type");
         });
 
-        modelBuilder.Entity<DictFlight>(entity =>
+        modelBuilder.Entity<Flight>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_flight_pk");
 
@@ -413,7 +412,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("dict_flight_depart_place_fk");
         });
 
-        modelBuilder.Entity<DictGender>(entity =>
+        modelBuilder.Entity<GenderType>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_genders_pkey");
 
@@ -429,7 +428,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("gender");
         });
 
-        modelBuilder.Entity<DictPassengerType>(entity =>
+        modelBuilder.Entity<PassengerType>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_passenger_types_pkey");
 
@@ -456,7 +455,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("type");
         });
 
-        modelBuilder.Entity<DictQuotaCategory>(entity =>
+        modelBuilder.Entity<QuotaCategory>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_quota_categories_pkey");
 
@@ -481,7 +480,7 @@ public partial class PspDataContext : DbContext
                 .HasColumnName("round_trip_quota");
         });
 
-        modelBuilder.Entity<DictSubsidizedRoute>(entity =>
+        modelBuilder.Entity<SubsidizedRoute>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("dict_subsidized_routes_pkey");
 
@@ -535,7 +534,7 @@ public partial class PspDataContext : DbContext
                 .HasConstraintName("dict_subsidized_routes_fkey_city_start_iata_code");
         });
 
-        modelBuilder.Entity<DictTicketType>(entity =>
+        modelBuilder.Entity<TicketType>(entity =>
         {
             entity.HasKey(e => e.Code).HasName("dict_ticket_type_pkey");
 

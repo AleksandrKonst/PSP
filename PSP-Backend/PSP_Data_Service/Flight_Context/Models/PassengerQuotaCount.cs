@@ -1,6 +1,6 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
-public partial class ConPassengerQuotaCount
+public partial class PassengerQuotaCount
 {
     /// <summary>
     /// Идендификатор пассажира
@@ -37,7 +37,7 @@ public partial class ConPassengerQuotaCount
     /// </summary>
     public short AvailableCount { get; set; }
 
-    public virtual DataPassenger Passenger { get; set; } = null!;
+    public virtual Passenger Passenger { get; set; } = null!;
 
-    public virtual DictQuotaCategory QuotaCategoriesCodeNavigation { get; set; } = null!;
+    public virtual QuotaCategory QuotaCategoriesCodeNavigation { get; set; } = null!;
 }

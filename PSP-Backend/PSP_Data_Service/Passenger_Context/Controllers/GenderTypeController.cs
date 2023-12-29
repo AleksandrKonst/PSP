@@ -5,7 +5,7 @@ using PSP_Data_Service.Passenger_Context.Repositories.Interfaces;
 namespace PSP_Data_Service.Passenger_Context.Controllers;
 
 [ApiController]
-[Route("api")]
+[Route("api/gender")]
 public class GenderTypeController : ControllerBase
 {
     private readonly IGenderTypeRepository _typeRepository;

@@ -1,6 +1,5 @@
-﻿namespace PSP_Data_Service.Data.Models;
-
-public partial class DictFlight
+﻿namespace PSP_Data_Service.Flight_Context.Models;
+public partial class Flight
 {
     /// <summary>
     /// Код маршрута
@@ -37,13 +36,13 @@ public partial class DictFlight
     /// </summary>
     public string Currency { get; set; } = null!;
 
-    public virtual DictAirline AirlineCodeNavigation { get; set; } = null!;
+    public virtual Airline AirlineCodeNavigation { get; set; } = null!;
 
-    public virtual DictAirport ArrivePlaceNavigation { get; set; } = null!;
+    public virtual Airport ArrivePlaceNavigation { get; set; } = null!;
 
-    public virtual ICollection<ConFlightPart> ConFlightParts { get; set; } = new List<ConFlightPart>();
+    public virtual ICollection<PartOfFlight> ConFlightParts { get; set; } = new List<PartOfFlight>();
 
-    public virtual ICollection<DataCouponEvent> DataCouponEvents { get; set; } = new List<DataCouponEvent>();
+    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual DictAirport DepartPlaceNavigation { get; set; } = null!;
+    public virtual Airport DepartPlaceNavigation { get; set; } = null!;
 }

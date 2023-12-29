@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Типы документов, удостоверяющих личность
 /// </summary>
-public partial class DictDocumentType
+public partial class DocumentType
 {
     /// <summary>
     /// Код типа документа, удостоверяющего личность
@@ -15,5 +15,5 @@ public partial class DictDocumentType
     /// </summary>
     public string Type { get; set; } = null!;
 
-    public virtual ICollection<DataPassenger> DataPassengers { get; set; } = new List<DataPassenger>();
+    public virtual ICollection<Passenger> DataPassengers { get; set; } = new List<Passenger>();
 }

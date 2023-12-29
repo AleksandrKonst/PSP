@@ -1,6 +1,6 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
-public partial class ConFlightPart
+public partial class PartOfFlight
 {
     /// <summary>
     /// Код маршрута
@@ -32,9 +32,9 @@ public partial class ConFlightPart
     /// </summary>
     public DateTime FlightArriveDatetime { get; set; }
 
-    public virtual DictAirport ArrivePlaceNavigation { get; set; } = null!;
+    public virtual Airport ArrivePlaceNavigation { get; set; } = null!;
 
-    public virtual DictAirport DepartPlaceNavigation { get; set; } = null!;
+    public virtual Airport DepartPlaceNavigation { get; set; } = null!;
 
-    public virtual DictFlight FlightCodeNavigation { get; set; } = null!;
+    public virtual Flight FlightCodeNavigation { get; set; } = null!;
 }

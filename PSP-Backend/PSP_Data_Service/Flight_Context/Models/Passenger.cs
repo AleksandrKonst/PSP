@@ -1,6 +1,6 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
-public partial class DataPassenger
+public partial class Passenger
 {
     /// <summary>
     /// Идентификатор пассажира
@@ -52,11 +52,11 @@ public partial class DataPassenger
     /// </summary>
     public List<string>? PassengerTypes { get; set; }
 
-    public virtual ICollection<ConPassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<ConPassengerQuotaCount>();
+    public virtual ICollection<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<PassengerQuotaCount>();
 
-    public virtual ICollection<DataCouponEvent> DataCouponEvents { get; set; } = new List<DataCouponEvent>();
+    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual DictDocumentType DocumentTypeCodeNavigation { get; set; } = null!;
+    public virtual DocumentType DocumentTypeCodeNavigation { get; set; } = null!;
 
-    public virtual DictGender GenderNavigation { get; set; } = null!;
+    public virtual GenderType GenderTypeNavigation { get; set; } = null!;
 }

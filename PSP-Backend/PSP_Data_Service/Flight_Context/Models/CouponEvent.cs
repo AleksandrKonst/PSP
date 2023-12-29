@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// События с купонами
 /// </summary>
-public partial class DataCouponEvent
+public partial class CouponEvent
 {
     /// <summary>
     /// Идентификатор события с купоном
@@ -55,13 +55,13 @@ public partial class DataCouponEvent
     /// </summary>
     public int FlightCode { get; set; }
 
-    public virtual DictFlight FlightCodeNavigation { get; set; } = null!;
+    public virtual Flight FlightCodeNavigation { get; set; } = null!;
 
-    public virtual DataPassenger Passenger { get; set; } = null!;
+    public virtual Passenger Passenger { get; set; } = null!;
 
-    public virtual DictQuotaCategory QuotaCategoryCodeNavigation { get; set; } = null!;
+    public virtual QuotaCategory QuotaCategoryCodeNavigation { get; set; } = null!;
 
-    public virtual DictSubsidizedRoute SubsidizedRoute { get; set; } = null!;
+    public virtual SubsidizedRoute SubsidizedRoute { get; set; } = null!;
 
-    public virtual DictTicketType TicketTypeNavigation { get; set; } = null!;
+    public virtual TicketType TicketTypeNavigation { get; set; } = null!;
 }

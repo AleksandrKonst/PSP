@@ -1,11 +1,11 @@
 ﻿using NpgsqlTypes;
 
-namespace PSP_Data_Service.Data.Models;
+namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Авиакомпании
 /// </summary>
-public partial class DictAirline
+public partial class Airline
 {
     /// <summary>
     /// Код IATA авиакомпании
@@ -52,5 +52,5 @@ public partial class DictAirline
     /// </summary>
     public bool ReportsUseFirstTransferFlightDepartDate { get; set; }
 
-    public virtual ICollection<DictFlight> DictFlights { get; set; } = new List<DictFlight>();
+    public virtual ICollection<Flight> DictFlights { get; set; } = new List<Flight>();
 }

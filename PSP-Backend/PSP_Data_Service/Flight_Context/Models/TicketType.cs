@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Типы перевозочных документов
 /// </summary>
-public partial class DictTicketType
+public partial class TicketType
 {
     /// <summary>
     /// Код типа перевозочного документа
@@ -15,5 +15,5 @@ public partial class DictTicketType
     /// </summary>
     public string Type { get; set; } = null!;
 
-    public virtual ICollection<DataCouponEvent> DataCouponEvents { get; set; } = new List<DataCouponEvent>();
+    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 }

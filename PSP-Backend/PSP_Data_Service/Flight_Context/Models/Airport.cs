@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Аэропорты
 /// </summary>
-public partial class DictAirport
+public partial class Airport
 {
     /// <summary>
     /// Код IATA аэропорта
@@ -30,13 +30,13 @@ public partial class DictAirport
     /// </summary>
     public string CityIataCode { get; set; } = null!;
 
-    public virtual DictCity CityIataCodeNavigation { get; set; } = null!;
+    public virtual City CityIataCodeNavigation { get; set; } = null!;
 
-    public virtual ICollection<ConFlightPart> ConFlightPartArrivePlaceNavigations { get; set; } = new List<ConFlightPart>();
+    public virtual ICollection<PartOfFlight> ConFlightPartArrivePlaceNavigations { get; set; } = new List<PartOfFlight>();
 
-    public virtual ICollection<ConFlightPart> ConFlightPartDepartPlaceNavigations { get; set; } = new List<ConFlightPart>();
+    public virtual ICollection<PartOfFlight> ConFlightPartDepartPlaceNavigations { get; set; } = new List<PartOfFlight>();
 
-    public virtual ICollection<DictFlight> DictFlightArrivePlaceNavigations { get; set; } = new List<DictFlight>();
+    public virtual ICollection<Flight> DictFlightArrivePlaceNavigations { get; set; } = new List<Flight>();
 
-    public virtual ICollection<DictFlight> DictFlightDepartPlaceNavigations { get; set; } = new List<DictFlight>();
+    public virtual ICollection<Flight> DictFlightDepartPlaceNavigations { get; set; } = new List<Flight>();
 }

@@ -1,9 +1,9 @@
-﻿namespace PSP_Data_Service.Data.Models;
+﻿namespace PSP_Data_Service.Flight_Context.Models;
 
 /// <summary>
 /// Полы
 /// </summary>
-public partial class DictGender
+public partial class GenderType
 {
     /// <summary>
     /// Код пола
@@ -15,5 +15,5 @@ public partial class DictGender
     /// </summary>
     public string Gender { get; set; } = null!;
 
-    public virtual ICollection<DataPassenger> DataPassengers { get; set; } = new List<DataPassenger>();
+    public virtual ICollection<Passenger> DataPassengers { get; set; } = new List<Passenger>();
 }
