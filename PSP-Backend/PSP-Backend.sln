@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Data_Service", "PSP_Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Route_Service", "PSP_Route_Service\PSP_Route_Service.csproj", "{6540DAD6-8082-4076-A80E-EB343384FE88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Gateway", "PSP_Gateway\PSP_Gateway.csproj", "{1B1E9759-68C0-408B-92EA-C6D65073261F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{6540DAD6-8082-4076-A80E-EB343384FE88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6540DAD6-8082-4076-A80E-EB343384FE88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6540DAD6-8082-4076-A80E-EB343384FE88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
