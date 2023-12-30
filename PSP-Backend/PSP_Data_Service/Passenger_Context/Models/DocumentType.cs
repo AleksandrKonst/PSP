@@ -3,7 +3,7 @@
 /// <summary>
 /// Типы документов, удостоверяющих личность
 /// </summary>
-public partial class DocumentType
+public class DocumentType
 {
     /// <summary>
     /// Код типа документа, удостоверяющего личность

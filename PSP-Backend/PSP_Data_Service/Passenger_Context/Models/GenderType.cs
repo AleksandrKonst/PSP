@@ -3,7 +3,7 @@
 /// <summary>
 /// Полы
 /// </summary>
-public partial class GenderType
+public class GenderType
 {
     /// <summary>
     /// Код пола

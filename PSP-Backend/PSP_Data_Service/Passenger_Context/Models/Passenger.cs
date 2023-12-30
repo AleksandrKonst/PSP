@@ -1,6 +1,6 @@
 ﻿namespace PSP_Data_Service.Passenger_Context.Models;
 
-public partial class Passenger
+public class Passenger
 {
     /// <summary>
     /// Идентификатор пассажира

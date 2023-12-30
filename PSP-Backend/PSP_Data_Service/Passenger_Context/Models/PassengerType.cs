@@ -3,7 +3,7 @@
 /// <summary>
 /// Типы пассажиров
 /// </summary>
-public partial class PassengerType
+public class PassengerType
 {
     /// <summary>
     /// Код типа пассажира

@@ -3,7 +3,7 @@
 /// <summary>
 /// Категории квотирования
 /// </summary>
-public partial class QuotaCategory
+public class QuotaCategory
 {
     /// <summary>
     /// Код категории квотирования
