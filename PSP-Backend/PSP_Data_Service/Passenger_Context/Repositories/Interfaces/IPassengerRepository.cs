@@ -4,5 +4,9 @@ namespace PSP_Data_Service.Passenger_Context.Repositories.Interfaces;
 
 public interface IPassengerRepository
 {
-    Task<IEnumerable<Passenger>> GetAllAsync();
+    IQueryable<Passenger> GetAll();
+    Task<Passenger?> GetByIdAsync(int id);
+    Task<bool> Add(Passenger passenger);
+    Task<bool> Update(Passenger passenger);
+    Task<bool> Delete(int id);
 }
