@@ -2,12 +2,15 @@ using System.Dynamic;
 using Microsoft.AspNetCore.Mvc;
 using PSP_Data_Service.Passenger_Context.DTO;
 using PSP_Data_Service.Passenger_Context.Infrastructure;
+using PSP_Data_Service.Passenger_Context.Infrastructure.Exceptions;
+using PSP_Data_Service.Passenger_Context.Infrastructure.Filters;
 using PSP_Data_Service.Passenger_Context.Services.Interfaces;
 
 namespace PSP_Data_Service.Passenger_Context.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
+[TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PassengerController(IPassengerService service) : ControllerBase
 {
@@ -17,10 +20,11 @@ public class PassengerController(IPassengerService service) : ControllerBase
     public async Task<IActionResult> Get(int index = 0, int count = Int32.MaxValue)
     {
         var requestDateTime = DateTime.Now;
-        var passengers = await service.GetPassengersAsync(index, count);
         var total = await service.GetPassengersCountAsync();
+        var passengers = await service.GetPassengersAsync(index, count);
         
         dynamic result = new ExpandoObject();
+        
         result.service_data = new
         {
             request_id = Guid.NewGuid().ToString(),
@@ -37,36 +41,21 @@ public class PassengerController(IPassengerService service) : ControllerBase
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> GetById(int id)
-    {
-        dynamic result = new ExpandoObject();
+    { 
         var requestDateTime = DateTime.Now;
+        dynamic response = new ExpandoObject();
         
-        try
-        {
-            var passenger = await service.GetPassengerByIdAsync(id);
+        var passenger = await service.GetPassengerByIdAsync(id);
             
-            result.service_data = new
-            {
-                request_id = Guid.NewGuid().ToString(),
-                request_datetime = requestDateTime,
-                response_datetime = DateTime.Now,
-            };
-            result.passenger = passenger;
+        response.service_data = new
+        {
+            request_id = Guid.NewGuid().ToString(),
+            request_datetime = requestDateTime,
+            response_datetime = DateTime.Now,
+        };
+        response.passenger = passenger;
         
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            result.service_data = new
-            {
-                request_id = Guid.NewGuid().ToString(),
-                request_datetime = requestDateTime,
-                response_datetime = DateTime.Now,
-                message = e.Message
-            };
-            
-            return BadRequest(result);
-        }
+        return Ok(response);
     }
     
     [HttpPost]
@@ -74,17 +63,23 @@ public class PassengerController(IPassengerService service) : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post([FromBody] PassengerDTO passenger)
     {
-        try
+        var requestDateTime = DateTime.Now;
+        dynamic response = new ExpandoObject();
+
+        var result = await service.AddPassenger(passenger);
+            
+        if (result)
         {
-            var result = await service.AddPassenger(passenger);
-            if (result) 
-                return Ok();
-            return NotFound("Ошибка добавления пассажира");
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                mesaage = "Пассажир добавлен"
+            };
+            return Ok(response);
         }
-        catch (Exception e)
-        {
-            return NotFound("Ошибка добавления пассажира");
-        }
+        throw new ResponseException("Ошибка добавления пассажира", "PPC-000500");
     }
     
     [HttpPut]
@@ -92,27 +87,46 @@ public class PassengerController(IPassengerService service) : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put([FromBody] PassengerDTO passenger)
     {
+        var requestDateTime = DateTime.Now;
+        dynamic response = new ExpandoObject();
+        
         var result = await service.UpdatePassenger(passenger);
-        if (result) 
-            return Ok();
-        return NotFound("Ошибка обновления пассажира");
+
+        if (result)
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                mesaage = "Пассажир изменен"
+            };
+            return Ok(response); 
+        }
+        throw new ResponseException("Ошибка изменения пассажира", "PPC-000500");
     }
-    
+
     [HttpDelete]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Post(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        try
+        var requestDateTime = DateTime.Now;
+        dynamic response = new ExpandoObject();
+
+        var result = await service.DeletePassenger(id);
+
+        if (result)
         {
-            var result = await service.DeletePassenger(id);
-            if (result) 
-                return Ok();
-            return NotFound("Ошибка добавления пассажира");
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                mesaage = "Пассажир удален"
+            };
+            return Ok(response);
         }
-        catch (Exception e)
-        {
-            return NotFound("Ошибка добавления пассажира");
-        }
+        throw new ResponseException("Ошибка удаления пассажира", "PPC-000500");
     }
 }

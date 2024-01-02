@@ -13,7 +13,7 @@ public class PassengerService(IPassengerRepository repository, IMapper mapper) :
     
     public async Task<int> GetPassengersCountAsync() => await repository.GetAll().CountAsync();
     
-    public async Task<Passenger?> GetPassengerByIdAsync(int id) => await repository.GetByIdAsync(id);
+    public async Task<PassengerDTO> GetPassengerByIdAsync(int id) => mapper.Map<PassengerDTO>(await repository.GetByIdAsync(id));
     
     public async Task<bool> AddPassenger(PassengerDTO dto) =>  await repository.Add(mapper.Map<Passenger>(dto));
     
