@@ -10,7 +10,7 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions
             errors = actionContext.ModelState.Values.SelectMany(x => x.Errors)
                 .Select(x => new
                 {
-                    code = "PPC-000500",
+                    code = "PPC-000403",
                     message = x.ErrorMessage
                 })
         });

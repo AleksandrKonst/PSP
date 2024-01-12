@@ -12,7 +12,7 @@ namespace PSP_Data_Service.Passenger_Context.Controllers;
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class PassengerQuotaCountController(IPassengerQuotaCountService service) : ControllerBase
+public class DocumentTypeController(IDocumentTypeService service) : ControllerBase
 {
     [HttpGet]
     [RequestSizeLimit(1 * 1024)]
@@ -20,8 +20,8 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
     public async Task<IActionResult> Get(int index = 0, int count = Int32.MaxValue)
     {
         var requestDateTime = DateTime.Now;
-        var total = await service.GetPassengerQuotaCountLenghtAsync();
-        var passengers = await service.GetPassengerQuotaCountsAsync(index, count);
+        var total = await service.GetDocumentTypesCountAsync();
+        var passengers = await service.GetDocumentTypesAsync(index, count);
         
         dynamic result = new ExpandoObject();
         
@@ -37,15 +37,15 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
         return Ok(result);
     }
     
-    [HttpGet("{passengerId}/{quotaCategory}/{year}")]
+    [HttpGet("{id}")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> GetById(long passengerId, string quotaCategory, string year)
+    public async Task<IActionResult> GetById(string id)
     { 
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var passenger = await service.GetPassengerQuotaCountByIdAsync(passengerId, quotaCategory, year);
+        var passenger = await service.GetDocumentTypeByIdAsync(id);
             
         response.service_data = new
         {
@@ -61,12 +61,12 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
     [HttpPost]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Post([FromBody] PassengerQuotaCountDTO passengerQuotaCount)
+    public async Task<IActionResult> Post([FromBody] DocumentTypeDTO documentType)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var result = await service.AddPassengerQuotaCountAsync(passengerQuotaCount);
+        var result = await service.AddDocumentTypeAsync(documentType);
             
         if (result)
         {
@@ -75,22 +75,22 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Квота добавлена"
+                mesaage = "Тип документа добавлен"
             };
             return Ok(response);
         }
-        throw new ResponseException("Ошибка добавления квоты", "PPC-000500");
+        throw new ResponseException("Ошибка добавления типа документа", "PPC-000500");
     }
     
     [HttpPut]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Put([FromBody] PassengerQuotaCountDTO passengerQuotaCount)
+    public async Task<IActionResult> Put([FromBody] DocumentTypeDTO documentType)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var result = await service.UpdatePassengerQuotaCountAsync(passengerQuotaCount);
+        var result = await service.UpdateDocumentTypeAsync(documentType);
 
         if (result)
         {
@@ -99,22 +99,22 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Квота изменена"
+                mesaage = "Тип документа изменен"
             };
             return Ok(response); 
         }
-        throw new ResponseException("Ошибка изменения квоты", "PPC-000500");
+        throw new ResponseException("Ошибка изменения типа документа", "PPC-000500");
     }
 
     [HttpDelete]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Delete(long id)
+    public async Task<IActionResult> Delete(string id)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var result = await service.DeletePassengerQuotaCountAsync(id);
+        var result = await service.DeleteDocumentTypeAsync(id);
 
         if (result)
         {
@@ -123,10 +123,10 @@ public class PassengerQuotaCountController(IPassengerQuotaCountService service) 
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Квота удалена"
+                mesaage = "Тип документа удален"
             };
             return Ok(response);
         }
-        throw new ResponseException("Ошибка удаления квоты", "PPC-000500");
+        throw new ResponseException("Ошибка удаления типа документа", "PPC-000500");
     }
 }

@@ -17,6 +17,15 @@ public static class PassengerDI
         services.AddScoped<IPassengerService, PassengerService>();
         services.AddTransient<IPassengerRepository, PassengerRepository>();
         
+        services.AddScoped<IPassengerTypeService, PassengerTypeService>();
+        services.AddTransient<IPassengerTypeRepository, PassengerTypeRepository>();
+        
+        services.AddScoped<IDocumentTypeService, DocumentTypeService>();
+        services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();
+        
+        services.AddScoped<IPassengerQuotaCountService, PassengerQuotaCountService>();
+        services.AddTransient<IPassengerQuotaCountRepository, PassengerQuotaCountRepository>();
+        
         return services;
     }
 }

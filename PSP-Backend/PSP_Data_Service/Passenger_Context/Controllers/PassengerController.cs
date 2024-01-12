@@ -66,7 +66,7 @@ public class PassengerController(IPassengerService service) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var result = await service.AddPassenger(passenger);
+        var result = await service.AddPassengerAsync(passenger);
             
         if (result)
         {
@@ -90,7 +90,7 @@ public class PassengerController(IPassengerService service) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var result = await service.UpdatePassenger(passenger);
+        var result = await service.UpdatePassengerAsync(passenger);
 
         if (result)
         {
@@ -114,7 +114,7 @@ public class PassengerController(IPassengerService service) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var result = await service.DeletePassenger(id);
+        var result = await service.DeletePassengerAsync(id);
 
         if (result)
         {
