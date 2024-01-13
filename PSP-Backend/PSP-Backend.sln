@@ -1,12 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Auth_Service", "PSP_Auth_Service\PSP_Auth_Service.csproj", "{7499A15E-D931-4302-B021-CA7921FD18B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.AuthService", "PSP.AuthService\PSP.AuthService.csproj", "{7499A15E-D931-4302-B021-CA7921FD18B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Data_Service", "PSP_Data_Service\PSP_Data_Service.csproj", "{85578510-E9C1-4C6E-A3B5-B1EC9F118DCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.DataWebApi", "PSP.DataWebApi\PSP.DataWebApi.csproj", "{85578510-E9C1-4C6E-A3B5-B1EC9F118DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Route_Service", "PSP_Route_Service\PSP_Route_Service.csproj", "{6540DAD6-8082-4076-A80E-EB343384FE88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.RouteWebApi", "PSP.RouteWebApi\PSP.RouteWebApi.csproj", "{6540DAD6-8082-4076-A80E-EB343384FE88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP_Gateway", "PSP_Gateway\PSP_Gateway.csproj", "{1B1E9759-68C0-408B-92EA-C6D65073261F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Gateway", "PSP.Gateway\PSP.Gateway.csproj", "{1B1E9759-68C0-408B-92EA-C6D65073261F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Domain", "PSP.Domain\PSP.Domain.csproj", "{18C02C7E-5467-41EB-A274-BAA712C45107}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Infrastructure", "PSP.Infrastructure\PSP.Infrastructure.csproj", "{2D2B901A-6230-4047-99B5-564C45A4D816}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +34,13 @@ Global
 		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B1E9759-68C0-408B-92EA-C6D65073261F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18C02C7E-5467-41EB-A274-BAA712C45107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18C02C7E-5467-41EB-A274-BAA712C45107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18C02C7E-5467-41EB-A274-BAA712C45107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18C02C7E-5467-41EB-A274-BAA712C45107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D2B901A-6230-4047-99B5-564C45A4D816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2B901A-6230-4047-99B5-564C45A4D816}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2B901A-6230-4047-99B5-564C45A4D816}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2B901A-6230-4047-99B5-564C45A4D816}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
