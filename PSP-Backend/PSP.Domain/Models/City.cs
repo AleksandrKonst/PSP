@@ -3,7 +3,7 @@
 /// <summary>
 /// Населенные пункты
 /// </summary>
-public partial class City
+public class City
 {
     /// <summary>
     /// Код IATA населенного пункта

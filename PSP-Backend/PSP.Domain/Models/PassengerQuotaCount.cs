@@ -1,6 +1,6 @@
 ﻿namespace PSP.Domain.Models;
 
-public partial class PassengerQuotaCount
+public class PassengerQuotaCount
 {
     /// <summary>
     /// Идендификатор пассажира

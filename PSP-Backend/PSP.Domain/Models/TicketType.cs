@@ -3,7 +3,7 @@
 /// <summary>
 /// Типы перевозочных документов
 /// </summary>
-public partial class TicketType
+public class TicketType
 {
     /// <summary>
     /// Код типа перевозочного документа

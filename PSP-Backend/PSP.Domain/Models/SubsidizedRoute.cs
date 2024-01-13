@@ -3,7 +3,7 @@
 /// <summary>
 /// Субсидированные направления
 /// </summary>
-public partial class SubsidizedRoute
+public class SubsidizedRoute
 {
     /// <summary>
     /// Идентификатор субсидированного направления

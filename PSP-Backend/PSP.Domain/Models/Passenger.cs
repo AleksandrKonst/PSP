@@ -1,6 +1,6 @@
 ﻿namespace PSP.Domain.Models;
 
-public partial class Passenger
+public class Passenger
 {
     /// <summary>
     /// Идентификатор пассажира

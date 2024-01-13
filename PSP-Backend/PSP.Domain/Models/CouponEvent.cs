@@ -3,7 +3,7 @@
 /// <summary>
 /// События с купонами
 /// </summary>
-public partial class CouponEvent
+public class CouponEvent
 {
     /// <summary>
     /// Идентификатор события с купоном

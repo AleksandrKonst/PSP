@@ -3,7 +3,7 @@
 /// <summary>
 /// Авиакомпании
 /// </summary>
-public partial class Airline
+public class Airline
 {
     /// <summary>
     /// Код IATA авиакомпании

@@ -1,6 +1,6 @@
 ﻿namespace PSP.Domain.Models;
 
-public partial class PartOfFlight
+public class PartOfFlight
 {
     /// <summary>
     /// Код маршрута

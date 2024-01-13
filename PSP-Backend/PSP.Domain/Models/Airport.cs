@@ -3,7 +3,7 @@
 /// <summary>
 /// Аэропорты
 /// </summary>
-public partial class Airport
+public class Airport
 {
     /// <summary>
     /// Код IATA аэропорта

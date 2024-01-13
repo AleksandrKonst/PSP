@@ -1,5 +1,5 @@
 ﻿namespace PSP.Domain.Models;
-public partial class Flight
+public class Flight
 {
     /// <summary>
     /// Код маршрута
