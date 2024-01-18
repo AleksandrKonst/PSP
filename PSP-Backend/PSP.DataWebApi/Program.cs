@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using PSP.DataWebApi.ARM_Context.Infrastructure;
 using PSP.DataWebApi.Passenger_Context.Infrastructure;
 using PSP.Infrastructure;
 
@@ -23,8 +24,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioning();
 builder.Services.AddAutoMapper(typeof(Program));
-
 builder.Services.AddPassenger(builder.Configuration);
+builder.Services.AddArm(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();

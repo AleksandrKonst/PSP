@@ -16,7 +16,7 @@ public class SelectPassengerRequestDTO
 
     public string Gender { get; set; }
     
-    public string DocumentTypeCode { get; set; }
+    public string DocumentType { get; set; }
     
     public string DocumentNumber { get; set; }
 

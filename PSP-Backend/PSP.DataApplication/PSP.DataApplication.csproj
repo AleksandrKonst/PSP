@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="ARM_Context\Commands\" />
+      <Folder Include="ARM_Context\Queries\" />
+      <Folder Include="Flight_Context\Commands\" />
+      <Folder Include="Flight_Context\Queries\" />
+      <Folder Include="Passanger_Context\Commands\" />
+      <Folder Include="Passanger_Context\Queries\" />
+      <Folder Include="Validations\" />
+    </ItemGroup>
+
+</Project>

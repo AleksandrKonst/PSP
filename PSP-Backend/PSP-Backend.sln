@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Domain", "PSP.Domain\PS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.Infrastructure", "PSP.Infrastructure\PSP.Infrastructure.csproj", "{2D2B901A-6230-4047-99B5-564C45A4D816}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.DataApplication", "PSP.DataApplication\PSP.DataApplication.csproj", "{7909508C-8040-4437-A065-324C0444144B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSP.RouteApplication", "PSP.RouteApplication\PSP.RouteApplication.csproj", "{5ABFB30A-B725-4863-A320-C77A34148297}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,13 @@ Global
 		{2D2B901A-6230-4047-99B5-564C45A4D816}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D2B901A-6230-4047-99B5-564C45A4D816}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D2B901A-6230-4047-99B5-564C45A4D816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7909508C-8040-4437-A065-324C0444144B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7909508C-8040-4437-A065-324C0444144B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7909508C-8040-4437-A065-324C0444144B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7909508C-8040-4437-A065-324C0444144B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ABFB30A-B725-4863-A320-C77A34148297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABFB30A-B725-4863-A320-C77A34148297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ABFB30A-B725-4863-A320-C77A34148297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ABFB30A-B725-4863-A320-C77A34148297}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

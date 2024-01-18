@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="ARM_Context\DTO\AutoMapperProfiles\" />
       <Folder Include="Flight_Context\Controllers\" />
       <Folder Include="Flight_Context\DTO\" />
       <Folder Include="Flight_Context\Services\Interfaces\" />
