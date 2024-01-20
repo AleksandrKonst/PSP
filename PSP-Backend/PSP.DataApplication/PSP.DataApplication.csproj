@@ -7,13 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="ARM_Context\Commands\" />
-      <Folder Include="ARM_Context\Queries\" />
-      <Folder Include="Flight_Context\Commands\" />
-      <Folder Include="Flight_Context\Queries\" />
-      <Folder Include="Passanger_Context\Commands\" />
-      <Folder Include="Passanger_Context\Queries\" />
-      <Folder Include="Validations\" />
+      <PackageReference Include="AutoMapper" Version="12.0.1" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+      <PackageReference Include="FluentValidation" Version="11.9.0" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+      <PackageReference Include="MediatR" Version="12.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PSP.Domain\PSP.Domain.csproj" />
+      <ProjectReference Include="..\PSP.Infrastructure\PSP.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

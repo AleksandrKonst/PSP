@@ -13,7 +13,6 @@ public static class InfrastructureDI
         services.AddDbContext<PSPContext>();
         
         services.AddTransient<IGenderTypeRepository, GenderTypeRepository>();
-        
         services.AddTransient<IPassengerRepository, PassengerRepository>();
         services.AddTransient<IPassengerTypeRepository, PassengerTypeRepository>();
         services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();

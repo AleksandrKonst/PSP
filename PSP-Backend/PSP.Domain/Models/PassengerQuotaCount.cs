@@ -15,7 +15,7 @@ public class PassengerQuotaCount
     /// <summary>
     /// Год квотирования
     /// </summary>
-    public string QuotaYear { get; set; } = null!;
+    public short QuotaYear { get; set; }
 
     /// <summary>
     /// Колличество оформленных билетов

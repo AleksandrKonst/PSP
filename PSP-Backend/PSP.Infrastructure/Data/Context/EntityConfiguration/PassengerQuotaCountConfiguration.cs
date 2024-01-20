@@ -22,7 +22,6 @@ public class PassengerQuotaCountConfiguration : IEntityTypeConfiguration<Passeng
             .HasColumnName("quota_categories_code");
         entity.Property(e => e.QuotaYear)
             .HasComment("Год квотирования")
-            .HasColumnType("character varying")
             .HasColumnName("quota_year");
         entity.Property(e => e.AvailableCount)
             .HasComment("Колличество доступных квот")

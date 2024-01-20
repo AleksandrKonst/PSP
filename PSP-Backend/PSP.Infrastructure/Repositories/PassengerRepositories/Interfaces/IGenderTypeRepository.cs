@@ -4,6 +4,8 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 public interface IGenderTypeRepository
 {
-    IQueryable<GenderType> GetAll();
-    Task<GenderType> GetByIdAsync(string code);
+    Task<List<GenderType>> GetAllAsync();
+    Task<List<GenderType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
+    Task<GenderType> GetByIdAsync(string id);
+    Task<int> GetCountAsync();
 }

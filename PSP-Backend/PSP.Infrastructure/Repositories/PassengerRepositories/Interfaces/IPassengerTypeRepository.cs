@@ -4,9 +4,11 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 public interface IPassengerTypeRepository
 {
-    IQueryable<PassengerType> GetAll();
+    Task<List<PassengerType>> GetAllAsync();
+    Task<List<PassengerType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
     Task<PassengerType> GetByIdAsync(string code);
-    Task<bool> Add(PassengerType passengerType);
-    Task<bool> Update(PassengerType passengerType);
-    Task<bool> Delete(string code);
+    Task<int> GetCountAsync();
+    Task<bool> AddAsync(PassengerType passengerType);
+    Task<bool> UpdateAsync(PassengerType passengerType);
+    Task<bool> DeleteAsync(string code);
 }
