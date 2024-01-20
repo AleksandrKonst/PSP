@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using PSP.DataApplication.DTO;
+using PSP.Domain.Exceptions;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 namespace PSP.DataApplication.Mediatr.Queries.PassengerQueries;
@@ -14,12 +15,12 @@ public static class GetPassengerById
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        public Validator(IPassengerRepository repository)
         {
             RuleFor(x => x.Id)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+                .MustAsync(async (id, cancellationToken) => await repository.CheckByIdAsync(id))
+                .WithMessage("Идентификатор пассажира не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     
@@ -27,7 +28,8 @@ public static class GetPassengerById
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<PassengerDTO>(await repository.GetByIdAsync(request.Id)));
+            var passenger = await repository.GetByIdAsync(request.Id);
+            return new QueryResult(mapper.Map<PassengerDTO>(passenger));
         }
     }
 }

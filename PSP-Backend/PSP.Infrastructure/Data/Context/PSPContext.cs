@@ -11,7 +11,6 @@ public class PSPContext : DbContext
     }
 
     public virtual DbSet<PartOfFlight> ConFlightParts { get; set; }
-    public virtual DbSet<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; }
     public virtual DbSet<CouponEvent> DataCouponEvents { get; set; }
     public virtual DbSet<Passenger> DataPassengers { get; set; }
     public virtual DbSet<Airline> DictAirlines { get; set; }
@@ -24,6 +23,7 @@ public class PSPContext : DbContext
     public virtual DbSet<QuotaCategory> DictQuotaCategories { get; set; }
     public virtual DbSet<SubsidizedRoute> DictSubsidizedRoutes { get; set; }
     public virtual DbSet<TicketType> DictTicketTypes { get; set; }
+    public virtual DbSet<OperationType> DictOperationTypes { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Server=localhost; Port=5432;Database=PSP_Data;User Id=postgres;Password=1243");
@@ -31,7 +31,6 @@ public class PSPContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PartOfFlightConfiguration());
-        modelBuilder.ApplyConfiguration(new PassengerQuotaCountConfiguration());
         modelBuilder.ApplyConfiguration(new CouponEventConfiguration());
         modelBuilder.ApplyConfiguration(new PassengerConfiguration());
         modelBuilder.ApplyConfiguration(new AirlineConfiguration());
@@ -44,5 +43,6 @@ public class PSPContext : DbContext
         modelBuilder.ApplyConfiguration(new QuotaCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new SubsidizedRouteConfiguration());
         modelBuilder.ApplyConfiguration(new TicketTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
     }
 }

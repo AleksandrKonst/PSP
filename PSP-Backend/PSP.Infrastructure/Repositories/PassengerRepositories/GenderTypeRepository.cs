@@ -8,18 +8,13 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories;
 
 public class GenderTypeRepository(PSPContext context) : IGenderTypeRepository
 {
-    public IQueryable<GenderType> GetAll() => context.DictGenders;
+    public async Task<List<GenderType>> GetAllAsync() => await context.DictGenders.ToListAsync();
 
-    public Task<List<GenderType>> GetAllAsync() => context.DictGenders.ToListAsync();
+    public async Task<List<GenderType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.DictGenders.Skip(index).Take(count).ToListAsync();
 
-    public Task<List<GenderType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => context.DictGenders.Skip(index).Take(count).ToListAsync();
+    public async Task<GenderType?> GetByIdAsync(string code) => await context.DictGenders.Where(p => p.Code == code).FirstOrDefaultAsync();
 
-    public async Task<GenderType> GetByIdAsync(string code)
-    {
-        var genderType = await context.DictGenders.Where(p => p.Code == code).FirstOrDefaultAsync();
-        if (genderType == null) throw new ResponseException("Пол не найден", "PPC-000001");
-        return genderType;
-    }
-
-    public Task<int> GetCountAsync() => context.DictGenders.CountAsync();
+    public async Task<int> GetCountAsync() => await context.DictGenders.CountAsync();
+    
+    public async Task<bool> CheckByCodeAsync(string code) => await context.DictPassengerTypes.Where(p => p.Code == code).AnyAsync();
 }

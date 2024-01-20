@@ -9,18 +9,18 @@ namespace PSP.DataApplication.MediatR.Commands.DocumentTypeCommands;
 
 public static class UpdateDocumentType
 {
-    public record Command(DocumentTypeDTO PassengerDto) : IRequest<CommandResult>;
+    public record Command(DocumentTypeDTO DocumentTypeDto) : IRequest<CommandResult>;
     
     public record CommandResult(bool Result);
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IPassengerTypeRepository repository)
         {
-            RuleFor(x => x.PassengerDto.Code)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+            RuleFor(x => x.DocumentTypeDto.Code)
+                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
+                .WithMessage("Идентификатор типа документа не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     
@@ -28,7 +28,7 @@ public static class UpdateDocumentType
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            return new CommandResult(await repository.UpdateAsync(mapper.Map<DocumentType>(request.PassengerDto)));
+            return new CommandResult(await repository.UpdateAsync(mapper.Map<DocumentType>(request.DocumentTypeDto)));
         }
     }
 }

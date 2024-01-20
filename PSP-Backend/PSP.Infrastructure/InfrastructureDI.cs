@@ -16,7 +16,6 @@ public static class InfrastructureDI
         services.AddTransient<IPassengerRepository, PassengerRepository>();
         services.AddTransient<IPassengerTypeRepository, PassengerTypeRepository>();
         services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();
-        services.AddTransient<IPassengerQuotaCountRepository, PassengerQuotaCountRepository>();
         
         return services;
     }

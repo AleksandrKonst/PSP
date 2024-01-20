@@ -8,35 +8,26 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories;
 
 public class DocumentTypeRepository(PSPContext context) : IDocumentTypeRepository
 {
-    public Task<List<DocumentType>> GetAllAsync() => context.DictDocumentTypes.ToListAsync();
+    public async Task<List<DocumentType>> GetAllAsync() => await context.DictDocumentTypes.ToListAsync();
 
-    public Task<List<DocumentType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => context.DictDocumentTypes.Skip(index).Take(count).ToListAsync();
+    public async Task<List<DocumentType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.DictDocumentTypes.Skip(index).Take(count).ToListAsync();
 
-    public async Task<DocumentType> GetByIdAsync(string code)
+    public async Task<DocumentType?> GetByIdAsync(string code) => await context.DictDocumentTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
+
+    public async Task<int> GetCountAsync() => await context.DictDocumentTypes.CountAsync();
+
+    public async Task<bool> CheckByCodeAsync(string code) => await context.DictPassengerTypes.Where(p => p.Code == code).AnyAsync();
+    
+    public async Task<bool> AddAsync(DocumentType documentType)
     {
-        var documentType = await context.DictDocumentTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
-        if (documentType == null) throw new ResponseException("Тип документа не найден", "PPC-000001");
-        return documentType;
-    }
-
-    public Task<int> GetCountAsync() => context.DictDocumentTypes.CountAsync();
-
-    public async Task<bool> UpdateAsync(DocumentType documentType)
-    {
-        var dbPassenger = await context.DictDocumentTypes.AnyAsync(p => p.Code == documentType.Code);
-        if (!dbPassenger) throw new ResponseException("Тип документа не найден", "PPC-000001");
-        
-        var updatePassengerType = context.Update(documentType);
+        var newPassengerType = await context.DictDocumentTypes.AddAsync(documentType);
         await context.SaveChangesAsync();
         return true;
     }
-
-    public async Task<bool> AddAsync(DocumentType documentType)
+    
+    public async Task<bool> UpdateAsync(DocumentType documentType)
     {
-        var dbPassenger = await context.DictDocumentTypes.AnyAsync(p => p.Code == documentType.Code);
-        if (dbPassenger) throw new ResponseException("Тип документа уже существует", "PPC-000002");
-
-        var newPassengerType = await context.DictDocumentTypes.AddAsync(documentType);
+        var updatePassengerType = context.Update(documentType);
         await context.SaveChangesAsync();
         return true;
     }
@@ -44,7 +35,7 @@ public class DocumentTypeRepository(PSPContext context) : IDocumentTypeRepositor
     public async Task<bool> DeleteAsync(string code)
     {
         var dbPassengerType = await context.DictDocumentTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
-        if (dbPassengerType == null) throw new ResponseException("Тип документа не найден", "PPC-000001");
+        if (dbPassengerType == null) return false;
         
         context.DictDocumentTypes.Remove(dbPassengerType);
         await context.SaveChangesAsync();

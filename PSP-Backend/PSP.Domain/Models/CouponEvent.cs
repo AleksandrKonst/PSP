@@ -57,6 +57,8 @@ public class CouponEvent
 
     public virtual Flight FlightCodeNavigation { get; set; } = null!;
 
+    public virtual OperationType OperationTypeNavigation { get; set; } = null!;
+    
     public virtual Passenger Passenger { get; set; } = null!;
 
     public virtual QuotaCategory QuotaCategoryCodeNavigation { get; set; } = null!;

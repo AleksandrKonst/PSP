@@ -14,12 +14,12 @@ public static class GetPassengerTypeById
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        public Validator(IPassengerTypeRepository repository)
         {
             RuleFor(x => x.Code)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
+                .WithMessage("Идентификатор типа пассажира не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     

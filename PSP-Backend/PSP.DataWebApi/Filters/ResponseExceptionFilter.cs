@@ -1,5 +1,6 @@
 using System.Dynamic;
 using System.Net;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PSP.Domain.Exceptions;
@@ -21,6 +22,29 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
             exception.message = responseException.Message;
             
             errorList.Add(exception);
+            
+            var result = new ObjectResult(new
+            {
+                trace_id = Guid.NewGuid().ToString(),
+                errors = errorList
+            })
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest
+            };
+            
+            context.Result = result;
+        }
+        else if (context.Exception is ValidationException validationException)
+        {
+            var errorList = new List<dynamic>();
+
+            foreach (var error in validationException.Errors)
+            {
+                dynamic exception = new ExpandoObject();
+                exception.code = error.ErrorCode;
+                exception.message = error.ErrorMessage;
+                errorList.Add(exception);
+            }
             
             var result = new ObjectResult(new
             {

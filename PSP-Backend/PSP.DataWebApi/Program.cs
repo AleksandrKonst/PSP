@@ -16,11 +16,11 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions
         });
     });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioning();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddApplication(builder.Configuration);
 
@@ -31,8 +31,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseHealthChecks("/health");
 app.Run();

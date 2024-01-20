@@ -1,8 +1,8 @@
 using System.Dynamic;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 using PSP.DataApplication.DTO;
+using PSP.Domain.Exceptions;
 using PSP.Domain.Models;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -25,12 +25,14 @@ public class SelectPassenger
                 dynamic passenger = new ExpandoObject();
                 passenger.id = requestDto.Id;
 
-                var passengerFromDb = new Passenger();
+                Passenger? passengerFromDb = null;
 
-                if (await passengerRepository.CheckAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate))
+                if (await passengerRepository.CheckByFullNameAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate))
                 {
                     passengerFromDb = await passengerRepository
-                        .GetByIdWithQuotaCountAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate, requestDto.QuotaBalancesYears);
+                        .GetByIdWithCouponEventAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate, requestDto.QuotaBalancesYears);
+                    
+                    if (passengerFromDb == null) throw new ResponseException("Пассажир не найден", "PPC-000001");
                 }
                 else
                 {
@@ -85,17 +87,17 @@ public class SelectPassenger
                         var quotaBalances = new List<QuotBalanceDTO>();
                     
             
-                        foreach (var quotaCount in passengerFromDb.ConPassengerQuotaCounts)
-                        {
-                            quotaBalances.Add(new QuotBalanceDTO
-                            {
-                                Category = quotaCount.QuotaCategoriesCode,
-                                Available = quotaCount.AvailableCount,
-                                Issued = quotaCount.IssuedCount,
-                                Refund = quotaCount.RefundCount,
-                                Used = quotaCount.UsedCount
-                            }); //MapDTO
-                        }
+                        // foreach (var quotaCount in passengerFromDb.ConPassengerQuotaCounts)
+                        // {
+                        //     quotaBalances.Add(new QuotBalanceDTO
+                        //     {
+                        //         Category = quotaCount.QuotaCategoriesCode,
+                        //         Available = quotaCount.AvailableCount,
+                        //         Issued = quotaCount.IssuedCount,
+                        //         Refund = quotaCount.RefundCount,
+                        //         Used = quotaCount.UsedCount
+                        //     }); //MapDTO
+                        // }
                         quotaBalance.category_balances = quotaBalances;
                         
                         quotaYearBalances.Add(quotaBalance);

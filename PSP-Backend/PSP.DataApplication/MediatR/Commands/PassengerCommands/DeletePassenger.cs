@@ -13,12 +13,12 @@ public static class DeletePassenger
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IPassengerRepository repository)
         {
             RuleFor(x => x.Id)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+                .MustAsync(async (id, cancellationToken) => await repository.CheckByIdAsync(id))
+                .WithMessage("Идентификатор пассажира не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     

@@ -52,8 +52,6 @@ public class Passenger
     /// </summary>
     public List<string>? PassengerTypes { get; set; }
 
-    public virtual ICollection<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<PassengerQuotaCount>();
-
     public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 
     public virtual DocumentType DocumentTypeCodeNavigation { get; set; } = null!;

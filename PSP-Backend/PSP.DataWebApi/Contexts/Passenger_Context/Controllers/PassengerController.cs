@@ -110,7 +110,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
                 response_datetime = DateTime.Now,
                 mesaage = "Пассажир изменен"
             };
-            return Ok(response); 
+            return Ok(response);
         }
         throw new ResponseException("Ошибка изменения пассажира", "PPC-000500");
     }

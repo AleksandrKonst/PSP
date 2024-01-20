@@ -15,12 +15,12 @@ public static class CreatePassengerType
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IPassengerTypeRepository repository)
         {
             RuleFor(x => x.PassengerTypeDto.Code)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code) == false)
+                .WithMessage("Имеется повторяющийся идентификатор типа пассажира")
+                .WithErrorCode("PPC-000002");
         }
     }
     

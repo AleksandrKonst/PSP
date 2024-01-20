@@ -30,7 +30,5 @@ public class QuotaCategory
     /// </summary>
     public short RoundTripQuota { get; set; }
 
-    public virtual ICollection<PassengerQuotaCount> ConPassengerQuotaCounts { get; set; } = new List<PassengerQuotaCount>();
-
     public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
 }

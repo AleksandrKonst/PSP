@@ -13,12 +13,12 @@ public static class DeleteDocumentType
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(IPassengerTypeRepository repository)
         {
             RuleFor(x => x.Code)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("Неверный формат данных");
+                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
+                .WithMessage("Идентификатор типа документа не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     
