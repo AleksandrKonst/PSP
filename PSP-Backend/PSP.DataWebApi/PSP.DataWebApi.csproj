@@ -29,8 +29,4 @@
       <ProjectReference Include="..\PSP.Domain\PSP.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Contexts\ARM_Context\DTO\" />
-    </ItemGroup>
-
 </Project>

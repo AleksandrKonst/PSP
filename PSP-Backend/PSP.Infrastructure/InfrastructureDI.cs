@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PSP.Infrastructure.Data.Context;
+using PSP.Infrastructure.Repositories.FlightRepositories;
+using PSP.Infrastructure.Repositories.FlightRepositories.Interfaces;
 using PSP.Infrastructure.Repositories.PassengerRepositories;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -16,6 +18,8 @@ public static class InfrastructureDI
         services.AddTransient<IPassengerRepository, PassengerRepository>();
         services.AddTransient<IPassengerTypeRepository, PassengerTypeRepository>();
         services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();
+
+        services.AddTransient<IQuotaCategoryRepository, QuotaCategoryRepository>();
         
         return services;
     }

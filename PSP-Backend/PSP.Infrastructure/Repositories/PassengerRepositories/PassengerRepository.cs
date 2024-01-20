@@ -21,7 +21,7 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
                         p.Birthdate == birthdate)
-            .Include(p => p.DataCouponEvents)
+            .Include(p => p.DataCouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
             .FirstOrDefaultAsync();
         
         return passenger;

@@ -24,5 +24,5 @@ public class SelectPassengerRequestDTO
     
     public List<string>? Types { get; set; }
 
-    public List<string>? AdpPassengerIds { get; set; }
+    public List<int>? AdpPassengerIds { get; set; }
 }

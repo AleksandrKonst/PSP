@@ -14,14 +14,14 @@ namespace PSP.DataWebApi.Contexts.ARM_Context.Controllers;
 public class ARMController(IMediator mediator) : ControllerBase
 {
     [HttpPost("select")]
-    [RequestSizeLimit(1 * 1024)]
+    [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
     { 
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var query = new SelectPassenger.Query(selectPassengerRequests);
+        var query = new SelectPassengerQuotaCount.Query(selectPassengerRequests);
         var passengers = await mediator.Send(query, cancellationToken);
             
         response.service_data = new

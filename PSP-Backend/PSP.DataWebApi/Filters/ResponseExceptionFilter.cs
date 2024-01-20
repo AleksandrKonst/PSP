@@ -57,5 +57,25 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
             
             context.Result = result;
         }
+        else
+        {
+            var errorList = new List<dynamic>();
+
+            dynamic exception = new ExpandoObject();
+            exception.code = "PFC-000500";
+            exception.message = context.Exception.Message;
+            errorList.Add(exception);
+            
+            var result = new ObjectResult(new
+            {
+                trace_id = Guid.NewGuid().ToString(),
+                errors = errorList
+            })
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest
+            };
+            
+            context.Result = result;
+        }
     }
 }
