@@ -45,5 +45,7 @@ public class Airline
     /// </summary>
     public bool ReportsUseFirstTransferFlightDepartDate { get; set; }
 
+    public virtual ICollection<Fare> DictFares { get; set; } = new List<Fare>();
+    
     public virtual ICollection<Flight> DictFlights { get; set; } = new List<Flight>();
 }

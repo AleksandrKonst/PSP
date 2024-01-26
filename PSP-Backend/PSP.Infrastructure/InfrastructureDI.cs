@@ -20,6 +20,9 @@ public static class InfrastructureDI
         services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();
 
         services.AddTransient<IQuotaCategoryRepository, QuotaCategoryRepository>();
+        services.AddTransient<IFareRepository, FareRepository>();
+        services.AddTransient<IFlightRepository, FlightRepository>();
+        services.AddTransient<ICouponEventRepository, CouponEventRepository>();
         
         return services;
     }

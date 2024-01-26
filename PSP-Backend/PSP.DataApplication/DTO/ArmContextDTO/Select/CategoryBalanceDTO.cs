@@ -1,6 +1,6 @@
-namespace PSP.DataApplication.DTO;
+namespace PSP.DataApplication.DTO.ArmContextDTO.Select;
 
-public class QuotBalanceDTO
+public class CategoryBalanceDTO
 {
     public string Category { get; set; }
 

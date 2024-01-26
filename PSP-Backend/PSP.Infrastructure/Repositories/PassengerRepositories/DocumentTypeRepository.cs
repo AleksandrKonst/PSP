@@ -16,7 +16,7 @@ public class DocumentTypeRepository(PSPContext context) : IDocumentTypeRepositor
 
     public async Task<int> GetCountAsync() => await context.DictDocumentTypes.CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(string code) => await context.DictPassengerTypes.Where(p => p.Code == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(string code) => await context.DictDocumentTypes.Where(p => p.Code == code).AnyAsync();
     
     public async Task<bool> AddAsync(DocumentType documentType)
     {

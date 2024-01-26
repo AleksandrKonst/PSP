@@ -24,20 +24,14 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
             .HasComment("Код аэропорта прилета")
             .HasColumnType("character varying")
             .HasColumnName("arrive_place");
-        entity.Property(e => e.Currency)
-            .HasComment("Валюта")
-            .HasColumnType("character varying")
-            .HasColumnName("currency");
         entity.Property(e => e.DepartPlace)
             .HasComment("Код аэропорта отправки")
             .HasColumnType("character varying")
             .HasColumnName("depart_place");
-        entity.Property(e => e.PreferentialAmount)
-            .HasComment("Колличество субсидий")
-            .HasColumnName("preferential_amount");
-        entity.Property(e => e.SubsitizedAmount)
-            .HasComment("Стоимость льготного билета")
-            .HasColumnName("subsitized_amount");
+        entity.Property(e => e.Fares)
+            .HasComment("Коды тарифа")
+            .HasColumnType("character varying[]")
+            .HasColumnName("fares");
 
         entity.HasOne(d => d.AirlineCodeNavigation).WithMany(p => p.DictFlights)
             .HasForeignKey(d => d.AirlineCode)

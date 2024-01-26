@@ -24,17 +24,7 @@ public class Flight
     /// <summary>
     /// Стоимость льготного билета
     /// </summary>
-    public decimal SubsitizedAmount { get; set; }
-
-    /// <summary>
-    /// Колличество субсидий
-    /// </summary>
-    public decimal PreferentialAmount { get; set; }
-
-    /// <summary>
-    /// Валюта
-    /// </summary>
-    public string Currency { get; set; } = null!;
+    public List<string>? Fares { get; set; }
 
     public virtual Airline AirlineCodeNavigation { get; set; } = null!;
 

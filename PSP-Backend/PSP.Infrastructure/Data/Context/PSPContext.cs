@@ -24,6 +24,7 @@ public class PSPContext : DbContext
     public virtual DbSet<SubsidizedRoute> DictSubsidizedRoutes { get; set; }
     public virtual DbSet<TicketType> DictTicketTypes { get; set; }
     public virtual DbSet<OperationType> DictOperationTypes { get; set; }
+    public virtual DbSet<Fare> DictFare { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Server=localhost; Port=5432;Database=PSP_Data;User Id=postgres;Password=1243");
@@ -44,5 +45,6 @@ public class PSPContext : DbContext
         modelBuilder.ApplyConfiguration(new SubsidizedRouteConfiguration());
         modelBuilder.ApplyConfiguration(new TicketTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new FareConfiguration());
     }
 }

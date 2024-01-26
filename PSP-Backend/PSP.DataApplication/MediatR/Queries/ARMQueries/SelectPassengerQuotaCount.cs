@@ -3,6 +3,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.ArmContextDTO.Select;
 using PSP.Infrastructure.Repositories.FlightRepositories.Interfaces;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -42,7 +43,7 @@ public static class SelectPassengerQuotaCount
                     var passengerFromDb = await passengerRepository
                         .GetByIdWithCouponEventAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate, requestDto.QuotaBalancesYears);
                     
-                    passenger.passenger_data = mapper.Map<SelectPassengerResponseDTO>(passengerFromDb);
+                    passenger.passenger_data = mapper.Map<SelectPassengerDataDTO>(passengerFromDb);
                     //Mock go to url and get Confirme
                     passenger.identity_confirmation = new
                     {
@@ -86,24 +87,32 @@ public static class SelectPassengerQuotaCount
                             quotaBalance.year = quotaYear;
                             quotaBalance.used_documents_count = 1;
                 
-                            var quotaBalances = new List<QuotBalanceDTO>();
+                            var categoryBalances = new List<CategoryBalanceDTO>();
                             
                             foreach (var quotaCategory in quotaCategories)
                             {
-                                quotaBalances.Add(new QuotBalanceDTO
+                                categoryBalances.Add(new CategoryBalanceDTO
                                 {
                                     Category = quotaCategory.Code,
                                     Available = 4 - passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "used" && dc.QuotaCategoryCode == quotaCategory.Code),
+                                        .Count(dc => dc.OperationType == "used" && 
+                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                                     dc.OperationDatetimeUtc.Year == quotaYear),
                                     Issued = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "issued" && dc.QuotaCategoryCode == quotaCategory.Code),
+                                        .Count(dc => dc.OperationType == "issued" && 
+                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                                     dc.OperationDatetimeUtc.Year == quotaYear),
                                     Refund = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "refund" && dc.QuotaCategoryCode == quotaCategory.Code),
+                                        .Count(dc => dc.OperationType == "refund" && 
+                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                                     dc.OperationDatetimeUtc.Year == quotaYear),
                                     Used = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "used" && dc.QuotaCategoryCode == quotaCategory.Code)
+                                        .Count(dc => dc.OperationType == "used" && 
+                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                                     dc.OperationDatetimeUtc.Year == quotaYear)
                                 });
                             }
-                            quotaBalance.category_balances = quotaBalances;
+                            quotaBalance.category_balances = categoryBalances;
                             
                             quotaYearBalances.Add(quotaBalance);
                         }

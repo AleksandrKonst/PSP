@@ -1,4 +1,4 @@
-namespace PSP.DataApplication.DTO;
+namespace PSP.DataApplication.DTO.PassengerContextDTO;
 
 public class DocumentTypeDTO
 {

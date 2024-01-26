@@ -1,8 +1,8 @@
-namespace PSP.DataApplication.DTO;
+namespace PSP.DataApplication.DTO.ArmContextDTO.Insert;
 
-public class SelectPassengerRequestDTO
+public class InsertPassengerDataDTO
 {
-    public long Id { get; set; }
+    public int Id { get; set; }
 
     public string Surname { get; set; }
 
@@ -18,11 +18,9 @@ public class SelectPassengerRequestDTO
     
     public string DocumentNumber { get; set; }
 
-    public string Snils { get; set; }
-
-    public List<int>? QuotaBalancesYears { get; set; }
+    public short TicketType { get; set; }
     
-    public List<string>? Types { get; set; }
+    public string TicketNumber { get; set; }
 
-    public List<int>? AdpPassengerIds { get; set; }
+    public List<int> QuotaBalancesYears { get; set; }
 }

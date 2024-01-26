@@ -36,34 +36,26 @@ public class CouponEvent
     public long PassengerId { get; set; }
 
     /// <summary>
-    /// Идентификатор субсидируемого маршрута
-    /// </summary>
-    public int SubsidizedRouteId { get; set; }
-
-    /// <summary>
     /// Тип билета
     /// </summary>
     public short TicketType { get; set; }
-
-    /// <summary>
-    /// Код категории квотирования
-    /// </summary>
-    public string QuotaCategoryCode { get; set; } = null!;
 
     /// <summary>
     /// Код маршрута
     /// </summary>
     public int FlightCode { get; set; }
 
-    public virtual Flight FlightCodeNavigation { get; set; } = null!;
-
-    public virtual OperationType OperationTypeNavigation { get; set; } = null!;
+    
+    /// <summary>
+    /// Код тарифа
+    /// </summary>
+    public string FareCode { get; set; } = null!;
+    
+    public virtual Fare Fare { get; set; } = null!;
+    
+    public virtual Flight Flight { get; set; } = null!;
     
     public virtual Passenger Passenger { get; set; } = null!;
-
-    public virtual QuotaCategory QuotaCategoryCodeNavigation { get; set; } = null!;
-
-    public virtual SubsidizedRoute SubsidizedRoute { get; set; } = null!;
 
     public virtual TicketType TicketTypeNavigation { get; set; } = null!;
 }

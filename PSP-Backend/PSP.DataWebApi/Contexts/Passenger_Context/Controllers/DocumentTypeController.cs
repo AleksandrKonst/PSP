@@ -1,9 +1,12 @@
 using System.Dynamic;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.DataApplication.MediatR.Commands.DocumentTypeCommands;
 using PSP.DataApplication.MediatR.Queries.DocumentTypeQueries;
+using PSP.DataWebApi.Contexts.Passenger_Context.DTO;
 using PSP.DataWebApi.Filters;
 using PSP.DataWebApi.Infrastructure;
 using PSP.Domain.Exceptions;
@@ -14,7 +17,7 @@ namespace PSP.DataWebApi.Contexts.Passenger_Context.Controllers;
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class DocumentTypeController(IMediator mediator) : ControllerBase
+public class DocumentTypeController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     [RequestSizeLimit(1 * 1024)]
@@ -68,12 +71,12 @@ public class DocumentTypeController(IMediator mediator) : ControllerBase
     [HttpPost]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Post([FromBody] DocumentTypeDTO documentType, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post([FromBody] PostDocumentTypeDTO documentType, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
     
-        var command = new CreateDocumentType.Command(documentType);
+        var command = new CreateDocumentType.Command(mapper.Map<DocumentTypeDTO>(documentType));
         var result = await mediator.Send(command, cancellationToken);
             
         if (result.Result)
@@ -93,12 +96,12 @@ public class DocumentTypeController(IMediator mediator) : ControllerBase
     [HttpPut]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Put([FromBody] DocumentTypeDTO documentType, CancellationToken cancellationToken)
+    public async Task<IActionResult> Put([FromBody] PostDocumentTypeDTO documentType, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var command = new UpdateDocumentType.Command(documentType);
+        var command = new UpdateDocumentType.Command(mapper.Map<DocumentTypeDTO>(documentType));
         var result = await mediator.Send(command, cancellationToken);
     
         if (result.Result)

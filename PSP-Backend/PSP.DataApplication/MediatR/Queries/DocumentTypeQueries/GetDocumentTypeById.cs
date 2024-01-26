@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 namespace PSP.DataApplication.MediatR.Queries.DocumentTypeQueries;

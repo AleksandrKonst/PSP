@@ -59,5 +59,5 @@ public class SubsidizedRoute
 
     public virtual City CityStartIataCodeNavigation { get; set; } = null!;
 
-    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
+    public virtual ICollection<Fare> DictFares { get; set; } = new List<Fare>();
 }

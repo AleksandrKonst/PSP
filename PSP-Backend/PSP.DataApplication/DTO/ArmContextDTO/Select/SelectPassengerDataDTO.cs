@@ -1,6 +1,6 @@
-namespace PSP.DataApplication.DTO;
+namespace PSP.DataApplication.DTO.ArmContextDTO.Select;
 
-public class SelectPassengerResponseDTO
+public class SelectPassengerDataDTO
 {
     public DateOnly Birthdate { get; set; }
 
