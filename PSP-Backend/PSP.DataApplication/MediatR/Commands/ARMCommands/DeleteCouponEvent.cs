@@ -7,7 +7,7 @@ namespace PSP.DataApplication.MediatR.Commands.ARMCommands;
 
 public static class DeleteCouponEvent
 {
-    public record Command(DeleteCouponEventRequestDTO DeleteCouponEvent) : IRequest<CommandResult>;
+    public record Command(DeleteCouponEventRequestDTO DeleteCouponEventRequestDto) : IRequest<CommandResult>;
     
     public record CommandResult(int Result);
     
@@ -15,7 +15,15 @@ public static class DeleteCouponEvent
     {
         public Validator(ICouponEventRepository repository)
         {
+            RuleFor(x => x.DeleteCouponEventRequestDto.TicketType)
+                .LessThan(100)
+                .WithMessage("Неверный формат типа билета")
+                .WithErrorCode("PPC-000403");
             
+            RuleFor(x => x.DeleteCouponEventRequestDto.TicketNumber)
+                .MaximumLength(30)
+                .WithMessage("Слишком длинный номер билета")
+                .WithErrorCode("PPC-000403");
         }
     }
     
@@ -23,10 +31,10 @@ public static class DeleteCouponEvent
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            return new CommandResult(await repository.DeleteByTicketAsync(request.DeleteCouponEvent.OperationType, 
-                request.DeleteCouponEvent.TicketType, 
-                request.DeleteCouponEvent.TicketNumber, 
-                DateTime.Parse(request.DeleteCouponEvent.OperationDatetime).ToUniversalTime()));
+            return new CommandResult(await repository.DeleteByTicketAsync(request.DeleteCouponEventRequestDto.OperationType, 
+                request.DeleteCouponEventRequestDto.TicketType, 
+                request.DeleteCouponEventRequestDto.TicketNumber, 
+                DateTime.Parse(request.DeleteCouponEventRequestDto.OperationDatetime).ToUniversalTime()));
         }
     }
 }

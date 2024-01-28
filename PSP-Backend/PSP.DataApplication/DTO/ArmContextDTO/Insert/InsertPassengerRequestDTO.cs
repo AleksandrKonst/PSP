@@ -48,7 +48,7 @@ public class InsertCouponDTO
     
     public string DepartPlace { get; set; }
     
-    public string DepartDateTimePlan { get; set; }
+    public string DepartTimePlan { get; set; }
     
     public string ArrivePlace { get; set; }
     

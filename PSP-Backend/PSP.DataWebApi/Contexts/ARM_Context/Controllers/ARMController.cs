@@ -112,12 +112,12 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
         
         if (searchRequest.SearchType == "passenger")
         {
-            var query = new SearchPasseneger.Query(mapper.Map<SearchPassengerDTO>(searchRequest));
+            var query = new SearchByPasseneger.Query(mapper.Map<SearchByPassengerDTO>(searchRequest));
             coupon = (await mediator.Send(query, cancellationToken)).Result;
         }
         else if (searchRequest.SearchType == "ticket")
         {
-            var query = new SearchTicket.Query(mapper.Map<SearchTicketDTO>(searchRequest));
+            var query = new SearchByTicket.Query(mapper.Map<SearchByTicketDTO>(searchRequest));
             coupon = (await mediator.Send(query, cancellationToken)).Result;
         }
         else

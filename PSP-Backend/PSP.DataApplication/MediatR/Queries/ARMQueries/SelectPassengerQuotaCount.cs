@@ -1,12 +1,13 @@
 using System.Dynamic;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
+using PSP.Domain.Exceptions;
 using PSP.DataApplication.DTO.ArmContextDTO.General;
 using PSP.DataApplication.DTO.ArmContextDTO.Select;
+using PSP.DataApplication.DTO.ArmContextDTO.Select.Validators;
 using PSP.DataApplication.DTO.PassengerContextDTO;
-using PSP.DataApplication.Inrastructure;
 using PSP.DataApplication.Mediatr.Commands.PassengerCommands;
-using PSP.Domain.Exceptions;
 using PSP.Infrastructure.Repositories.FlightRepositories.Interfaces;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -26,11 +27,13 @@ public static class SelectPassengerQuotaCount
                 .NotEmpty()
                 .WithMessage("Передана пустая коллекция")
                 .WithErrorCode("PPC-000403");
+
+            RuleForEach(x => x.SelectPassengerRequests).SetValidator(new SelectPassengerValidator());
         }
     }
     
     public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, 
-        IMediator mediator) : IRequestHandler<Query, QueryResult>
+        IMediator mediator, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -48,22 +51,29 @@ public static class SelectPassengerQuotaCount
 
                 if (passengerFromDb != null)
                 {
-                    passenger.passengerData = new SelectPassengerDataDTO()
-                    { //mapper
-                        Birthdate = passengerFromDb.Birthdate,
-                        Gender = passengerFromDb.Gender,
-                        DocumentType = passengerRequest.DocumentType,
-                        DocumentNumber = passengerRequest.DocumentNumber,
-                        DocumentNumbersLatin = new List<string>() {ConvertStringService.Transliterate(passengerRequest.DocumentNumber)}
-                    };
+                    passenger.passengerData = mapper.Map<SelectPassengerDataDTO>(passengerRequest);
                     
-                    //Заглушка, из за отсутсвия сервиса проверки check(snills and FIO)
-                    passenger.identityConfirmation = new
+                    var checkPassengerQuery= new CheckPassenger.Query(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, passengerRequest.Birthdate);
+                    var checkPassengerResult = await mediator.Send(checkPassengerQuery, cancellationToken);
+                                
+                    if (checkPassengerResult.Result)
                     {
-                        Confirmed = true,
-                        Code = "PIC-000000",
-                        Message = "Успешное подтверждение личности гражданина"
-                    };
+                        passenger.identityConfirmation = new
+                        {
+                            Confirmed = true,
+                            Code = "PIC-000000",
+                            Message = "Успешное подтверждение личности гражданина"
+                        };
+                    }
+                    else
+                    {
+                        passenger.identityConfirmation = new
+                        {
+                            Confirmed = true,
+                            Code = "PIC-000001",
+                            Message = "Ошибка подтверждения личности гражданина"
+                        };
+                    }
 
                     var typeConfirmations = new List<SelectTypeConfirmationDTO>();
                     if (passengerRequest.Types.Count > 0)
@@ -75,7 +85,7 @@ public static class SelectPassengerQuotaCount
 
                             if (!passengerFromDb.PassengerTypes.Contains(type))
                             {
-                                var query = new CheckPassengerType.Query(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, passengerRequest.Birthdate );
+                                var query = new CheckPassengerType.Query(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, passengerRequest.Birthdate);
                                 var result = await mediator.Send(query, cancellationToken);
                                 
                                 if (result.Result)
@@ -83,7 +93,6 @@ public static class SelectPassengerQuotaCount
                                     passengerFromDb.PassengerTypes.Add(type);
                                     await passengerRepository.UpdateAsync(passengerFromDb);
                                 }
-
                                 confirmed = result.Result;
                             }
                             
@@ -111,44 +120,32 @@ public static class SelectPassengerQuotaCount
                     }
 
                     passenger.typeConfirmations = typeConfirmations;
-
                     if (passengerRequest.QuotaBalancesYears.Count > 0)
                     {
                         var quotaBalances = new List<SelectQuotaBalanceDTO>();
                         foreach (var quotaYear in passengerRequest.QuotaBalancesYears)
                         {
-                            var quotaBalance = new SelectQuotaBalanceDTO();
-
-                            quotaBalance.Year = quotaYear;
-                            quotaBalance.UsedDocumentsCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count() + 1;
-
-                            var categoryBalances = new List<CategoryBalanceDTO>();
-
-                            foreach (var quotaCategory in quotaCategories)
+                            var quotaBalance = new SelectQuotaBalanceDTO
                             {
-                                categoryBalances.Add(new CategoryBalanceDTO
+                                Year = quotaYear,
+                                UsedDocumentsCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count()
+                            };
+
+                            var categoryBalances = quotaCategories.Select(quotaCategory => new CategoryBalanceDTO
                                 {
                                     Category = quotaCategory.Code,
-                                    Available = 4 - passengerFromDb.CouponEvents
-                                        .Count(dc => dc.OperationType == "used" &&
-                                                     dc.QuotaCode == quotaCategory.Code &&
-                                                     dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Issued = passengerFromDb.CouponEvents
-                                        .Count(dc => dc.OperationType == "issued" &&
-                                                     dc.QuotaCode == quotaCategory.Code &&
-                                                     dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Refund = passengerFromDb.CouponEvents
-                                        .Count(dc => dc.OperationType == "refund" &&
-                                                     dc.QuotaCode == quotaCategory.Code &&
-                                                     dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Used = passengerFromDb.CouponEvents
-                                        .Count(dc => dc.OperationType == "used" &&
-                                                     dc.QuotaCode == quotaCategory.Code &&
-                                                     dc.OperationDatetimeUtc.Year == quotaYear)
-                                });
-                            }
+                                    Available = 4 - passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && 
+                                        dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Issued = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "issued" && 
+                                        dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Refund = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "refund" && 
+                                        dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Used = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && 
+                                        dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear)
+                                })
+                                .ToList();
 
-                            quotaBalance.categoryBalances = categoryBalances;
+                            quotaBalance.CategoryBalances = categoryBalances;
                             quotaBalances.Add(quotaBalance);
                         }
                         passenger.QuotaBalances = quotaBalances; 
@@ -156,8 +153,8 @@ public static class SelectPassengerQuotaCount
                 }
                 else
                 {
-                    var command = new CreatePassenger.Command(new PassengerDTO()
-                    { //mapper
+                    var command =  new CreatePassenger.Command(new PassengerDTO()
+                    {
                         Birthdate = passengerRequest.Birthdate,
                         Gender = passengerRequest.Gender,
                         Name = passengerRequest.Name,
@@ -169,41 +166,23 @@ public static class SelectPassengerQuotaCount
                     
                     if (createResult.Result)
                     {
-                        passenger.passengerData = new SelectPassengerDataDTO()
-                        { //Mapper
-                            Birthdate = passengerRequest.Birthdate,
-                            Gender = passengerRequest.Gender,
-                            DocumentType = passengerRequest.DocumentType,
-                            DocumentNumber = passengerRequest.DocumentNumber,
-                            DocumentNumbersLatin = new List<string>() {ConvertStringService.Transliterate(passengerRequest.DocumentNumber)}
-                        };
+                        passenger.passengerData = mapper.Map<SelectPassengerDataDTO>(passengerRequest);
 
                         if (passengerRequest.QuotaBalancesYears.Count > 0)
                         {
-                            var quotaBalances = new List<SelectQuotaBalanceDTO>();
-                            foreach (var quotaYear in passengerRequest.QuotaBalancesYears)
-                            {
-                                var quotaBalance = new SelectQuotaBalanceDTO();
-
-                                quotaBalance.Year = quotaYear;
-                                quotaBalance.UsedDocumentsCount = 1;
-                                
-                                var categoryBalances = new List<CategoryBalanceDTO>();
-                                foreach (var quotaCategory in quotaCategories)
+                            var quotaBalances = passengerRequest.QuotaBalancesYears.Select(quotaYear => new SelectQuotaBalanceDTO
                                 {
-                                    categoryBalances.Add(new CategoryBalanceDTO
-                                    {
-                                        Category = quotaCategory.Code,
-                                        Available = 4,
-                                        Issued = 0,
-                                        Refund = 0,
-                                        Used = 0
-                                    });
-                                }
-                                
-                                quotaBalance.categoryBalances = categoryBalances;
-                                quotaBalances.Add(quotaBalance);
-                            }
+                                    Year = quotaYear,
+                                    UsedDocumentsCount = 1,
+                                    CategoryBalances = quotaCategories.Select(quotaCategory => new CategoryBalanceDTO
+                                        {
+                                            Category = quotaCategory.Code,
+                                            Available = 4,
+                                            Issued = 0,
+                                            Refund = 0,
+                                            Used = 0
+                                        }).ToList()
+                                }).ToList();
                             passenger.quotaBalances = quotaBalances;  
                         }
                     }

@@ -1,6 +1,4 @@
-using System.Text;
-
-namespace PSP.DataApplication.Inrastructure;
+namespace PSP.DataApplication.Infrastructure;
 
 public static class ConvertStringService
 {

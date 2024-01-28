@@ -4,9 +4,10 @@ using MediatR;
 using PSP.DataApplication.DTO;
 using PSP.DataApplication.DTO.ArmContextDTO.General;
 using PSP.DataApplication.DTO.ArmContextDTO.Insert;
+using PSP.DataApplication.DTO.ArmContextDTO.Insert.Validators;
 using PSP.DataApplication.DTO.FlightContextDTO;
 using PSP.DataApplication.DTO.PassengerContextDTO;
-using PSP.DataApplication.Inrastructure;
+using PSP.DataApplication.Infrastructure;
 using PSP.DataApplication.MediatR.Commands.CouponEventCommands;
 using PSP.DataApplication.MediatR.Commands.FareCommands;
 using PSP.DataApplication.MediatR.Commands.FlightCommands;
@@ -29,7 +30,8 @@ public static class InsertCouponEvent
     {
         public Validator()
         {
-            
+            RuleForEach(x => x.PassengerRequestDto.Coupons).SetValidator(new InsertCouponValidator());
+            RuleForEach(x => x.PassengerRequestDto.Passengers).SetValidator(new InsertPassengerDataValidator());
         }
     }
     
@@ -49,7 +51,7 @@ public static class InsertCouponEvent
                         .CheckByFullNameAsync(passenger.Name, passenger.Surname, passenger.Patronymic, passenger.Birthdate))
                 {
                     var command = new CreatePassenger.Command(new PassengerDTO()
-                    { //mapper
+                    {
                         Birthdate = passenger.Birthdate,
                         Gender = passenger.Gender,
                         Name = passenger.Name,
@@ -73,44 +75,17 @@ public static class InsertCouponEvent
                 {
                     passengersDb.Add(passenger.Id, passengerFromDb);
 
-                    var quotaBalances = new List<InsertQuotaBalanceDTO>();
-
-                    foreach (var quotaYear in passenger.QuotaBalancesYears)
-                    {
-                        var categoryBalances = new List<CategoryBalanceDTO>();
-
-                        foreach (var quotaCategory in quotaCategories)
-                        {
-                            categoryBalances.Add(new CategoryBalanceDTO
+                    var quotaBalances = (from quotaYear in passenger.QuotaBalancesYears
+                        let categoryBalances = quotaCategories.Select(quotaCategory => new CategoryBalanceDTO
                             {
                                 Category = quotaCategory.Code,
-                                Available = 4 - passengerFromDb.CouponEvents
-                                    .Count(dc => dc.OperationType == "used" &&
-                                                 dc.QuotaCode == quotaCategory.Code &&
-                                                 dc.OperationDatetimeUtc.Year == quotaYear),
-                                Issued = passengerFromDb.CouponEvents
-                                    .Count(dc => dc.OperationType == "issued" &&
-                                                 dc.QuotaCode == quotaCategory.Code &&
-                                                 dc.OperationDatetimeUtc.Year == quotaYear),
-                                Refund = passengerFromDb.CouponEvents
-                                    .Count(dc => dc.OperationType == "refund" &&
-                                                 dc.QuotaCode == quotaCategory.Code &&
-                                                 dc.OperationDatetimeUtc.Year == quotaYear),
-                                Used = passengerFromDb.CouponEvents
-                                    .Count(dc => dc.OperationType == "used" &&
-                                                 dc.QuotaCode == quotaCategory.Code &&
-                                                 dc.OperationDatetimeUtc.Year == quotaYear)
-                            });
-                        }
-
-                        quotaBalances.Add(new InsertQuotaBalanceDTO()
-                        {
-                            Year = quotaYear,
-                            UsedDocumentCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count() + 1,
-                            Changed = false,
-                            CategoryBalances = categoryBalances
-                        });
-                    }
+                                Available = 4 - passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                Issued = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "issued" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                Refund = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "refund" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                Used = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear)
+                            })
+                            .ToList()
+                        select new InsertQuotaBalanceDTO() { Year = quotaYear, UsedDocumentCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count() + 1, Changed = false, CategoryBalances = categoryBalances }).ToList();
 
                     passengers.Add(new InsertPassengerResponseDTO()
                     {
@@ -135,13 +110,7 @@ public static class InsertCouponEvent
                 {
                     if (!await fareRepository.CheckByCodeAsync(fare.Code))
                     {
-                        var command = new CreateFare.Command(new FareDTO()
-                        { //mapper
-                            Code = fare.Code,
-                            Amount = fare.Amount,
-                            Currency = fare.Currency,
-                            Special = fare.Special
-                        });
+                        var command = new CreateFare.Command(mapper.Map<FareDTO>(fare));
                         var createResult = await mediator.Send(command, cancellationToken);
 
                         if (!createResult.Result)
@@ -152,17 +121,11 @@ public static class InsertCouponEvent
                     
                     if (!await flightRepository.CheckByCodeAsync(coupon.FlightNumber))
                     {
-                        var command = new CreateFlight.Command(new FlightDTO()
-                        { //mapper
-                            Code = coupon.FlightNumber,
-                            AirlineCode = coupon.AirlineCode,
-                            DepartPlace = coupon.DepartPlace,
-                            DepartDatetimePlan = DateTime.Parse(coupon.DepartDateTimePlan).ToUniversalTime(),
-                            ArrivePlace = coupon.ArrivePlace,
-                            ArriveDatetimePlan = DateTime.Parse(coupon.ArriveTimePlan).ToUniversalTime(),
-                            PnrCode = coupon.PnrCode,
-                            FareCode = fare.Code
-                        });
+                        var command = new CreateFlight.Command(mapper.Map<FlightDTO>(coupon, opt =>
+                        {
+                            opt.AfterMap((src, dest) => dest.FareCode = fare.Code);
+                        }));
+                        
                         var createResult = await mediator.Send(command, cancellationToken);
 
                         if (!createResult.Result)
@@ -210,11 +173,11 @@ public static class InsertCouponEvent
                             .First(q => q.Year == DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime().Year)
                             .CategoryBalances
                             .First(c => c.Category == quotaCategory);
-
+                        
                         if (fare.PassengerType == "ocean" || categoryBalance.Available > 0)
                         {
                             var passenger = request.PassengerRequestDto.Passengers.Find(p => p.Id == fare.PassengerId);
-                            
+                            //check 
                             var command = new CreateCouponEvent.Command(new CouponEventDTO()
                             {
                                 OperationType = request.PassengerRequestDto.OperationType,

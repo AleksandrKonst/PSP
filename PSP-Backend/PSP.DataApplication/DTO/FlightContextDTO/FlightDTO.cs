@@ -8,11 +8,11 @@ public class FlightDTO
     
     public string DepartPlace { get; set; }
     
-    public DateTime DepartDatetimePlan { get; set; }
+    public DateTime DepartDateTimePlan { get; set; }
     
     public string ArrivePlace { get; set; }
     
-    public DateTime ArriveDatetimePlan { get; set; }
+    public DateTime ArriveDateTimePlan { get; set; }
     
     public string PnrCode { get; set; }
     

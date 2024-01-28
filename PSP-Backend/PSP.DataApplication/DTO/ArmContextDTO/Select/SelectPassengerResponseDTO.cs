@@ -30,5 +30,5 @@ public class SelectQuotaBalanceDTO
     
     public int UsedDocumentsCount { get; set; }
     
-    public List<CategoryBalanceDTO> categoryBalances { get; set; }
+    public List<CategoryBalanceDTO> CategoryBalances { get; set; }
 }

@@ -1,16 +1,14 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using PSP.DataApplication.DTO;
 using PSP.DataApplication.DTO.PassengerContextDTO;
-using PSP.Domain.Exceptions;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 namespace PSP.DataApplication.Mediatr.Queries.PassengerQueries;
 
 public static class GetPassengerById
 {
-    public record Query(int Id) : IRequest<QueryResult>;
+    public record Query(long Id) : IRequest<QueryResult>;
     
     public record QueryResult(PassengerDTO Result);
     

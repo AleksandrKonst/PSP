@@ -56,7 +56,7 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
         return true;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(long id)
     {
         var dbPassenger = await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
         if (dbPassenger == null) return false;

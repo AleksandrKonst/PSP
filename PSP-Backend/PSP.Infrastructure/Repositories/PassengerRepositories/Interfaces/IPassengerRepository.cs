@@ -15,5 +15,5 @@ public interface IPassengerRepository
     Task<bool> CheckByIdAsync(long id);
     Task<bool> AddAsync(Passenger passenger);
     Task<bool> UpdateAsync(Passenger passenger);
-    Task<bool> DeleteAsync(int id);
+    Task<bool> DeleteAsync(long id);
 }

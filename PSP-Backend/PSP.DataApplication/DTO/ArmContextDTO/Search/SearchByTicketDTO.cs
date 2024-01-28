@@ -1,6 +1,6 @@
 namespace PSP.DataApplication.DTO.ArmContextDTO.Search;
 
-public class SearchTicketDTO
+public class SearchByTicketDTO
 {
     public int TicketType { get; set; }
 

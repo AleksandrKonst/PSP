@@ -7,7 +7,7 @@ namespace PSP.DataApplication.Mediatr.Commands.PassengerCommands;
 
 public static class DeletePassenger
 {
-    public record Command(int Id) : IRequest<CommandResult>;
+    public record Command(long Id) : IRequest<CommandResult>;
     
     public record CommandResult(bool Result);
     

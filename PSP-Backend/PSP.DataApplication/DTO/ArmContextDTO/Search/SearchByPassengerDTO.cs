@@ -1,6 +1,6 @@
 namespace PSP.DataApplication.DTO.ArmContextDTO.Search;
 
-public class SearchPassengerDTO
+public class SearchByPassengerDTO
 {
     public int QuotaBalancesYear { get; set; }
 
