@@ -49,12 +49,12 @@ public class SubsidizedRouteConfiguration : IEntityTypeConfiguration<SubsidizedR
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("validity_to");
 
-            entity.HasOne(d => d.CityFinishIataCodeNavigation).WithMany(p => p.DictSubsidizedRouteCityFinishIataCodeNavigations)
+            entity.HasOne(d => d.CityFinishIataCodeNavigation).WithMany(p => p.SubsidizedRouteCityFinishIataCodeNavigations)
                 .HasForeignKey(d => d.CityFinishIataCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dict_subsidized_routes_fkey_city_finish_iata_code");
 
-            entity.HasOne(d => d.CityStartIataCodeNavigation).WithMany(p => p.DictSubsidizedRouteCityStartIataCodeNavigations)
+            entity.HasOne(d => d.CityStartIataCodeNavigation).WithMany(p => p.SubsidizedRouteCityStartIataCodeNavigations)
                 .HasForeignKey(d => d.CityStartIataCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dict_subsidized_routes_fkey_city_start_iata_code");

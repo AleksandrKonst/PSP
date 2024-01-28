@@ -1,10 +1,10 @@
 using AutoMapper;
-using PSP.DataApplication.DTO.ArmContextDTO.Select;
+using PSP.Domain.Models;
+using PSP.DataApplication.DTO.ArmContextDTO.Search;
 using PSP.DataApplication.DTO.FlightContextDTO;
 using PSP.DataApplication.DTO.PassengerContextDTO;
-using PSP.Domain.Models;
 
-namespace PSP.DataApplication.DTO.AutoMapperProfiles;
+namespace PSP.DataApplication.AutoMapperProfiles;
 
 public class ApplicationProfile : Profile
 {
@@ -13,14 +13,11 @@ public class ApplicationProfile : Profile
         CreateMap<PassengerDTO, Passenger>().ReverseMap();
         CreateMap<PassengerTypeDTO, PassengerType>().ReverseMap();
         CreateMap<DocumentTypeDTO, DocumentType>().ReverseMap();
-        CreateMap<PassengerQuotaCountDTO, PassengerQuotaCount>().ReverseMap();
 
         CreateMap<CouponEventDTO, CouponEvent>().ReverseMap();
-        
-        CreateMap<SelectPassengerDataDTO, Passenger>()
-            .ForMember(response => response.DocumentTypeCode, 
-                opt => opt.MapFrom(
-                    request => request.DocumentType))
-            .ReverseMap();
+        CreateMap<FareDTO, Fare>().ReverseMap();
+        CreateMap<FlightDTO, Flight>().ReverseMap();
+        CreateMap<SearchRequestDTO, SearchPassengerDTO>().ReverseMap();
+        CreateMap<SearchRequestDTO, SearchTicketDTO>().ReverseMap();
     }
 }

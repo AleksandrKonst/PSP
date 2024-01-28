@@ -28,7 +28,7 @@ public static class GetDocumentTypeById
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<DocumentTypeDTO>(await repository.GetByIdAsync(request.Code)));
+            return new QueryResult(mapper.Map<DocumentTypeDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

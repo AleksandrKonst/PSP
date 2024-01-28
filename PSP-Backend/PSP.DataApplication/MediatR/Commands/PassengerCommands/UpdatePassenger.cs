@@ -22,16 +22,6 @@ public static class UpdatePassenger
                 .MustAsync(async (id, cancellationToken) => await repository.CheckByIdAsync(id))
                 .WithMessage("Идентификатор пассажира не существует")
                 .WithErrorCode("PPC-000001");
-            
-            RuleFor(x => x.PassengerDto.DocumentTypeCode)
-                .Length(2)
-                .WithMessage("Номер документа больше 2 символов")
-                .WithErrorCode("PPC-000403");
-            
-            RuleFor(x => x.PassengerDto.DocumentNumber)
-                .MaximumLength(20)
-                .WithMessage("Серия документа больше 20 символов")
-                .WithErrorCode("PPC-000403");
         }
     }
     

@@ -36,26 +36,49 @@ public class CouponEvent
     public long PassengerId { get; set; }
 
     /// <summary>
+    /// Тип документа
+    /// </summary>
+    public string DocumentTypeCode { get; set; } = null!;
+
+    /// <summary>
+    /// Номер документа
+    /// </summary>
+    public string DocumentNumber { get; set; } = null!;
+
+    /// <summary>
+    /// Номер документа latin
+    /// </summary>
+    public string DocumentNumberLatin { get; set; } = null!;
+
+    /// <summary>
+    /// Код квотирования
+    /// </summary>
+    public string QuotaCode { get; set; } = null!;
+
+    /// <summary>
+    /// Код перелета
+    /// </summary>
+    public int FlightCode { get; set; }
+
+    /// <summary>
     /// Тип билета
     /// </summary>
     public short TicketType { get; set; }
 
     /// <summary>
-    /// Код маршрута
+    /// Номер билета
     /// </summary>
-    public int FlightCode { get; set; }
+    public string TicketNumber { get; set; } = null!;
 
-    
-    /// <summary>
-    /// Код тарифа
-    /// </summary>
-    public string FareCode { get; set; } = null!;
-    
-    public virtual Fare Fare { get; set; } = null!;
-    
-    public virtual Flight Flight { get; set; } = null!;
-    
+    public virtual DocumentType DocumentTypeCodeNavigation { get; set; } = null!;
+
+    public virtual Flight FlightCodeNavigation { get; set; } = null!;
+
+    public virtual OperationType OperationTypeNavigation { get; set; } = null!;
+
     public virtual Passenger Passenger { get; set; } = null!;
+
+    public virtual QuotaCategory QuotaCodeNavigation { get; set; } = null!;
 
     public virtual TicketType TicketTypeNavigation { get; set; } = null!;
 }

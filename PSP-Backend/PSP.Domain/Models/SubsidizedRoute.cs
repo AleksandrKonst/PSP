@@ -58,6 +58,4 @@ public class SubsidizedRoute
     public virtual City CityFinishIataCodeNavigation { get; set; } = null!;
 
     public virtual City CityStartIataCodeNavigation { get; set; } = null!;
-
-    public virtual ICollection<Fare> DictFares { get; set; } = new List<Fare>();
 }

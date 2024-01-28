@@ -6,7 +6,7 @@ public interface IDocumentTypeRepository
 {
     Task<List<DocumentType>> GetAllAsync();
     Task<List<DocumentType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
-    Task<DocumentType?> GetByIdAsync(string id);
+    Task<DocumentType?> GetByCodeAsync(string code);
     Task<int> GetCountAsync();
     Task<bool> CheckByCodeAsync(string code);
     Task<bool> AddAsync(DocumentType documentType);

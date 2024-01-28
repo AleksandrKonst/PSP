@@ -14,11 +14,5 @@ public class PassengerDTO
     
     public string Gender { get; set; }
     
-    public string DocumentTypeCode { get; set; }
-    
-    public string DocumentNumber { get; set; }
-    
-    public List<string>? DocumentNumbersLatin { get; set; }
-    
     public List<string>? PassengerTypes { get; set; }
 }

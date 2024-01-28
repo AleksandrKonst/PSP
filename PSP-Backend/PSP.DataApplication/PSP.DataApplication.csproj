@@ -19,4 +19,10 @@
       <ProjectReference Include="..\PSP.Infrastructure\PSP.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DTO\ArmContextDTO\General\Validators\" />
+      <Folder Include="DTO\ArmContextDTO\Insert\Validators\" />
+      <Folder Include="DTO\ArmContextDTO\Select\Validators\" />
+    </ItemGroup>
+
 </Project>

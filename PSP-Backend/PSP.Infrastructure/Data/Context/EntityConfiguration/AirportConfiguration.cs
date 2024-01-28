@@ -33,7 +33,7 @@ public class AirportConfiguration : IEntityTypeConfiguration<Airport>
             .HasColumnType("character varying")
             .HasColumnName("rf_code");
 
-        entity.HasOne(d => d.CityIataCodeNavigation).WithMany(p => p.DictAirports)
+        entity.HasOne(d => d.CityIataCodeNavigation).WithMany(p => p.Airports)
             .HasForeignKey(d => d.CityIataCode)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("dict_airports_fkey_city_iata_code");

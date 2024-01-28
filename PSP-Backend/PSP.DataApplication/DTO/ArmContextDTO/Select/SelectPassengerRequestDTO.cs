@@ -20,9 +20,9 @@ public class SelectPassengerRequestDTO
 
     public string Snils { get; set; }
 
-    public List<int>? QuotaBalancesYears { get; set; }
+    public List<int> QuotaBalancesYears { get; set; }
     
-    public List<string>? Types { get; set; }
+    public List<string> Types { get; set; }
 
-    public List<int>? AdpPassengerIds { get; set; }
+    public List<int> AdpPassengerIds { get; set; }
 }

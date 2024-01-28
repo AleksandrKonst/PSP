@@ -30,5 +30,5 @@ public class QuotaCategory
     /// </summary>
     public short RoundTripQuota { get; set; }
 
-    public virtual ICollection<Fare> DictFares { get; set; } = new List<Fare>();
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 }

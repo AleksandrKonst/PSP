@@ -15,5 +15,5 @@ public class DocumentType
     /// </summary>
     public string Type { get; set; } = null!;
 
-    public virtual ICollection<Passenger> DataPassengers { get; set; } = new List<Passenger>();
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 }

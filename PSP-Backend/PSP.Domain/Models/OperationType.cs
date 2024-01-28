@@ -11,4 +11,6 @@ public class OperationType
     /// Описание операции
     /// </summary>
     public string? OperationDescription { get; set; }
+    
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 }

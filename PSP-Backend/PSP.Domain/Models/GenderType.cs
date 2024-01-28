@@ -15,5 +15,5 @@ public class GenderType
     /// </summary>
     public string Gender { get; set; } = null!;
 
-    public virtual ICollection<Passenger> DataPassengers { get; set; } = new List<Passenger>();
+    public virtual ICollection<Passenger> Passengers { get; set; } = new List<Passenger>();
 }

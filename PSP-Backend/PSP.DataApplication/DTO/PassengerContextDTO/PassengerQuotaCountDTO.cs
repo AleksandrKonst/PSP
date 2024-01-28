@@ -4,9 +4,9 @@ public class PassengerQuotaCountDTO
 {
     public long PassengerId { get; set; }
     
-    public string QuotaCategoriesCode { get; set; } = null!;
+    public string QuotaCategoriesCode { get; set; }
     
-    public string QuotaYear { get; set; } = null!;
+    public string QuotaYear { get; set; }
     
     public short IssuedCount { get; set; }
     

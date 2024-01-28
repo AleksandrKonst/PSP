@@ -33,28 +33,11 @@ public class Passenger
     public string Gender { get; set; } = null!;
 
     /// <summary>
-    /// Тип документа
-    /// </summary>
-    public string DocumentTypeCode { get; set; } = null!;
-
-    /// <summary>
-    /// Серия документа
-    /// </summary>
-    public string DocumentNumber { get; set; } = null!;
-
-    /// <summary>
-    /// Разлиные варианты названий документов
-    /// </summary>
-    public List<string>? DocumentNumbersLatin { get; set; }
-
-    /// <summary>
     /// Типы пассажира
     /// </summary>
-    public List<string>? PassengerTypes { get; set; }
+    public List<string> PassengerTypes { get; set; }
 
-    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual DocumentType DocumentTypeCodeNavigation { get; set; } = null!;
-
-    public virtual GenderType GenderTypeNavigation { get; set; } = null!;
+    public virtual GenderType GenderNavigation { get; set; } = null!;
 }

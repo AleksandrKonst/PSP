@@ -28,7 +28,7 @@ public static class GetPassengerTypeById
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<PassengerTypeDTO>(await repository.GetByIdAsync(request.Code)));
+            return new QueryResult(mapper.Map<PassengerTypeDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

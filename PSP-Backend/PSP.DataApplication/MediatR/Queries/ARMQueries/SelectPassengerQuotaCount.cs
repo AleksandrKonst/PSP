@@ -1,9 +1,12 @@
 using System.Dynamic;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
-using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.ArmContextDTO.General;
 using PSP.DataApplication.DTO.ArmContextDTO.Select;
+using PSP.DataApplication.DTO.PassengerContextDTO;
+using PSP.DataApplication.Inrastructure;
+using PSP.DataApplication.Mediatr.Commands.PassengerCommands;
+using PSP.Domain.Exceptions;
 using PSP.Infrastructure.Repositories.FlightRepositories.Interfaces;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -17,7 +20,7 @@ public static class SelectPassengerQuotaCount
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator(IPassengerRepository repository)
+        public Validator()
         {
             RuleFor(x => x.SelectPassengerRequests)
                 .NotEmpty()
@@ -26,109 +29,189 @@ public static class SelectPassengerQuotaCount
         }
     }
     
-    public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, 
+        IMediator mediator) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
             var quotaCategories = await quotaCategoryRepository.GetAllAsync();
             var passengers = new List<dynamic>();
             
-            foreach (var requestDto in request.SelectPassengerRequests)
+            foreach (var passengerRequest in request.SelectPassengerRequests)
             {
                 dynamic passenger = new ExpandoObject();
-                passenger.id = requestDto.Id;
+                passenger.id = passengerRequest.Id;
+                
+                var passengerFromDb = await passengerRepository
+                    .GetByFullNameWithCouponEventAsync(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, 
+                        passengerRequest.Birthdate, passengerRequest.QuotaBalancesYears);
 
-                if (await passengerRepository.CheckByFullNameAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate))
+                if (passengerFromDb != null)
                 {
-                    var passengerFromDb = await passengerRepository
-                        .GetByIdWithCouponEventAsync(requestDto.Name, requestDto.Surname, requestDto.Patronymic, requestDto.Birthdate, requestDto.QuotaBalancesYears);
+                    passenger.passengerData = new SelectPassengerDataDTO()
+                    { //mapper
+                        Birthdate = passengerFromDb.Birthdate,
+                        Gender = passengerFromDb.Gender,
+                        DocumentType = passengerRequest.DocumentType,
+                        DocumentNumber = passengerRequest.DocumentNumber,
+                        DocumentNumbersLatin = new List<string>() {ConvertStringService.Transliterate(passengerRequest.DocumentNumber)}
+                    };
                     
-                    passenger.passenger_data = mapper.Map<SelectPassengerDataDTO>(passengerFromDb);
-                    //Mock go to url and get Confirme
-                    passenger.identity_confirmation = new
+                    //Заглушка, из за отсутсвия сервиса проверки check(snills and FIO)
+                    passenger.identityConfirmation = new
                     {
                         Confirmed = true,
                         Code = "PIC-000000",
                         Message = "Успешное подтверждение личности гражданина"
                     };
 
-                    var typeConfirmations = new List<dynamic>();
-                    if (requestDto.Types != null)
+                    var typeConfirmations = new List<SelectTypeConfirmationDTO>();
+                    if (passengerRequest.Types.Count > 0)
                     {
-                        foreach (var type in requestDto.Types)
+                        foreach (var type in passengerRequest.Types)
                         {
-                            dynamic typeConfirmation = new ExpandoObject();
-                            typeConfirmation.type = type;
-                            
-                            if (passengerFromDb.PassengerTypes.Contains(type))
+                            SelectTypeConfirmationDTO selectTypeConfirmation;
+                            var confirmed = true;
+
+                            if (!passengerFromDb.PassengerTypes.Contains(type))
                             {
-                                typeConfirmation.status = "confirmed";
-                                typeConfirmation.code = "PTC-000000";
-                                typeConfirmation.message = "Успешное подтверждение типа пассажира";
+                                var query = new CheckPassengerType.Query(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, passengerRequest.Birthdate );
+                                var result = await mediator.Send(query, cancellationToken);
+                                
+                                if (result.Result)
+                                {
+                                    passengerFromDb.PassengerTypes.Add(type);
+                                    await passengerRepository.UpdateAsync(passengerFromDb);
+                                }
+
+                                confirmed = result.Result;
+                            }
+                            
+                            if (confirmed)
+                            {
+                                selectTypeConfirmation = new SelectTypeConfirmationDTO()
+                                {
+                                    Status = "confirmed",
+                                    Code = "PTC-000000",
+                                    Message = "Успешное подтверждение типа пассажира"
+                                };
                             }
                             else
                             {
-                                typeConfirmation.status = "not confirmed";
-                                typeConfirmation.code = "PTC-000001";
-                                typeConfirmation.message = "Тип пассажира не подтвержден";
+                                selectTypeConfirmation = new SelectTypeConfirmationDTO()
+                                {
+                                    Status = "not confirmed",
+                                    Code = "PTC-000001",
+                                    Message = "Тип пассажира не подтвержден"
+                                }; 
                             }
-                            typeConfirmations.Add(typeConfirmation);
-                        } 
+
+                            typeConfirmations.Add(selectTypeConfirmation);
+                        }
                     }
-                    passenger.type_confirmations = typeConfirmations;
-                    
-                    var quotaYearBalances = new List<dynamic>();
-                    if (requestDto.QuotaBalancesYears != null)
+
+                    passenger.typeConfirmations = typeConfirmations;
+
+                    if (passengerRequest.QuotaBalancesYears.Count > 0)
                     {
-                        foreach (var quotaYear in requestDto.QuotaBalancesYears)
+                        var quotaBalances = new List<SelectQuotaBalanceDTO>();
+                        foreach (var quotaYear in passengerRequest.QuotaBalancesYears)
                         {
-                            dynamic quotaBalance = new ExpandoObject();
-                            
-                            quotaBalance.year = quotaYear;
-                            quotaBalance.used_documents_count = 1;
-                
+                            var quotaBalance = new SelectQuotaBalanceDTO();
+
+                            quotaBalance.Year = quotaYear;
+                            quotaBalance.UsedDocumentsCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count() + 1;
+
                             var categoryBalances = new List<CategoryBalanceDTO>();
-                            
+
                             foreach (var quotaCategory in quotaCategories)
                             {
                                 categoryBalances.Add(new CategoryBalanceDTO
                                 {
                                     Category = quotaCategory.Code,
-                                    Available = 4 - passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "used" && 
-                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                    Available = 4 - passengerFromDb.CouponEvents
+                                        .Count(dc => dc.OperationType == "used" &&
+                                                     dc.QuotaCode == quotaCategory.Code &&
                                                      dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Issued = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "issued" && 
-                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                    Issued = passengerFromDb.CouponEvents
+                                        .Count(dc => dc.OperationType == "issued" &&
+                                                     dc.QuotaCode == quotaCategory.Code &&
                                                      dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Refund = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "refund" && 
-                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                    Refund = passengerFromDb.CouponEvents
+                                        .Count(dc => dc.OperationType == "refund" &&
+                                                     dc.QuotaCode == quotaCategory.Code &&
                                                      dc.OperationDatetimeUtc.Year == quotaYear),
-                                    Used = passengerFromDb.DataCouponEvents
-                                        .Count(dc => dc.OperationType == "used" && 
-                                                     dc.Fare.QuotaCategoryCode == quotaCategory.Code && 
+                                    Used = passengerFromDb.CouponEvents
+                                        .Count(dc => dc.OperationType == "used" &&
+                                                     dc.QuotaCode == quotaCategory.Code &&
                                                      dc.OperationDatetimeUtc.Year == quotaYear)
                                 });
                             }
-                            quotaBalance.category_balances = categoryBalances;
-                            
-                            quotaYearBalances.Add(quotaBalance);
+
+                            quotaBalance.categoryBalances = categoryBalances;
+                            quotaBalances.Add(quotaBalance);
                         }
+                        passenger.QuotaBalances = quotaBalances; 
                     }
-                    passenger.quota_balances = quotaYearBalances;
                 }
                 else
                 {
-                    passenger.identity_confirmation = new
+                    var command = new CreatePassenger.Command(new PassengerDTO()
+                    { //mapper
+                        Birthdate = passengerRequest.Birthdate,
+                        Gender = passengerRequest.Gender,
+                        Name = passengerRequest.Name,
+                        Surname = passengerRequest.Surname,
+                        Patronymic = passengerRequest.Patronymic,
+                        PassengerTypes = passengerRequest.Types
+                    });
+                    var createResult = await mediator.Send(command, cancellationToken);
+                    
+                    if (createResult.Result)
                     {
-                        Confirmed = false,
-                        Code = "PFC-000006",
-                        Message = "Передан идентификатор отсутствующего пассажира"
-                    };
+                        passenger.passengerData = new SelectPassengerDataDTO()
+                        { //Mapper
+                            Birthdate = passengerRequest.Birthdate,
+                            Gender = passengerRequest.Gender,
+                            DocumentType = passengerRequest.DocumentType,
+                            DocumentNumber = passengerRequest.DocumentNumber,
+                            DocumentNumbersLatin = new List<string>() {ConvertStringService.Transliterate(passengerRequest.DocumentNumber)}
+                        };
+
+                        if (passengerRequest.QuotaBalancesYears.Count > 0)
+                        {
+                            var quotaBalances = new List<SelectQuotaBalanceDTO>();
+                            foreach (var quotaYear in passengerRequest.QuotaBalancesYears)
+                            {
+                                var quotaBalance = new SelectQuotaBalanceDTO();
+
+                                quotaBalance.Year = quotaYear;
+                                quotaBalance.UsedDocumentsCount = 1;
+                                
+                                var categoryBalances = new List<CategoryBalanceDTO>();
+                                foreach (var quotaCategory in quotaCategories)
+                                {
+                                    categoryBalances.Add(new CategoryBalanceDTO
+                                    {
+                                        Category = quotaCategory.Code,
+                                        Available = 4,
+                                        Issued = 0,
+                                        Refund = 0,
+                                        Used = 0
+                                    });
+                                }
+                                
+                                quotaBalance.categoryBalances = categoryBalances;
+                                quotaBalances.Add(quotaBalance);
+                            }
+                            passenger.quotaBalances = quotaBalances;  
+                        }
+                    }
+                    else
+                    {
+                        throw new ResponseException("Ошибка добавления пассажира", "PPC-000500");
+                    }
                 }
-                
                 passengers.Add(passenger);
             }
 

@@ -14,9 +14,17 @@ public class CouponEventDTO
     
     public long PassengerId { get; set; }
     
+    public string DocumentTypeCode { get; set; }
+    
+    public string DocumentNumber { get; set; }
+    
+    public string DocumentNumberLatin { get; set; }
+    
+    public string QuotaCode { get; set; }
+
+    public int FlightCode { get; set; }
+
     public short TicketType { get; set; }
     
-    public int FlightCode { get; set; }
-    
-    public string FareCode { get; set; }
+    public string TicketNumber { get; set; }
 }

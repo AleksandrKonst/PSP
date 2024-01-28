@@ -7,33 +7,32 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories;
 
 public class PassengerRepository(PSPContext context) : IPassengerRepository
 {
-    public async Task<List<Passenger>> GetAllAsync() => await context.DataPassengers.ToListAsync();
+    public async Task<List<Passenger>> GetAllAsync() => await context.Passengers.ToListAsync();
     
-    public async Task<List<Passenger>> GetPartAsync(int index, int count) => await context.DataPassengers.Skip(index).Take(count).ToListAsync();
+    public async Task<List<Passenger>> GetPartAsync(int index, int count) => await context.Passengers.Skip(index).Take(count).ToListAsync();
 
-    public async Task<Passenger?> GetByIdAsync(int id) => await context.DataPassengers.Where(p => p.Id == id).FirstOrDefaultAsync();
+    public async Task<Passenger?> GetByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
     
-    public async Task<Passenger?> GetByIdWithCouponEventAsync(string name, string surname, 
-        string patronymic, DateOnly birthdate, List<int> year)
+    public async Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname, 
+        string? patronymic, DateOnly birthdate, List<int> year)
     {
-        var passenger = await context.DataPassengers
+        var passenger = await context.Passengers
             .Where(p => p.Name == name && 
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
                         p.Birthdate == birthdate)
-            .Include(p => p.DataCouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
-                .ThenInclude(e => e.Fare)
+            .Include(p => p.CouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
             .FirstOrDefaultAsync();
         
         return passenger;
     }
     
-    public async Task<int> GetCountAsync() => await context.DataPassengers.CountAsync();
+    public async Task<int> GetCountAsync() => await context.Passengers.CountAsync();
     
     public async Task<bool> CheckByFullNameAsync(string name, string surname, 
-        string patronymic, DateOnly birthdate)
+        string? patronymic, DateOnly birthdate)
     {
-        var result = await context.DataPassengers
+        var result = await context.Passengers
             .Where(p => p.Name == name && 
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
@@ -41,11 +40,11 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
         return result;
     }
     
-    public async Task<bool> CheckByIdAsync(long id) => await context.DataPassengers.Where(p => p.Id == id).AnyAsync();
+    public async Task<bool> CheckByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).AnyAsync();
 
     public async Task<bool> AddAsync(Passenger passenger)
     {
-        var newPassenger = await context.DataPassengers.AddAsync(passenger);
+        var newPassenger = await context.Passengers.AddAsync(passenger);
         await context.SaveChangesAsync();
         return true;
     }
@@ -59,10 +58,10 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var dbPassenger = await context.DataPassengers.Where(p => p.Id == id).FirstOrDefaultAsync();
+        var dbPassenger = await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
         if (dbPassenger == null) return false;
         
-        context.DataPassengers.Remove(dbPassenger);
+        context.Passengers.Remove(dbPassenger);
         await context.SaveChangesAsync();
         return true;
     }
