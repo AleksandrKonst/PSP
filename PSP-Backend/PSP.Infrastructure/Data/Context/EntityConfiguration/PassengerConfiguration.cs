@@ -18,18 +18,6 @@ public class PassengerConfiguration : IEntityTypeConfiguration<Passenger>
         entity.Property(e => e.Birthdate)
             .HasComment("Дата рождения")
             .HasColumnName("birthdate");
-        entity.Property(e => e.DocumentNumber)
-            .HasComment("Серия документа")
-            .HasColumnType("character varying")
-            .HasColumnName("document_number");
-        entity.Property(e => e.DocumentNumbersLatin)
-            .HasComment("Разлиные варианты названий документов")
-            .HasColumnType("character varying[]")
-            .HasColumnName("document_numbers_latin");
-        entity.Property(e => e.DocumentTypeCode)
-            .HasComment("Тип документа")
-            .HasColumnType("character varying")
-            .HasColumnName("document_type_code");
         entity.Property(e => e.Gender)
             .HasComment("Пол пассажира")
             .HasColumnType("character varying")
@@ -51,12 +39,7 @@ public class PassengerConfiguration : IEntityTypeConfiguration<Passenger>
             .HasColumnType("character varying")
             .HasColumnName("surname");
 
-        entity.HasOne(d => d.DocumentTypeCodeNavigation).WithMany(p => p.DataPassengers)
-            .HasForeignKey(d => d.DocumentTypeCode)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("data_passenger_document_type_fk");
-
-        entity.HasOne(d => d.GenderTypeNavigation).WithMany(p => p.DataPassengers)
+        entity.HasOne(d => d.GenderType).WithMany(p => p.Passengers)
             .HasForeignKey(d => d.Gender)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("data_passenger_gender_fk");

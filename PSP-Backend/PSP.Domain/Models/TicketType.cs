@@ -15,5 +15,5 @@ public class TicketType
     /// </summary>
     public string Type { get; set; } = null!;
 
-    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 }

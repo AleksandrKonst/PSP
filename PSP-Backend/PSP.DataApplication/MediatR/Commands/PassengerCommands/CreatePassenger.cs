@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.Domain.Models;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -21,16 +22,6 @@ public static class CreatePassenger
                 .MustAsync(async (id, cancellationToken) => await repository.CheckByIdAsync(id) == false)
                 .WithMessage("Имеется повторяющийся идентификатор пассажира")
                 .WithErrorCode("PPC-000002");
-            
-            RuleFor(x => x.PassengerDto.DocumentTypeCode)
-                .Length(2)
-                .WithMessage("Номер документа больше 2 символов")
-                .WithErrorCode("PPC-000403");
-            
-            RuleFor(x => x.PassengerDto.DocumentNumber)
-                .MaximumLength(20)
-                .WithMessage("Серия документа больше 20 символов")
-                .WithErrorCode("PPC-000403");
         }
     }
     

@@ -17,32 +17,37 @@ public class Flight
     public string DepartPlace { get; set; } = null!;
 
     /// <summary>
-    /// Код аэропорта прилета
+    /// Время отправки
+    /// </summary>
+    public DateTime DepartDatetimePlan { get; set; }
+
+    /// <summary>
+    /// Код аэропорта посадки
     /// </summary>
     public string ArrivePlace { get; set; } = null!;
 
     /// <summary>
-    /// Стоимость льготного билета
+    /// Время посадки
     /// </summary>
-    public decimal SubsitizedAmount { get; set; }
+    public DateTime ArriveDatetimePlan { get; set; }
 
     /// <summary>
-    /// Колличество субсидий
+    /// PNR код
     /// </summary>
-    public decimal PreferentialAmount { get; set; }
+    public string PnrCode { get; set; } = null!;
 
     /// <summary>
-    /// Валюта
+    /// Код тарифа
     /// </summary>
-    public string Currency { get; set; } = null!;
+    public string FareCode { get; set; } = null!;
 
     public virtual Airline AirlineCodeNavigation { get; set; } = null!;
 
-    public virtual Airport ArrivePlaceNavigation { get; set; } = null!;
+    public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual ICollection<PartOfFlight> ConFlightParts { get; set; } = new List<PartOfFlight>();
-
-    public virtual ICollection<CouponEvent> DataCouponEvents { get; set; } = new List<CouponEvent>();
+    public virtual ICollection<FlightSegment> FlightSegments { get; set; } = new List<FlightSegment>();
 
     public virtual Airport DepartPlaceNavigation { get; set; } = null!;
+
+    public virtual Fare FareCodeNavigation { get; set; } = null!;
 }

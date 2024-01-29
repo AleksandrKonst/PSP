@@ -5,7 +5,7 @@ namespace PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 public interface IPassengerTypeRepository
 {
     Task<List<PassengerType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
-    Task<PassengerType?> GetByIdAsync(string code);
+    Task<PassengerType?> GetByCodeAsync(string code);
     Task<int> GetCountAsync();
     Task<bool> CheckByCodeAsync(string code);
     Task<bool> AddAsync(PassengerType passengerType);

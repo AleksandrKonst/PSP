@@ -36,9 +36,29 @@ public class CouponEvent
     public long PassengerId { get; set; }
 
     /// <summary>
-    /// Идентификатор субсидируемого маршрута
+    /// Тип документа
     /// </summary>
-    public int SubsidizedRouteId { get; set; }
+    public string DocumentTypeCode { get; set; } = null!;
+
+    /// <summary>
+    /// Номер документа
+    /// </summary>
+    public string DocumentNumber { get; set; } = null!;
+
+    /// <summary>
+    /// Номер документа latin
+    /// </summary>
+    public string DocumentNumberLatin { get; set; } = null!;
+
+    /// <summary>
+    /// Код квотирования
+    /// </summary>
+    public string QuotaCode { get; set; } = null!;
+
+    /// <summary>
+    /// Код перелета
+    /// </summary>
+    public int FlightCode { get; set; }
 
     /// <summary>
     /// Тип билета
@@ -46,24 +66,19 @@ public class CouponEvent
     public short TicketType { get; set; }
 
     /// <summary>
-    /// Код категории квотирования
+    /// Номер билета
     /// </summary>
-    public string QuotaCategoryCode { get; set; } = null!;
+    public string TicketNumber { get; set; } = null!;
 
-    /// <summary>
-    /// Код маршрута
-    /// </summary>
-    public int FlightCode { get; set; }
+    public virtual DocumentType DocumentTypeCodeNavigation { get; set; } = null!;
 
     public virtual Flight FlightCodeNavigation { get; set; } = null!;
 
     public virtual OperationType OperationTypeNavigation { get; set; } = null!;
-    
+
     public virtual Passenger Passenger { get; set; } = null!;
 
-    public virtual QuotaCategory QuotaCategoryCodeNavigation { get; set; } = null!;
-
-    public virtual SubsidizedRoute SubsidizedRoute { get; set; } = null!;
+    public virtual QuotaCategory QuotaCodeNavigation { get; set; } = null!;
 
     public virtual TicketType TicketTypeNavigation { get; set; } = null!;
 }

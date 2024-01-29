@@ -7,5 +7,5 @@ namespace PSP.Infrastructure.Repositories.FlightRepositories;
 
 public class QuotaCategoryRepository(PSPContext context) : IQuotaCategoryRepository
 {
-    public async Task<List<QuotaCategory>> GetAllAsync() => await context.DictQuotaCategories.ToListAsync();
+    public async Task<List<QuotaCategory>> GetAllAsync() => await context.QuotaCategories.ToListAsync();
 }

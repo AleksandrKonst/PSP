@@ -3,6 +3,7 @@ using PSP.DataApplication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Configure Endpoints Routing
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions =>
     apiBehaviorOptions.InvalidModelStateResponseFactory = actionContext => {
         return new BadRequestObjectResult(new {
@@ -22,17 +23,22 @@ builder.Services.AddApiVersioning();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
+
+//Add Any DI Configuration Block
 builder.Services.AddApplication(builder.Configuration);
 
 var app = builder.Build();
 
+//Environment.IsDevelopment Middleware Block
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseHealthChecks("/health");
+
+//Middleware Block
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseHealthChecks("/health");
 app.Run();

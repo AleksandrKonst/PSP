@@ -1,7 +1,7 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.Domain.Models;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -15,12 +15,17 @@ public static class UpdateDocumentType
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IPassengerTypeRepository repository)
+        public Validator(IDocumentTypeRepository repository)
         {
             RuleFor(x => x.DocumentTypeDto.Code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
                 .WithMessage("Идентификатор типа документа не существует")
                 .WithErrorCode("PPC-000001");
+            
+            RuleFor(x => x.DocumentTypeDto.Code)
+                .MaximumLength(2)
+                .WithMessage("Идентификатор типа документа слишком длинный")
+                .WithErrorCode("PPC-000403");
         }
     }
     

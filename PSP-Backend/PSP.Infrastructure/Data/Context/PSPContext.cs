@@ -10,27 +10,28 @@ public class PSPContext : DbContext
     {
     }
 
-    public virtual DbSet<PartOfFlight> ConFlightParts { get; set; }
-    public virtual DbSet<CouponEvent> DataCouponEvents { get; set; }
-    public virtual DbSet<Passenger> DataPassengers { get; set; }
-    public virtual DbSet<Airline> DictAirlines { get; set; }
-    public virtual DbSet<Airport> DictAirports { get; set; }
-    public virtual DbSet<City> DictCities { get; set; }
-    public virtual DbSet<DocumentType> DictDocumentTypes { get; set; }
-    public virtual DbSet<Flight> DictFlights { get; set; }
-    public virtual DbSet<GenderType> DictGenders { get; set; }
-    public virtual DbSet<PassengerType> DictPassengerTypes { get; set; }
-    public virtual DbSet<QuotaCategory> DictQuotaCategories { get; set; }
-    public virtual DbSet<SubsidizedRoute> DictSubsidizedRoutes { get; set; }
-    public virtual DbSet<TicketType> DictTicketTypes { get; set; }
-    public virtual DbSet<OperationType> DictOperationTypes { get; set; }
+    public virtual DbSet<FlightSegment> FlightParts { get; set; }
+    public virtual DbSet<CouponEvent> CouponEvents { get; set; }
+    public virtual DbSet<Passenger> Passengers { get; set; }
+    public virtual DbSet<Airline> Airlines { get; set; }
+    public virtual DbSet<Airport> Airports { get; set; }
+    public virtual DbSet<City> Cities { get; set; }
+    public virtual DbSet<DocumentType> DocumentTypes { get; set; }
+    public virtual DbSet<Flight> Flights { get; set; }
+    public virtual DbSet<GenderType> Genders { get; set; }
+    public virtual DbSet<PassengerType> PassengerTypes { get; set; }
+    public virtual DbSet<QuotaCategory> QuotaCategories { get; set; }
+    public virtual DbSet<SubsidizedRoute> SubsidizedRoutes { get; set; }
+    public virtual DbSet<TicketType> TicketTypes { get; set; }
+    public virtual DbSet<OperationType> OperationTypes { get; set; }
+    public virtual DbSet<Fare> Fare { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Server=localhost; Port=5432;Database=PSP_Data;User Id=postgres;Password=1243");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new PartOfFlightConfiguration());
+        modelBuilder.ApplyConfiguration(new FlightSegmentConfiguration());
         modelBuilder.ApplyConfiguration(new CouponEventConfiguration());
         modelBuilder.ApplyConfiguration(new PassengerConfiguration());
         modelBuilder.ApplyConfiguration(new AirlineConfiguration());
@@ -44,5 +45,6 @@ public class PSPContext : DbContext
         modelBuilder.ApplyConfiguration(new SubsidizedRouteConfiguration());
         modelBuilder.ApplyConfiguration(new TicketTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new FareConfiguration());
     }
 }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using PSP.DataApplication.DTO;
+using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 namespace PSP.DataApplication.MediatR.Queries.PassengerTypeQueries;
@@ -27,7 +27,7 @@ public static class GetPassengerTypeById
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<PassengerTypeDTO>(await repository.GetByIdAsync(request.Code)));
+            return new QueryResult(mapper.Map<PassengerTypeDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

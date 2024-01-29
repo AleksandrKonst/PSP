@@ -28,5 +28,5 @@ public class PassengerType
     /// <summary>
     /// Список ссылок на категории квотирования
     /// </summary>
-    public List<string>? QuotaCategories { get; set; }
+    public List<string> QuotaCategories { get; set; }
 }

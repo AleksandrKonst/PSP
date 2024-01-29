@@ -15,9 +15,9 @@ public class City
     /// </summary>
     public string Name { get; set; } = null!;
 
-    public virtual ICollection<Airport> DictAirports { get; set; } = new List<Airport>();
+    public virtual ICollection<Airport> Airports { get; set; } = new List<Airport>();
 
-    public virtual ICollection<SubsidizedRoute> DictSubsidizedRouteCityFinishIataCodeNavigations { get; set; } = new List<SubsidizedRoute>();
+    public virtual ICollection<SubsidizedRoute> SubsidizedRouteCityFinishIataCodeNavigations { get; set; } = new List<SubsidizedRoute>();
 
-    public virtual ICollection<SubsidizedRoute> DictSubsidizedRouteCityStartIataCodeNavigations { get; set; } = new List<SubsidizedRoute>();
+    public virtual ICollection<SubsidizedRoute> SubsidizedRouteCityStartIataCodeNavigations { get; set; } = new List<SubsidizedRoute>();
 }

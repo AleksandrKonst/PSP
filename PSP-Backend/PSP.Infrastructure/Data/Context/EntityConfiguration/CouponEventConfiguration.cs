@@ -15,8 +15,20 @@ public class CouponEventConfiguration : IEntityTypeConfiguration<CouponEvent>
             entity.Property(e => e.Id)
                 .HasComment("Идентификатор события с купоном")
                 .HasColumnName("id");
+            entity.Property(e => e.DocumentNumber)
+                .HasComment("Номер документа")
+                .HasColumnType("character varying")
+                .HasColumnName("document_number");
+            entity.Property(e => e.DocumentNumberLatin)
+                .HasComment("Номер документа latin")
+                .HasColumnType("character varying")
+                .HasColumnName("document_number_latin");
+            entity.Property(e => e.DocumentTypeCode)
+                .HasComment("Тип документа")
+                .HasColumnType("character varying")
+                .HasColumnName("document_type_code");
             entity.Property(e => e.FlightCode)
-                .HasComment("Код маршрута")
+                .HasComment("Код перелета")
                 .HasColumnName("flight_code");
             entity.Property(e => e.OperationDatetimeTimezone)
                 .HasComment("Временная зона времени операции с билетами")
@@ -36,46 +48,46 @@ public class CouponEventConfiguration : IEntityTypeConfiguration<CouponEvent>
                 .ValueGeneratedOnAdd()
                 .HasComment("Идентификатор пассажира")
                 .HasColumnName("passenger_id");
-            entity.Property(e => e.QuotaCategoryCode)
-                .HasComment("Код категории квотирования")
+            entity.Property(e => e.QuotaCode)
+                .HasComment("Код квотирования")
                 .HasColumnType("character varying")
-                .HasColumnName("quota_category_code");
-            entity.Property(e => e.SubsidizedRouteId)
-                .ValueGeneratedOnAdd()
-                .HasComment("Идентификатор субсидируемого маршрута")
-                .HasColumnName("subsidized_route_id");
+                .HasColumnName("quota_code");
+            entity.Property(e => e.TicketNumber)
+                .HasComment("Номер билета")
+                .HasColumnType("character varying")
+                .HasColumnName("ticket_number");
             entity.Property(e => e.TicketType)
                 .HasComment("Тип билета")
                 .HasColumnName("ticket_type");
 
-            entity.HasOne(d => d.FlightCodeNavigation).WithMany(p => p.DataCouponEvents)
+            entity.HasOne(d => d.DocumentTypeCodeNavigation).WithMany(p => p.CouponEvents)
+                .HasForeignKey(d => d.DocumentTypeCode)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("data_coupon_events_document_type_fk");
+
+            entity.HasOne(d => d.FlightCodeNavigation).WithMany(p => p.CouponEvents)
                 .HasForeignKey(d => d.FlightCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("data_coupon_events_flights_fk");
+                .HasConstraintName("data_coupon_events_flight_fk");
 
-            entity.HasOne(d => d.OperationTypeNavigation).WithMany(p => p.DataCouponEvents)
+            entity.HasOne(d => d.OperationTypeNavigation).WithMany(p => p.CouponEvents)
                 .HasForeignKey(d => d.OperationType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("data_coupon_events_fk");
+                .HasConstraintName("data_coupon_events_operation_type_fk");
 
-            entity.HasOne(d => d.Passenger).WithMany(p => p.DataCouponEvents)
+            entity.HasOne(d => d.Passenger).WithMany(p => p.CouponEvents)
                 .HasForeignKey(d => d.PassengerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("data_coupon_events_passenger_fk");
 
-            entity.HasOne(d => d.QuotaCategoryCodeNavigation).WithMany(p => p.DataCouponEvents)
-                .HasForeignKey(d => d.QuotaCategoryCode)
+            entity.HasOne(d => d.QuotaCodeNavigation).WithMany(p => p.CouponEvents)
+                .HasForeignKey(d => d.QuotaCode)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("data_coupon_events_category_fk");
+                .HasConstraintName("data_coupon_events_quota_fk");
 
-            entity.HasOne(d => d.SubsidizedRoute).WithMany(p => p.DataCouponEvents)
-                .HasForeignKey(d => d.SubsidizedRouteId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("data_coupon_events_subsidized_route_fk");
-
-            entity.HasOne(d => d.TicketTypeNavigation).WithMany(p => p.DataCouponEvents)
+            entity.HasOne(d => d.TicketTypeNavigation).WithMany(p => p.CouponEvents)
                 .HasForeignKey(d => d.TicketType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("data_coupon_events_ticket_fk");
+                .HasConstraintName("data_coupon_events_ticket_type_fk");
     }
 }
