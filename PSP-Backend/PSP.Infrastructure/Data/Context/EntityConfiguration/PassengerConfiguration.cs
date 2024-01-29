@@ -39,7 +39,7 @@ public class PassengerConfiguration : IEntityTypeConfiguration<Passenger>
             .HasColumnType("character varying")
             .HasColumnName("surname");
 
-        entity.HasOne(d => d.GenderNavigation).WithMany(p => p.Passengers)
+        entity.HasOne(d => d.GenderType).WithMany(p => p.Passengers)
             .HasForeignKey(d => d.Gender)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("data_passenger_gender_fk");

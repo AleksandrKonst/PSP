@@ -14,13 +14,14 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
     public async Task<Passenger?> GetByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
     
     public async Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname, 
-        string? patronymic, DateOnly birthdate, List<int> year)
+        string? patronymic, string gender, DateOnly birthdate, List<int> year)
     {
         var passenger = await context.Passengers
             .Where(p => p.Name == name && 
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
-                        p.Birthdate == birthdate)
+                        p.Birthdate == birthdate && 
+                        p.Gender == gender)
             .Include(p => p.CouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
             .FirstOrDefaultAsync();
         
@@ -28,15 +29,24 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
     }
     
     public async Task<int> GetCountAsync() => await context.Passengers.CountAsync();
-    
+
+    public async Task<long> GetIdByFullNameAsync(string name, string surname,
+        string? patronymic, string gender, DateOnly birthdate) => await context.Passengers.Where(p => p.Name == name &&
+            p.Surname == surname &&
+            p.Patronymic == patronymic && 
+            p.Birthdate == birthdate && 
+            p.Gender == gender)
+        .Select(p => p.Id).FirstOrDefaultAsync();
+
     public async Task<bool> CheckByFullNameAsync(string name, string surname, 
-        string? patronymic, DateOnly birthdate)
+        string? patronymic, string gender, DateOnly birthdate)
     {
         var result = await context.Passengers
             .Where(p => p.Name == name && 
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
-                        p.Birthdate == birthdate).AnyAsync();
+                        p.Birthdate == birthdate && 
+                        p.Gender == gender).AnyAsync();
         return result;
     }
     

@@ -39,5 +39,5 @@ public class Passenger
 
     public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual GenderType GenderNavigation { get; set; } = null!;
+    public virtual GenderType GenderType { get; set; } = null!;
 }

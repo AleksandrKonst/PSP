@@ -77,7 +77,7 @@ public static class SearchByPasseneger
             var passenger = new SearchPassengerResponseDTO();
                 
             var passengerFromDb = await passengerRepository
-                .GetByFullNameWithCouponEventAsync(request.SearchByPassengerDto.Name, request.SearchByPassengerDto.Surname, request.SearchByPassengerDto.Patronymic, 
+                .GetByFullNameWithCouponEventAsync(request.SearchByPassengerDto.Name, request.SearchByPassengerDto.Surname, request.SearchByPassengerDto.Patronymic, request.SearchByPassengerDto.Gender, 
                     request.SearchByPassengerDto.Birthdate, new List<int>() {request.SearchByPassengerDto.QuotaBalancesYear});
 
             if (passengerFromDb != null)

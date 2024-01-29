@@ -1,6 +1,8 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using PSP.Domain.Models;
+using PSP.Domain.Exceptions;
 using PSP.DataApplication.DTO;
 using PSP.DataApplication.DTO.ArmContextDTO.General;
 using PSP.DataApplication.DTO.ArmContextDTO.Insert;
@@ -8,13 +10,10 @@ using PSP.DataApplication.DTO.ArmContextDTO.Insert.Validators;
 using PSP.DataApplication.DTO.FlightContextDTO;
 using PSP.DataApplication.DTO.PassengerContextDTO;
 using PSP.DataApplication.Infrastructure;
-using PSP.DataApplication.MediatR.Commands.CouponEventCommands;
 using PSP.DataApplication.MediatR.Commands.FareCommands;
 using PSP.DataApplication.MediatR.Commands.FlightCommands;
 using PSP.DataApplication.Mediatr.Commands.PassengerCommands;
 using PSP.DataApplication.MediatR.Queries.ARMQueries;
-using PSP.Domain.Exceptions;
-using PSP.Domain.Models;
 using PSP.Infrastructure.Repositories.FlightRepositories.Interfaces;
 using PSP.Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
@@ -41,73 +40,38 @@ public static class InsertCouponEvent
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
             var passengers = new List<InsertPassengerResponseDTO>();
-            var passengersDb = new Dictionary<int, Passenger>();
-            
-            foreach (var passenger in request.PassengerRequestDto.Passengers)
-            {
-                var quotaCategories = await quotaCategoryRepository.GetAllAsync();
-                
-                if (!await passengerRepository
-                        .CheckByFullNameAsync(passenger.Name, passenger.Surname, passenger.Patronymic, passenger.Birthdate))
-                {
-                    var command = new CreatePassenger.Command(new PassengerDTO()
-                    {
-                        Birthdate = passenger.Birthdate,
-                        Gender = passenger.Gender,
-                        Name = passenger.Name,
-                        Surname = passenger.Surname,
-                        Patronymic = passenger.Patronymic,
-                        PassengerTypes = new List<string>()
-                    });
-                    var createResult = await mediator.Send(command, cancellationToken);
-
-                    if (!createResult.Result)
-                    {
-                        throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
-                    }
-                }
-                
-                var passengerFromDb = await passengerRepository
-                    .GetByFullNameWithCouponEventAsync(passenger.Name, passenger.Surname, passenger.Patronymic, 
-                        passenger.Birthdate, passenger.QuotaBalancesYears);
-
-                if (passengerFromDb != null)
-                {
-                    passengersDb.Add(passenger.Id, passengerFromDb);
-
-                    var quotaBalances = (from quotaYear in passenger.QuotaBalancesYears
-                        let categoryBalances = quotaCategories.Select(quotaCategory => new CategoryBalanceDTO
-                            {
-                                Category = quotaCategory.Code,
-                                Available = 4 - passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
-                                Issued = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "issued" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
-                                Refund = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "refund" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear),
-                                Used = passengerFromDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == quotaCategory.Code && dc.OperationDatetimeUtc.Year == quotaYear)
-                            })
-                            .ToList()
-                        select new InsertQuotaBalanceDTO() { Year = quotaYear, UsedDocumentCount = passengerFromDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count() + 1, Changed = false, CategoryBalances = categoryBalances }).ToList();
-
-                    passengers.Add(new InsertPassengerResponseDTO()
-                    {
-                        Id = passenger.Id,
-                        TicketProperties = new InsertTicketPropertiesDTO()
-                        {
-                            PassengerTypesPreConfirmed = false,
-                            ContainsQuotaRoutes = request.PassengerRequestDto.Coupons.Count > 0
-                        },
-                        QuotaBalances = quotaBalances
-                    });
-                }
-                else
-                {
-                    throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
-                }
-            }
             
             foreach (var coupon in request.PassengerRequestDto.Coupons)
             {
                 foreach (var fare in coupon.Fares)
                 {
+                    var passengerData = request.PassengerRequestDto.Passengers.FirstOrDefault(p => p.Id == fare.PassengerId);
+                    
+                    if (passengerData == null)
+                    {
+                        throw new ResponseException("PFC-000004", "Для пассажира передано больше одного тарифа в купоне");
+                    }
+                
+                    if (!await passengerRepository
+                            .CheckByFullNameAsync(passengerData.Name, passengerData.Surname, passengerData.Patronymic, passengerData.Gender, passengerData.Birthdate))
+                    {
+                        var command = new CreatePassenger.Command(new PassengerDTO()
+                        {
+                            Birthdate = passengerData.Birthdate,
+                            Gender = passengerData.Gender,
+                            Name = passengerData.Name,
+                            Surname = passengerData.Surname,
+                            Patronymic = passengerData.Patronymic,
+                            PassengerTypes = new List<string>()
+                        });
+                        var createResult = await mediator.Send(command, cancellationToken);
+
+                        if (!createResult.Result)
+                        {
+                            throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
+                        }
+                    }
+                    
                     if (!await fareRepository.CheckByCodeAsync(fare.Code))
                     {
                         var command = new CreateFare.Command(mapper.Map<FareDTO>(fare));
@@ -123,7 +87,7 @@ public static class InsertCouponEvent
                     {
                         var command = new CreateFlight.Command(mapper.Map<FlightDTO>(coupon, opt =>
                         {
-                            opt.AfterMap((src, dest) => dest.FareCode = fare.Code);
+                            opt.AfterMap((_, dest) => dest.FareCode = fare.Code);
                         }));
                         
                         var createResult = await mediator.Send(command, cancellationToken);
@@ -134,89 +98,103 @@ public static class InsertCouponEvent
                         }
                     }
                     
-                    var passengerDb = passengersDb.GetValueOrDefault(fare.PassengerId);
+                    var passengerDb = await passengerRepository.GetByFullNameWithCouponEventAsync(passengerData.Name,
+                        passengerData.Surname, passengerData.Patronymic, passengerData.Gender, passengerData.Birthdate, passengerData.QuotaBalancesYears);
                     
-                    if (passengerDb != null)
-                    {
-                        if (!passengerDb.PassengerTypes.Contains(fare.PassengerType))
-                        {
-                            var query = new CheckPassengerType.Query(passengerDb.Name, passengerDb.Surname, passengerDb.Patronymic, passengerDb.Birthdate);
-                            var result = await mediator.Send(query, cancellationToken);
-                                
-                            if (result.Result)
-                            {
-                                passengerDb.PassengerTypes.Add(fare.PassengerType);
-                                await passengerRepository.UpdateAsync(passengerDb);
-                            }
-                            else
-                            {
-                                throw new ResponseException("PFC-000403", "Jшибка проверки типа");
-                            }
-                        }
-                        
-                        passengers.First(p => p.Id == fare.PassengerId).TicketProperties.PassengerTypesPreConfirmed = true;
-                    }
-                    else
+                    if (passengerDb == null)
                     {
                         throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
                     }
                     
-                    if (passengersDb.ContainsKey(fare.PassengerId))
+                    if (!passengerDb.PassengerTypes.Contains(fare.PassengerType))
                     {
-                        var passengerType = await passengerTypeRepository.GetByCodeAsync(fare.PassengerType);
-                        if (passengerType == null) throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
-                        
-                        var quotaCategory = passengerType.QuotaCategories.First();
-                        
-                        var categoryBalance = passengers.First(p => p.Id == fare.PassengerId)
-                            .QuotaBalances
-                            .First(q => q.Year == DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime().Year)
-                            .CategoryBalances
-                            .First(c => c.Category == quotaCategory);
-                        
-                        if (fare.PassengerType == "ocean" || categoryBalance.Available > 0)
+                        var query = new CheckPassengerType.Query(passengerDb.Name, passengerDb.Surname, passengerDb.Patronymic, passengerDb.Birthdate);
+                        var result = await mediator.Send(query, cancellationToken);
+                                
+                        if (result.Result)
                         {
-                            var passenger = request.PassengerRequestDto.Passengers.Find(p => p.Id == fare.PassengerId);
-                            //check 
-                            var command = new CreateCouponEvent.Command(new CouponEventDTO()
-                            {
-                                OperationType = request.PassengerRequestDto.OperationType,
-                                OperationDatetimeUtc = DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime(),
-                                OperationDatetimeTimezone = (short)DateTimeOffset.Parse(request.PassengerRequestDto.OperationDatetime).Offset.Hours,
-                                OperationPlace = request.PassengerRequestDto.OperationPlace,
-                                PassengerId = passengerDb.Id,
-                                DocumentTypeCode = passenger.DocumentType,
-                                DocumentNumber = passenger.DocumentNumber,
-                                DocumentNumberLatin = ConvertStringService.Transliterate(passenger.DocumentNumber),
-                                QuotaCode = quotaCategory,
-                                FlightCode = coupon.FlightNumber,
-                                TicketType = passenger.TicketType,
-                                TicketNumber = passenger.TicketNumber
-                            });
-                            var result = await mediator.Send(command, cancellationToken);
-            
-                            if (result.Result)
-                            {
-                                var quotaBalance = passengers
-                                    .ElementAt(fare.PassengerId - 1)
-                                    .QuotaBalances
-                                    .First(q => q.Year == DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime().Year);
-            
-                                quotaBalance.Changed = true;
-                            }
+                            passengerDb.PassengerTypes.Add(fare.PassengerType);
+                            await passengerRepository.UpdateAsync(passengerDb);
                         }
                         else
                         {
-                            throw new ResponseException("PFC-000014", "Доступные квоты отсутствуют");
+                            throw new ResponseException("PFC-000403", "Jшибка проверки типа");
                         }
+                    }
+                    
+                    var passengerType = await passengerTypeRepository.GetByCodeAsync(fare.PassengerType);
+                    if (passengerType == null) throw new ResponseException("PFC-000500", "Внутренняя ошибка сервера");
+                    
+                    var quotaCategory = passengerType.QuotaCategories.First();
+
+                    var categoryBalance = passengerDb.CouponEvents.Count(c => c.QuotaCode == quotaCategory && c.OperationDatetimeUtc.Year ==
+                            DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime().Year && c.OperationType == "used");
+
+                    if ((request.PassengerRequestDto.OperationType != "refund" && request.PassengerRequestDto.OperationType != "edit" && request.PassengerRequestDto.OperationType != "exchange" || passengerDb.CouponEvents.Any(c => c.OperationType == "issued" && 
+                            c.PassengerId == passengerDb.Id && c.FlightCode == coupon.FlightNumber && c.TicketNumber == passengerData.TicketNumber)) == false)
+                    {
+                        throw new ResponseException("PFC-000013", "Билет отсутствует");
+                    }
+                    
+                    if ((categoryBalance < 4 || fare.PassengerType == "ocean") && passengerDb.CouponEvents
+                            .Any(c => c.OperationType == request.PassengerRequestDto.OperationType && 
+                                      c.PassengerId == passengerDb.Id && c.FlightCode == coupon.FlightNumber && c.TicketNumber == passengerData.TicketNumber) == false)
+                    {
+                        passengerDb.CouponEvents.Add(new CouponEvent() {
+                            OperationType = request.PassengerRequestDto.OperationType,
+                            OperationDatetimeUtc = DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime(),
+                            OperationDatetimeTimezone = (short)DateTimeOffset.Parse(request.PassengerRequestDto.OperationDatetime).Offset.Hours,
+                            OperationPlace = request.PassengerRequestDto.OperationPlace,
+                            PassengerId = passengerDb.Id,
+                            DocumentTypeCode = passengerData.DocumentType,
+                            DocumentNumber = passengerData.DocumentNumber,
+                            DocumentNumberLatin = ConvertStringService.Transliterate(passengerData.DocumentNumber),
+                            QuotaCode = quotaCategory,
+                            FlightCode = coupon.FlightNumber,
+                            TicketType = passengerData.TicketType,
+                            TicketNumber = passengerData.TicketNumber
+                        });
+                        await passengerRepository.UpdateAsync(passengerDb);
+    
+                        var quotaCategories = await quotaCategoryRepository.GetAllAsync();
+                        
+                        var quotaBalances = (from quotaYear in passengerData.QuotaBalancesYears
+                            let categoryBalances = quotaCategories.Select(category => new CategoryBalanceDTO
+                                {
+                                    Category = category.Code,
+                                    Available = 4 - passengerDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == category.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Issued = passengerDb.CouponEvents.Count(dc => dc.OperationType == "issued" && dc.QuotaCode == category.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Refund = passengerDb.CouponEvents.Count(dc => dc.OperationType == "refund" && dc.QuotaCode == category.Code && dc.OperationDatetimeUtc.Year == quotaYear),
+                                    Used = passengerDb.CouponEvents.Count(dc => dc.OperationType == "used" && dc.QuotaCode == category.Code && dc.OperationDatetimeUtc.Year == quotaYear)
+                                })
+                                .ToList()
+                            select new InsertQuotaBalanceDTO()
+                            {
+                                Year = quotaYear, 
+                                UsedDocumentCount = passengerDb.CouponEvents.Select(p => p.DocumentNumber).Distinct().Count(), 
+                                Changed = false, 
+                                CategoryBalances = categoryBalances
+                            }).ToList();
+                        
+                        quotaBalances.First(q => q.Year == DateTime.Parse(request.PassengerRequestDto.OperationDatetime).ToUniversalTime().Year).Changed = true;
+                        
+                        passengers.Add(new InsertPassengerResponseDTO()
+                        {
+                            Id = passengerDb.Id,
+                            TicketProperties = new InsertTicketPropertiesDTO()
+                            {
+                                PassengerTypesPreConfirmed = true,
+                                ContainsQuotaRoutes = request.PassengerRequestDto.Coupons.Count > 0
+                            },
+                            QuotaBalances = quotaBalances
+                        });
                     }
                     else
                     {
-                        throw new ResponseException("PFC-000006", "Для тарифа передан идентификатор отсутствующего пассажира");
+                        throw new ResponseException("PFC-000014", "Доступные квоты отсутствуют");
                     }
                 }
             }
-
             return new CommandResult(passengers);
         }
     }

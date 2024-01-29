@@ -8,11 +8,10 @@ using PSP.DataApplication.DTO.ArmContextDTO.Search;
 using PSP.DataApplication.DTO.ArmContextDTO.Select;
 using PSP.DataApplication.MediatR.Commands.ARMCommands;
 using PSP.DataApplication.MediatR.Queries.ARMQueries;
-using PSP.DataWebApi.Contexts.ARM_Context.DTO;
 using PSP.DataWebApi.Filters;
 using PSP.Domain.Exceptions;
 
-namespace PSP.DataWebApi.Contexts.ARM_Context.Controllers;
+namespace PSP.DataWebApi.Controllers.ARMContext;
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -23,12 +22,12 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     [HttpPost("select")]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> PostSelect([FromBody] IList<PostSelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
+    public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
     { 
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var query = new SelectPassengerQuotaCount.Query(mapper.Map<IList<SelectPassengerRequestDTO>>(selectPassengerRequests));
+        var query = new SelectPassengerQuotaCount.Query(selectPassengerRequests);
         var passengers = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
@@ -90,7 +89,6 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> DeleteInsert([FromBody] DeleteCouponEventRequestDTO insertPassengerRequests, CancellationToken cancellationToken)
     { 
-        var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
         var command = new DeleteCouponEvent.Command(insertPassengerRequests);

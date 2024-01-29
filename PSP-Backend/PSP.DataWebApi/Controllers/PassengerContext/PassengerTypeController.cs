@@ -1,23 +1,20 @@
 using System.Dynamic;
-using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PSP.DataApplication.DTO;
 using PSP.DataApplication.DTO.PassengerContextDTO;
-using PSP.Domain.Exceptions;
-using PSP.DataWebApi.Infrastructure;
 using PSP.DataApplication.MediatR.Commands.PassengerTypeCommands;
 using PSP.DataApplication.MediatR.Queries.PassengerTypeQueries;
-using PSP.DataWebApi.Contexts.Passenger_Context.DTO;
 using PSP.DataWebApi.Filters;
+using PSP.DataWebApi.Infrastructure;
+using PSP.Domain.Exceptions;
 
-namespace PSP.DataWebApi.Contexts.Passenger_Context.Controllers;
+namespace PSP.DataWebApi.Controllers.PassengerContext;
 
 [ApiController]
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class PassengerTypeController(IMediator mediator, IMapper mapper) : ControllerBase
+public class PassengerTypeController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [RequestSizeLimit(1 * 1024)]
@@ -71,12 +68,12 @@ public class PassengerTypeController(IMediator mediator, IMapper mapper) : Contr
     [HttpPost]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Post([FromBody] PostDocumentTypeDTO passengerType, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post([FromBody] PassengerTypeDTO passengerType, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
     
-        var command = new CreatePassengerType.Command(mapper.Map<PassengerTypeDTO>(passengerType));
+        var command = new CreatePassengerType.Command(passengerType);
         var result = await mediator.Send(command, cancellationToken);
             
         if (result.Result)
@@ -96,12 +93,12 @@ public class PassengerTypeController(IMediator mediator, IMapper mapper) : Contr
     [HttpPut]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Put([FromBody] PostDocumentTypeDTO passengerType, CancellationToken cancellationToken)
+    public async Task<IActionResult> Put([FromBody] PassengerTypeDTO passengerType, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var command = new UpdatePassengerType.Command(mapper.Map<PassengerTypeDTO>(passengerType));
+        var command = new UpdatePassengerType.Command(passengerType);
         var result = await mediator.Send(command, cancellationToken);
     
         if (result.Result)

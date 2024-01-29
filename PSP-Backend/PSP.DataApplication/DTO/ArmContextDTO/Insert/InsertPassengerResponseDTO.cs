@@ -4,7 +4,7 @@ namespace PSP.DataApplication.DTO.ArmContextDTO.Insert;
 
 public class InsertPassengerResponseDTO
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     
     public InsertTicketPropertiesDTO TicketProperties { get; set; }
     

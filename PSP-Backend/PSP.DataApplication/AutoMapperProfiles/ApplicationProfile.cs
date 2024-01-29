@@ -21,8 +21,6 @@ public class ApplicationProfile : Profile
         CreateMap<FareDTO, Fare>().ReverseMap();
         CreateMap<FlightDTO, Flight>().ReverseMap();
         
-        CreateMap<SearchRequestDTO, SearchByPassengerDTO>().ReverseMap();
-        CreateMap<SearchRequestDTO, SearchByTicketDTO>().ReverseMap();
         CreateMap<SearchByPassengerDTO, SelectPassengerDataDTO>()
             .ForMember(p => p.DocumentNumbersLatin, 
                 opt => opt.MapFrom(src => new List<string>() {ConvertStringService.Transliterate(src.DocumentNumber)})).ReverseMap();

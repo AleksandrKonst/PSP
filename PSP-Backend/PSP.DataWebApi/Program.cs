@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using PSP.DataApplication;
-using PSP.DataWebApi.Contexts.ARM_Context;
-using PSP.DataWebApi.Contexts.Passenger_Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,12 +22,10 @@ builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioning();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(Program));
 
 //Add Any DI Configuration Block
 builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddPassenger(builder.Configuration);
-builder.Services.AddARM(builder.Configuration);
-
 
 var app = builder.Build();
 

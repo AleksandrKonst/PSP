@@ -46,7 +46,7 @@ public static class SelectPassengerQuotaCount
                 passenger.id = passengerRequest.Id;
                 
                 var passengerFromDb = await passengerRepository
-                    .GetByFullNameWithCouponEventAsync(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, 
+                    .GetByFullNameWithCouponEventAsync(passengerRequest.Name, passengerRequest.Surname, passengerRequest.Patronymic, passengerRequest.Gender, 
                         passengerRequest.Birthdate, passengerRequest.QuotaBalancesYears);
 
                 if (passengerFromDb != null)
