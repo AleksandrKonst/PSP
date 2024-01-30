@@ -48,7 +48,12 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dict_flight_airline_fk");
 
-            entity.HasOne(d => d.DepartPlaceNavigation).WithMany(p => p.Flights)
+            entity.HasOne(d => d.ArrivePlaceNavigation).WithMany(p => p.FlightArrivePlaceNavigations)
+                .HasForeignKey(d => d.ArrivePlace)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("data_flight_arrive_place_fk");
+
+            entity.HasOne(d => d.DepartPlaceNavigation).WithMany(p => p.FlightDepartPlaceNavigations)
                 .HasForeignKey(d => d.DepartPlace)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dict_flight_depart_place_fk");

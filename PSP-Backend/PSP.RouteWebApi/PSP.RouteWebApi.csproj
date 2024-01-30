@@ -22,4 +22,8 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PSP.RouteApplication\PSP.RouteApplication.csproj" />
+    </ItemGroup>
+
 </Project>

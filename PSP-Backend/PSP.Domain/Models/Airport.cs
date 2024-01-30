@@ -36,5 +36,7 @@ public class Airport
 
     public virtual ICollection<FlightSegment> FlightSegmentDepartPlaceNavigations { get; set; } = new List<FlightSegment>();
 
-    public virtual ICollection<Flight> Flights { get; set; } = new List<Flight>();
+    public virtual ICollection<Flight> FlightArrivePlaceNavigations { get; set; } = new List<Flight>();
+
+    public virtual ICollection<Flight> FlightDepartPlaceNavigations { get; set; } = new List<Flight>();
 }

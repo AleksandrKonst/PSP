@@ -25,7 +25,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
 
 //Add Any DI Configuration Block
-builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddDataApplication(builder.Configuration);
 
 var app = builder.Build();
 
