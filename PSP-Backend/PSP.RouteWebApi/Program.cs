@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using PSP.RouteApplication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,15 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions
         });
     });
 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = "https://localhost:7161";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false
+        };
+    });
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioning();
@@ -37,6 +47,7 @@ if (app.Environment.IsDevelopment())
 
 //Middleware Block
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseHealthChecks("/health");

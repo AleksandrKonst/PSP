@@ -1,15 +1,17 @@
 using System.Dynamic;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PSP.DataWebApi.Filters;
 using PSP.RouteApplication.MediatR.Queries;
 
 namespace PSP.RouteWebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 public class RouteController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
