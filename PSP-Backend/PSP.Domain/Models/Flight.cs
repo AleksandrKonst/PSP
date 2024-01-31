@@ -42,6 +42,8 @@ public class Flight
     public string FareCode { get; set; } = null!;
 
     public virtual Airline AirlineCodeNavigation { get; set; } = null!;
+    
+    public virtual Airport ArrivePlaceNavigation { get; set; } = null!;
 
     public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 

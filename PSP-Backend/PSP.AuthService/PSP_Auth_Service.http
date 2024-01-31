@@ -1,6 +1,0 @@
-@PSP_Auth_Service_HostAddress = http://localhost:5232
-
-GET {{PSP_Auth_Service_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

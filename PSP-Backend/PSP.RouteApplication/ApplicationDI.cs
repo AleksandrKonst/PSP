@@ -4,11 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PSP.Infrastructure;
 
-namespace PSP.DataApplication;
+namespace PSP.RouteApplication;
 
 public static class ApplicationDI
 {
-    public static IServiceCollection AddDataApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRouteApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddInfrastructure(configuration);
 

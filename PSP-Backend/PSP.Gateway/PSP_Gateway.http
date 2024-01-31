@@ -1,6 +1,0 @@
-@PSP_Gateway_HostAddress = http://localhost:5160
-
-GET {{PSP_Gateway_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

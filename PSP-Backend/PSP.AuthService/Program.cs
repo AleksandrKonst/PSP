@@ -1,44 +1,47 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using PSP.AuthService;
+using PSP.AuthService.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<AuthDbContext>(config =>
+{
+    config.UseInMemoryDatabase("Memory");
+});
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(config =>
+    {
+        config.Password.RequiredLength = 8;
+        config.Password.RequireDigit = true;
+        config.Password.RequireNonAlphanumeric = true;
+        config.Password.RequireUppercase = true;
+    })
+    .AddEntityFrameworkStores<AuthDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(config =>
+{
+    config.Cookie.Name = "IdentityServer.Cookie";
+    config.Cookie.SameSite = SameSiteMode.None;
+    config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    config.LoginPath = "/Auth/Login";
+    config.LogoutPath = "/Auth/Logout";
+});
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddIdentityServer()
+    .AddAspNetIdentity<IdentityUser>()
+    .AddInMemoryClients(Config.Clients)
+    .AddInMemoryIdentityResources(Config.IdentityResources)
+    .AddInMemoryApiResources(Config.ApiResources)
+    .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddDeveloperSigningCredential();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
+app.UseRouting();
+app.UseIdentityServer();
+app.MapDefaultControllerRoute();
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

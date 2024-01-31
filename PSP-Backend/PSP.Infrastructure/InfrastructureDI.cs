@@ -23,6 +23,7 @@ public static class InfrastructureDI
         services.AddTransient<IFareRepository, FareRepository>();
         services.AddTransient<IFlightRepository, FlightRepository>();
         services.AddTransient<ICouponEventRepository, CouponEventRepository>();
+        services.AddTransient<ISubsidizedRouteRepository, SubsidizedRouteRepository>();
         
         return services;
     }

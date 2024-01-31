@@ -20,6 +20,7 @@ public class ApplicationProfile : Profile
         CreateMap<CouponEventDTO, CouponEvent>().ReverseMap();
         CreateMap<FareDTO, Fare>().ReverseMap();
         CreateMap<FlightDTO, Flight>().ReverseMap();
+        CreateMap<SubsidizedCityDTO, SubsidizedRoute>().ReverseMap();
         
         CreateMap<SearchByPassengerDTO, SelectPassengerDataDTO>()
             .ForMember(p => p.DocumentNumbersLatin, 
