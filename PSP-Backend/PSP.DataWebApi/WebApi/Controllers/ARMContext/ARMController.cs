@@ -9,14 +9,14 @@ using AutoMapper;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PSP.DataWebApi.Filters;
+using WebApi.Filters;
 
-namespace PSP.DataWebApi.Controllers.ARMContext;
+namespace WebApi.Controllers.ARMContext;
 
 [ApiController]
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpPost("select")]

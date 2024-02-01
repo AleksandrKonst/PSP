@@ -2,14 +2,14 @@ using System.Dynamic;
 using Application.MediatR.Queries.SubsidizedRouteQueries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PSP.DataWebApi.Filters;
+using WebApi.Filters;
 
-namespace PSP.DataWebApi.Controllers.FlightContext;
+namespace WebApi.Controllers.FlightContext;
 
 [ApiController]
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 public class SubsidizedRouteController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{appendix}")]
