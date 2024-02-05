@@ -1,4 +1,4 @@
-namespace AuthWebApi.Controllers;
+namespace AuthWebApi.DTO.ViewModels.Auth;
 
 public class LoginViewModel
 {

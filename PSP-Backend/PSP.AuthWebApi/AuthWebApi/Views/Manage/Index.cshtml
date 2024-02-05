@@ -1,0 +1,66 @@
+@model IEnumerable<UserDTO>
+
+@{
+    ViewData["Title"] = "Admin - Users";
+    Layout = "AdminLayout";
+}
+
+<h1>Пользователи</h1>
+
+<p>
+    <a asp-action="Create">Создать пользователя</a>
+</p>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                <label asp-for="@Model.First().Name">Имя</label>
+            </th>
+            <th>
+                <label asp-for="@Model.First().Surname">Фамилия</label>
+            </th>
+            <th>
+                <label asp-for="@Model.First().Patronymic">Отчество</label>
+            </th>
+            <th>
+                <label asp-for="@Model.First().Email">Почта</label>
+            </th>
+            <th>
+                <label asp-for="@Model.First().EmailConfirmed">Подтверждение почты</label>
+            </th>
+            <th>
+                <label>Изменить</label>
+            </th>
+            <th>
+                <label>Удалить</label>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Surname
+                </td>
+                <td>
+                    @item.Patronymic
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    @item.EmailConfirmed
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Изменить</a>
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-primary">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

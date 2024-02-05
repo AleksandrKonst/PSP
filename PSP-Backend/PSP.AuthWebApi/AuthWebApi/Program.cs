@@ -1,5 +1,6 @@
 using AuthWebApi;
-using AuthWebApi.Data;
+using AuthWebApi.Models;
+using AuthWebApi.Models.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,23 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AuthDbContext>(config =>
-{
-    config.UseInMemoryDatabase("Memory");
-});
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(config =>
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PSPAuthContext")));
+
+builder.Services.AddIdentity<PspUser, IdentityRole>(config =>
     {
-        config.Password.RequiredLength = 8;
+        config.Password.RequiredLength = 4;
         config.Password.RequireDigit = true;
-        config.Password.RequireNonAlphanumeric = true;
+        config.Password.RequireNonAlphanumeric = false;
         config.Password.RequireUppercase = true;
+        config.Password.RequireLowercase = true;
     })
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(config =>
 {
-    config.Cookie.Name = "IdentityServer.Cookie";
+    config.Cookie.Name = "PSP.IdentityServer.Cookie";
     config.Cookie.SameSite = SameSiteMode.None;
     config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     config.LoginPath = "/Auth/Login";
@@ -32,7 +33,7 @@ builder.Services.ConfigureApplicationCookie(config =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddIdentityServer()
-    .AddAspNetIdentity<IdentityUser>()
+    .AddAspNetIdentity<PspUser>()
     .AddInMemoryClients(Config.Clients)
     .AddInMemoryIdentityResources(Config.IdentityResources)
     .AddInMemoryApiResources(Config.ApiResources)
@@ -41,7 +42,10 @@ builder.Services.AddIdentityServer()
 
 var app = builder.Build();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseIdentityServer();
 app.MapDefaultControllerRoute();
 app.Run();

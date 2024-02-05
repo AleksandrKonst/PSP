@@ -1,11 +1,14 @@
+using AuthWebApi.DTO.ViewModels.Auth;
+using AuthWebApi.Models;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthWebApi.Controllers;
 
-public class AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,
-        IIdentityServerInteractionService interactionService)
+public class AuthController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
+        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager)
     : Controller
 {
     [HttpGet]
@@ -15,36 +18,29 @@ public class AuthController(SignInManager<IdentityUser> signInManager, UserManag
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel vm)
+    public async Task<IActionResult> Login(LoginViewModel viewModel)
     {
-        // get tenant info// check if the model is valid
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            // check if the user exists
-            var user = await userManager.FindByNameAsync(vm.Username);
-            if (user != null)
-            {
-                // check if the password is correct
-                var signInResult = signInManager.PasswordSignInAsync(user, vm.Password, false, false).Result;
-                if (signInResult.Succeeded)
-                {
-                    // redirect to the return url
-                    if (vm.ReturnUrl != null)
-                    {
-                        return Redirect(vm.ReturnUrl);
-                    }
-                    else
-                    {
-                        return View();
-                    }
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("", "Username or password is incorrect");
-            }
+            return Redirect(viewModel.ReturnUrl);
         }
-        return Redirect(vm.ReturnUrl);
+
+        var user = await userManager.FindByNameAsync(viewModel.Username);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "Login or Password Error");
+            return Redirect(viewModel.ReturnUrl);
+        }
+
+        var result = await signInManager.PasswordSignInAsync(user,
+            viewModel.Password, false, false);
+        if (result.Succeeded)
+        {
+            return Redirect(viewModel.ReturnUrl);
+        }
+        
+        ModelState.AddModelError(string.Empty, "Login error");
+        return Redirect(viewModel.ReturnUrl);
     }
     
     [HttpGet]
@@ -69,23 +65,34 @@ public class AuthController(SignInManager<IdentityUser> signInManager, UserManag
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register(RegisterViewModel vm)
+    public async Task<IActionResult> Register(RegisterViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
-            return View(vm);
+            return View(viewModel);
+        }
+        
+        if (!await roleManager.RoleExistsAsync("Passenger"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Passenger"));
         }
 
-        var user = new IdentityUser(vm.Username);
-        var result = await userManager.CreateAsync(user, vm.Password);
-
+        var user = new PspUser()
+        {
+            UserName = viewModel.Username,
+            Surname = "viewModel"
+        };
+        
+        var result = await userManager.CreateAsync(user, viewModel.Password);
         if (result.Succeeded)
         {
+            var userFromDb = await userManager.FindByNameAsync(user.UserName);
+            
             await signInManager.SignInAsync(user, false);
-
-            return Redirect(vm.ReturnUrl);
+            await userManager.AddToRoleAsync(userFromDb, "Passenger");
+            return Redirect(viewModel.ReturnUrl);
         }
-
-        return View(vm);
+        ModelState.AddModelError(string.Empty, "Error occurred");
+        return View(viewModel);
     }
 }
