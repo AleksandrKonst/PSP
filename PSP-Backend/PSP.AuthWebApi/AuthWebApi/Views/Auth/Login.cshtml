@@ -1,26 +1,33 @@
 @model AuthWebApi.DTO.ViewModels.Auth.LoginViewModel
 
 <div class="row">
-    <div class="col-md-4" style="margin-left: auto; margin-right: auto">
-        <h1>Sign In With</h1>
+    <div class="col-md-4 login-border">
+        <h1>Вход</h1>
         <form asp-controller="Auth" asp-action="Login" method="post" >
             <input type="hidden" asp-for="ReturnUrl"/>
-            <div style="margin: 15px">
-                <label asp-for="Username" class="control-label">Username</label>
+            <div class="edit-text">
+                <label asp-for="Username" class="control-label">Логин</label>
                 <input asp-for="Username" class="form-control"/>
+                <span asp-validation-for="Username" class="text-danger"></span>
             </div>
-            <div style="margin: 15px">
-                <label asp-for="Password" class="control-label">Password</label>
+            <div class="edit-text">
+                <label asp-for="Password" class="control-label">Пароль</label>
                 <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div>
-                <button type="submit" class="btn btn-primary" style="background-color: #605DEC; border-color: #605DEC;">Sign In</button>
+            <div class="edit-text">
+                <button type="submit" class="btn btn-primary">Вход</button>
             </div>
         </form>
         <div>
             <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">
-                Register
+                У вас нет аккаунта?
             </a>
         </div>
+        <p style="font-size: 15px; margin-top: 25px">Приложению "avs.io" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности и условиями использования.</p>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

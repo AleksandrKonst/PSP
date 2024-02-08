@@ -1,0 +1,15 @@
+<nav id="sidebarMenu" class="d-lg-block sidebar bg-white">
+    <div class="position-sticky">
+        <div class="list-group list-group-flush mx-3">
+            <a class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                <i class="bi bi-person-circle @(ViewBag.SelectedCategory == "admin" ? "active" : "")"></i>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action py-2 ripple @(ViewBag.SelectedCategory == "users" ? "active" : "")">
+                <i class="bi bi-people"></i>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action py-2 ripple @(ViewBag.SelectedCategory == "clients" ? "active" : "")">
+                <i class="bi bi-cast"></i>
+            </a>
+        </div>
+    </div>
+</nav>

@@ -1,5 +1,6 @@
 using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
+using AutoMapper;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthWebApi.Controllers;
 
 public class AuthController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager)
+        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper)
     : Controller
 {
     [HttpGet]
@@ -77,11 +78,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             await roleManager.CreateAsync(new IdentityRole("Passenger"));
         }
 
-        var user = new PspUser()
-        {
-            UserName = viewModel.Username,
-            Surname = "viewModel"
-        };
+        var user = mapper.Map<PspUser>(viewModel);
         
         var result = await userManager.CreateAsync(user, viewModel.Password);
         if (result.Succeeded)

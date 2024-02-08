@@ -1,1 +1,17 @@
-<h2>title</h2>
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "AdminLayout";
+}
+
+<h1>Создать</h1>
+
+<h4>@Model.Username</h4>
+<hr />
+
+<div>
+    <a asp-action="Index">Вернуться</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,6 +1,8 @@
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Auth;
+using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
+using AutoMapper;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,12 +13,13 @@ namespace AuthWebApi.Controllers;
 
 [Authorize]
 public class ManageController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager)
+        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper)
     : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        ViewBag.SelectedCategory = "users";
         var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -40,9 +43,9 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
     }
     
     [HttpGet]
-    [Authorize]
     public IActionResult Create(string returnUrl)
     {
+        ViewBag.SelectedCategory = "users";
         return View(new RegisterViewModel { ReturnUrl = returnUrl });
     }
 
@@ -59,11 +62,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
             await roleManager.CreateAsync(new IdentityRole("Passenger"));
         }
 
-        var user = new PspUser()
-        {
-            UserName = viewModel.Username,
-            Surname = "viewModel"
-        };
+        var user = mapper.Map<PspUser>(viewModel);
         
         var result = await userManager.CreateAsync(user, viewModel.Password);
         if (result.Succeeded)
@@ -78,13 +77,31 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         return View(viewModel);
     }
 
-    public IActionResult Edit()
+    [HttpGet]
+    public async Task<IActionResult> Edit()
     {
-        throw new NotImplementedException();
+        ViewBag.SelectedCategory = "users";
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return NoContent();
+        }
+        
+        return View(mapper.Map<EditViewModel>(user));
     }
 
-    public IActionResult Delete()
+    [HttpGet]
+    public async Task<IActionResult> Delete()
     {
-        throw new NotImplementedException();
+        ViewBag.SelectedCategory = "users";
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return NoContent();
+        }
+        
+        return View(mapper.Map<DeleteViewModel>(user));
     }
 }

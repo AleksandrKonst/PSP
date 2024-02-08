@@ -1,13 +1,10 @@
-using Microsoft.AspNetCore.Identity;
+namespace AuthWebApi.DTO.ViewModels.Manage;
 
-namespace AuthWebApi.Models;
-
-public class PspUser : IdentityUser
+public class DeleteViewModel
 {
+    public string Username { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
-    
     public string? Patronymic { get; set; }
-    
     public DateTime? Birthday { get; set; }
 }

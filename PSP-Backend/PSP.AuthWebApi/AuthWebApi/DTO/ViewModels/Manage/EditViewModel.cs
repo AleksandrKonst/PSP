@@ -1,20 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthWebApi.DTO.ViewModels.Auth;
+namespace AuthWebApi.DTO.ViewModels.Manage;
 
-public class RegisterViewModel
+public class EditViewModel
 {
-    public string ReturnUrl { get; set; }
-    [Required]
     public string Username { get; set; }
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
     [Required]
     public string Name { get; set; }
     [Required]
     public string Surname { get; set; }
     public string? Patronymic { get; set; }
+    [DataType(DataType.Date)]
+    public DateTime? Birthday { get; set; }
     [Required]
     [DataType("Password")]
     public string Password { get; set; }

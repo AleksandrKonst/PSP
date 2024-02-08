@@ -39,6 +39,7 @@ builder.Services.AddIdentityServer()
     .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryApiScopes(Config.ApiScopes)
     .AddDeveloperSigningCredential();
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 app.UseHttpsRedirection();
