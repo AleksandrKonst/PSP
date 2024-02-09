@@ -16,6 +16,9 @@ public class RegisterViewModel
     public string Surname { get; set; }
     public string? Patronymic { get; set; }
     [Required]
+    [DataType(DataType.Date)]
+    public DateOnly? Birthday { get; set; }
+    [Required]
     [DataType("Password")]
     public string Password { get; set; }
     [Required]

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace AuthWebApi.Models;
@@ -9,5 +10,6 @@ public class PspUser : IdentityUser
     
     public string? Patronymic { get; set; }
     
-    public DateTime? Birthday { get; set; }
+    [DataType(DataType.Date)]
+    public DateOnly? Birthday { get; set; }
 }

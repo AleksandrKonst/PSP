@@ -1,7 +1,7 @@
 @model AuthWebApi.DTO.ViewModels.Auth.RegisterViewModel
 
 <div class="row">
-    <div class="col-md-4 login-border">
+    <div class="col-md-4 auth-form">
         <h1>Регистрация</h1>
         <form asp-controller="Auth" asp-action="Register" method="post">
             <input type="hidden" asp-for="ReturnUrl" />
@@ -29,6 +29,11 @@
                 <label asp-for="Patronymic" class="control-label">Отчество</label>
                 <input asp-for="Patronymic" class="form-control"/>
                 <span asp-validation-for="Patronymic" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Birthday" class="control-label">День рождения</label>
+                <input asp-for="Birthday" class="form-control" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
             <div class="edit-text">
                 <label asp-for="Password" class="control-label">Пароль</label>

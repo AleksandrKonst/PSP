@@ -1,5 +1,4 @@
 using AuthWebApi.DTO;
-using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
 using AutoMapper;
@@ -27,9 +26,8 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         }
         
         Console.WriteLine(user.UserName);
-
-        //var roles = await roleManager.Roles.Select(r => r.Name).ToListAsync();
-        var users = await userManager.Users.Select(u => new UserDTO
+        
+        var users = await userManager.Users.Where(u => u.NormalizedUserName != user.NormalizedUserName).Select(u => new UserDTO
         {
             Id = u.Id,
             Name = u.UserName,
@@ -43,24 +41,23 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
     }
     
     [HttpGet]
-    public IActionResult Create(string returnUrl)
+    public async Task<IActionResult> Create()
     {
         ViewBag.SelectedCategory = "users";
-        return View(new RegisterViewModel { ReturnUrl = returnUrl });
+        ViewBag.Roles = await roleManager.Roles.ToListAsync();
+        return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(RegisterViewModel viewModel)
+    [AutoValidateAntiforgeryToken]
+    public async Task<IActionResult> Create(CreateViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
-            return View(viewModel);
+            return View();
         }
         
-        if (!await roleManager.RoleExistsAsync("Passenger"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("Passenger"));
-        }
+        ViewBag.SelectedCategory = "users";
 
         var user = mapper.Map<PspUser>(viewModel);
         
@@ -68,20 +65,19 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         if (result.Succeeded)
         {
             var userFromDb = await userManager.FindByNameAsync(user.UserName);
-            
-            await signInManager.SignInAsync(user, false);
-            await userManager.AddToRoleAsync(userFromDb, "Passenger");
-            return Redirect(viewModel.ReturnUrl);
+            await userManager.AddToRoleAsync(userFromDb, viewModel.Role);
+            return RedirectToAction(nameof(Create));
         }
+        
         ModelState.AddModelError(string.Empty, "Error occurred");
-        return View(viewModel);
+        return View();
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit()
+    public async Task<IActionResult> Edit(string id)
     {
         ViewBag.SelectedCategory = "users";
-        var user = await userManager.GetUserAsync(User);
+        var user = await userManager.FindByIdAsync(id);
 
         if (user == null)
         {
@@ -90,12 +86,46 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         
         return View(mapper.Map<EditViewModel>(user));
     }
-
-    [HttpGet]
-    public async Task<IActionResult> Delete()
+    
+    [HttpPost]
+    [AutoValidateAntiforgeryToken]
+    public async Task<IActionResult> Edit(EditViewModel viewModel)
     {
         ViewBag.SelectedCategory = "users";
-        var user = await userManager.GetUserAsync(User);
+        
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Model Error");
+            return View(viewModel);
+        }
+
+        var user = await userManager.FindByNameAsync(viewModel.NormalizedUserName);
+
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "User not found");
+            return View(viewModel);
+        }
+
+        user.Name = viewModel.Name;
+        user.Surname = viewModel.Surname;
+        user.Patronymic = viewModel.Patronymic;
+        user.Birthday = viewModel.Birthday;
+        
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return View(viewModel);
+        }
+        ModelState.AddModelError(string.Empty, "Error occurred");
+        return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(string id)
+    {
+        ViewBag.SelectedCategory = "users";
+        var user = await userManager.FindByIdAsync(id);
 
         if (user == null)
         {
@@ -103,5 +133,60 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         }
         
         return View(mapper.Map<DeleteViewModel>(user));
+    }
+    
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        ViewBag.SelectedCategory = "users";
+        var user = await userManager.FindByIdAsync(id);
+
+        if (user == null)
+        {
+            return NoContent();
+        }
+
+        var result = await userManager.DeleteAsync(user);
+        return RedirectToAction(nameof(Index));
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> ChangePassword(string normalizedUserName)
+    {
+        ViewBag.SelectedCategory = "users";
+
+        var user = new ChangePasswordViewModel()
+        {
+            NormalizedUserName = normalizedUserName
+        };
+        
+        return View(user);
+    }
+    
+    [HttpPost]
+    [AutoValidateAntiforgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel viewModel)
+    {
+        ViewBag.SelectedCategory = "users";
+        
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
+        var user = await userManager.FindByNameAsync(viewModel.NormalizedUserName);
+        if (user == null)
+        {
+            throw new ApplicationException($"Unable to load user with NormalizedUserName: {viewModel.NormalizedUserName}.");
+        }
+
+        var addPasswordResult = await userManager.ChangePasswordAsync(user, viewModel.CurrentPassword, viewModel.Password);
+        if (!addPasswordResult.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, "Password: addPasswordResult");
+            return View(viewModel);
+        }
+
+        return RedirectToAction(nameof(Edit), new { id = user.Id });
     }
 }

@@ -2,17 +2,18 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "AdminLayout";
+    Layout = "_AdminLayout";
 }
 
-<h1>Изменить</h1>
+<h1>Изменить пользователя</h1>
 
-<h4>@Model.Username</h4>
+<h5>@Model.NormalizedUserName</h5>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NormalizedUserName" />
             <div class="form-group edit-text">
                 <label asp-for="Name" class="control-label">Имя</label>
                 <input asp-for="Name" class="form-control" />
@@ -33,15 +34,8 @@
                 <input asp-for="Birthday" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
-            <div class="edit-text">
-                <label asp-for="Password" class="control-label">Пароль</label>
-                <input asp-for="Password" class="form-control"/>
-                <span asp-validation-for="Password"></span>
-            </div>
-            <div class="edit-text">
-                <label asp-for="ConfirmPassword" class="control-label">Повторите пароль</label>
-                <input asp-for="ConfirmPassword" class="form-control"/>
-                <span asp-validation-for="ConfirmPassword"></span>
+            <div class="form-group edit-text">
+                <a asp-action="ChangePassword" asp-route-normalizedUserName="@Model.NormalizedUserName" class="btn btn-primary">Изменить пароль</a>
             </div>
             <div class="form-group edit-text">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />

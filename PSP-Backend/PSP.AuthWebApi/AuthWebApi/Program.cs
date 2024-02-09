@@ -18,6 +18,7 @@ builder.Services.AddIdentity<PspUser, IdentityRole>(config =>
         config.Password.RequireNonAlphanumeric = false;
         config.Password.RequireUppercase = true;
         config.Password.RequireLowercase = true;
+        config.User.RequireUniqueEmail = true;
     })
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
