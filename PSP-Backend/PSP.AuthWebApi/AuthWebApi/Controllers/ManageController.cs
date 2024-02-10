@@ -1,10 +1,8 @@
-using System.Security.Claims;
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Data;
 using AutoMapper;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +12,12 @@ namespace AuthWebApi.Controllers;
 
 [Authorize]
 [Controller]
-public class ManageController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context)
-    : Controller
+public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
 {
+    private const int PageSize = 9;
+
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string search, int page = 1)
     {
         ViewBag.SelectedCategory = "users";
         var user = await userManager.GetUserAsync(User);
@@ -31,6 +29,8 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         var users = await (from us in context.Users
             join userRole in context.UserRoles on us.Id equals userRole.UserId
             join role in context.Roles on userRole.RoleId equals role.Id
+            where search == null || (us.UserName.Contains(search) || us.Name.Contains(search) || us.Surname.Contains(search) 
+                                     || us.Patronymic.Contains(search) || role.Name.Contains(search))
             select new UserDTO
             {
                 Id = us.Id,
@@ -39,9 +39,18 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
                 Email = us.Email,
                 EmailConfirmed = us.EmailConfirmed,
                 Role = role.Name
-            }).ToListAsync();
+            }).Skip((page - 1) * PageSize).Take(PageSize)
+            .ToListAsync();
 
-        return View(users);
+        var indexViewModel = new IndexViewModel()
+        {
+            Search = search,
+            MaxPage = users.Count / PageSize + 1,
+            Page = page,
+            Users = users
+        };
+        
+        return View(indexViewModel);
     }
     
     [HttpGet]
@@ -58,6 +67,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
     {
         if (!ModelState.IsValid)
         {
+            ModelState.AddModelError(string.Empty, "Error occurred");
             return View();
         }
         
@@ -73,7 +83,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
             return RedirectToAction(nameof(Create));
         }
         
-        ModelState.AddModelError(string.Empty, "Error occurred");
+        ModelState.AddModelError(string.Empty, "User error occurred");
         return View();
     }
 
@@ -87,7 +97,9 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         {
             return NoContent();
         }
-
+        
+        ViewBag.Roles = await roleManager.Roles.ToListAsync();
+        
         var editUser = mapper.Map<EditViewModel>(user);
         editUser.Role = (await userManager.GetRolesAsync(user)).First();
         
@@ -118,11 +130,19 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         user.Surname = viewModel.Surname;
         user.Patronymic = viewModel.Patronymic;
         user.Birthday = viewModel.Birthday;
+        user.Email = viewModel.Email;
+        user.EmailConfirmed = viewModel.EmailConfirmed;
         
         var result = await userManager.UpdateAsync(user);
         if (result.Succeeded)
         {
-            return View(viewModel);
+            var roleResult = await userManager.RemoveFromRoleAsync(user, (await userManager.GetRolesAsync(user)).First());
+
+            if (roleResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, viewModel.Role);
+                return RedirectToAction(nameof(Edit), new {user.Id});
+            }
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
         return View(viewModel);
@@ -139,6 +159,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
             return NoContent();
         }
         
+        ViewBag.Role = await roleManager.Roles.FirstAsync();
         return View(mapper.Map<DeleteViewModel>(user));
     }
     
@@ -178,6 +199,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         
         if (!ModelState.IsValid)
         {
+            ModelState.AddModelError(string.Empty, "Model Error");
             return View(viewModel);
         }
 
@@ -190,7 +212,7 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         var addPasswordResult = await userManager.ChangePasswordAsync(user, viewModel.CurrentPassword, viewModel.Password);
         if (!addPasswordResult.Succeeded)
         {
-            ModelState.AddModelError(string.Empty, "Password: addPasswordResult");
+            ModelState.AddModelError(string.Empty, "Change Password False");
             return View(viewModel);
         }
 

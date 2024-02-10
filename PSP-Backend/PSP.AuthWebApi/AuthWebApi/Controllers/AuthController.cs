@@ -2,15 +2,13 @@ using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
 using AutoMapper;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthWebApi.Controllers;
 
 public class AuthController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper)
-    : Controller
+        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper) : Controller
 {
     [HttpGet]
     public IActionResult Login(string returnUrl)

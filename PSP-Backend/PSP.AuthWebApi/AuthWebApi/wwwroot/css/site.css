@@ -66,7 +66,7 @@ body {
 }
 
 .image {
-  background: url("/plane.jpg") no-repeat center;
+  background: url("/black.jpg") no-repeat center;
   background-size: cover;
 }
 
@@ -83,4 +83,33 @@ body {
 
 .edit-text {
   margin-top: 15px;
+}
+
+.container-right {
+  max-width: 95%; 
+  margin-right: 10px
+}
+
+.arrow {
+  max-width: 50px; 
+  height: 40px
+}
+
+.page-count {
+  height: 40px; 
+  display: inline-block; 
+  border: 1px solid #ced4da; 
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.info {
+  font-size: 15px; 
+  margin-top: 25px
 }

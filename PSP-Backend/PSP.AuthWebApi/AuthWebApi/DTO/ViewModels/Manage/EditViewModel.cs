@@ -12,6 +12,11 @@ public class EditViewModel
     public string Surname { get; set; }
     public string? Patronymic { get; set; }
     [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+    [Required]
+    public bool EmailConfirmed { get; set; }
+    [Required]
     [DataType(DataType.Date)]
     public DateOnly? Birthday { get; set; }
     [Required]

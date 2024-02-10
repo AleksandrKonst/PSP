@@ -4,11 +4,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers;
 
 [Authorize]
-public class ProfileController(UserManager<PspUser> userManager, IMapper mapper) : Controller
+[Controller]
+public class ProfileController(RoleManager<IdentityRole> roleManager, UserManager<PspUser> userManager, IMapper mapper) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -22,6 +24,7 @@ public class ProfileController(UserManager<PspUser> userManager, IMapper mapper)
             return NoContent();
         }
         
+        ViewBag.Role = await roleManager.Roles.FirstAsync();
         return View(mapper.Map<DeleteViewModel>(user));
     }
 }
