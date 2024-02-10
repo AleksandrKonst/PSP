@@ -9,5 +9,6 @@ public class LoginViewModel
     [Required]
     [DataType("Password")]
     public string Password { get; set; }
+    [Required]
     public string ReturnUrl { get; set; }
 }

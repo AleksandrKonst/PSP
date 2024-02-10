@@ -10,9 +10,12 @@
     </head>
     <body>
         <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white box-shadow mb-3" >
-                <div class="container nav-bar-margin">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white box-shadow mb-3">
+                <div class="container nav-bar-margin" style="max-width: 94%">
                     <a class="navbar-brand">Панель администратора<strong class="orange-text"> @User.Identity.Name</strong></a>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </nav>
         </header>

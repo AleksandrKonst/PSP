@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
+using AuthWebApi.Models.Data;
 using AutoMapper;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +13,9 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthWebApi.Controllers;
 
 [Authorize]
+[Controller]
 public class ManageController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper)
+        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context)
     : Controller
 {
     [HttpGet]
@@ -24,18 +27,19 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         {
             throw new ApplicationException($"Unable to load user with ID '{userManager.GetUserId(User)}'.");
         }
-        
-        Console.WriteLine(user.UserName);
-        
-        var users = await userManager.Users.Where(u => u.NormalizedUserName != user.NormalizedUserName).Select(u => new UserDTO
-        {
-            Id = u.Id,
-            Name = u.UserName,
-            Surname = u.Surname,
-            Patronymic = u.Patronymic,
-            Email = u.Email,
-            EmailConfirmed = u.EmailConfirmed
-        }).ToListAsync();
+
+        var users = await (from us in context.Users
+            join userRole in context.UserRoles on us.Id equals userRole.UserId
+            join role in context.Roles on userRole.RoleId equals role.Id
+            select new UserDTO
+            {
+                Id = us.Id,
+                Login = us.UserName,
+                FIO = $"{us.Surname} {us.Name} {us.Patronymic}",
+                Email = us.Email,
+                EmailConfirmed = us.EmailConfirmed,
+                Role = role.Name
+            }).ToListAsync();
 
         return View(users);
     }
@@ -83,8 +87,11 @@ public class ManageController(SignInManager<PspUser> signInManager, UserManager<
         {
             return NoContent();
         }
+
+        var editUser = mapper.Map<EditViewModel>(user);
+        editUser.Role = (await userManager.GetRolesAsync(user)).First();
         
-        return View(mapper.Map<EditViewModel>(user));
+        return View(editUser);
     }
     
     [HttpPost]

@@ -35,8 +35,4 @@
       <_ContentIncludedByDefault Remove="Views\Manage\Register.cshtml" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DTO\ViewModels\Profile\" />
-    </ItemGroup>
-
 </Project>

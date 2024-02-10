@@ -59,6 +59,17 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         return Redirect(logoutRequest.PostLogoutRedirectUri);
     }
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await signInManager.SignOutAsync();
+        return RedirectToAction(nameof(Login), "Auth", new
+        {
+            ReturnUrl = "/manage/index"
+        });
+    }
+    
     [HttpGet]
     public IActionResult Register(string returnUrl)
     {

@@ -1,3 +1,4 @@
+@using IdentityServer4.Extensions
 @model AuthWebApi.DTO.ViewModels.Manage.DeleteViewModel
 
 @{
@@ -35,5 +36,7 @@
             @Model.Birthday
         </dd>
     </dl>
-    <a asp-action="Index">Вернуться</a>
+    <div>
+        <a asp-controller="Manage" asp-action="Edit" asp-route-id="@User.GetSubjectId()" class="btn btn-primary">Изменить</a> | <a asp-action="Index">Вернуться</a>
+    </div>
 </div>

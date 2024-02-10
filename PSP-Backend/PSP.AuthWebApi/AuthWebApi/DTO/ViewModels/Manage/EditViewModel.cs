@@ -14,4 +14,6 @@ public class EditViewModel
     [Required]
     [DataType(DataType.Date)]
     public DateOnly? Birthday { get; set; }
+    [Required]
+    public string Role { get; set; }
 }
