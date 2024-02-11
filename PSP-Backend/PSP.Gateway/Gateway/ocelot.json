@@ -26,6 +26,29 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
+          "Port": 7148
+        }
+      ],
+      "UpstreamPathTemplate": "/api/data/{path}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "IdentityApiKey",
+        "AllowedScopes": [
+          "api"
+        ]
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/{path}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
           "Port": 7161
         }
       ],

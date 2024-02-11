@@ -5,15 +5,15 @@ using Application.MediatR.Queries.PassengerQueries;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using PSP.DataWebApi.Filters;
-using PSP.DataWebApi.Infrastructure;
+using WebApi.Filters;
+using WebApi.Infrastructure;
 
-namespace PSP.DataWebApi.Controllers.PassengerContext;
+namespace WebApi.Controllers.PassengerContext;
 
 [ApiController]
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
 public class PassengerController(IMediator mediator) : ControllerBase
 {
     [HttpGet]

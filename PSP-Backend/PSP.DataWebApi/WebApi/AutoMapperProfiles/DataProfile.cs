@@ -1,7 +1,7 @@
 using Application.DTO.ArmContextDTO.Search;
 using AutoMapper;
 
-namespace PSP.DataWebApi.AutoMapperProfiles;
+namespace WebApi.AutoMapperProfiles;
 
 public class DataProfile : Profile
 {

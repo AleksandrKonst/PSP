@@ -1,6 +1,6 @@
 using System.Dynamic;
 
-namespace PSP.DataWebApi.Infrastructure;
+namespace WebApi.Infrastructure;
 
 public static class PaginationService
 {
