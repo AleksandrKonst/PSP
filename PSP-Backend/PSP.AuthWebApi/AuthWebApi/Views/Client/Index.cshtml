@@ -8,7 +8,7 @@
 <h1>Клиенты</h1>
 
 <p>
-    <a >Создать клиента</a>
+    <a asp-action="Create">Создать клиента</a>
 </p>
 <div>
     <form asp-action="Index" method="get" class="input-group rounded">
@@ -40,13 +40,13 @@
                 @item
             </td>
             <td>
-                <a asp-route-id="@item" class="btn btn-primary">Подробно</a>
+                <a asp-action="Info" asp-route-id="@item" class="btn btn-primary">Подробно</a>
             </td>
             <td>
-                <a asp-route-id="@item" class="btn btn-primary">Изменить</a>
+                <a asp-action="Edit" asp-route-id="@item" class="btn btn-primary">Изменить</a>
             </td>
             <td>
-                <a asp-route-id="@item" class="btn btn-primary">Удалить</a>
+                <a asp-action="Delete" asp-route-id="@item" class="btn btn-primary">Удалить</a>
             </td>
         </tr>
     }

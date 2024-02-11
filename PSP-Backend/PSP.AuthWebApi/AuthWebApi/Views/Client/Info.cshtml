@@ -11,19 +11,19 @@
 <div>
     <dl class="row">
         <dt class="col-sm-2">
-            <label>AllowedGrantTypes</label>
+            <label>GrantTypes</label>
         </dt>
         <dd class="col-sm-10">
             @(string.Join(", ", Model.AllowedGrantTypes))
         </dd>
         <dt class="col-sm-2">
-            <label asp-for="RequirePkce">RequirePkce</label>
+            <label asp-for="RequirePkce">Pkce</label>
         </dt>
         <dd class="col-sm-10">
             @Model.RequirePkce
         </dd>
         <dt class="col-sm-2">
-            <label asp-for="RequireClientSecret">RequireClientSecret</label>
+            <label asp-for="RequireClientSecret">ClientSecret</label>
         </dt>
         <dd class="col-sm-10">
             @Model.RequireClientSecret
@@ -41,13 +41,13 @@
             @(string.Join(", ", Model.AllowedScopes))
         </dd>
         <dt class="col-sm-2">
-            <label asp-for="AllowAccessTokensViaBrowser">AllowAccessTokensViaBrowser</label>
+            <label asp-for="AllowAccessTokensViaBrowser">ViaBrowser</label>
         </dt>
         <dd class="col-sm-10">
             @Model.AllowAccessTokensViaBrowser
         </dd>
         <dt class="col-sm-2">
-            <label asp-for="AllowOfflineAccess">AllowOfflineAccess</label>
+            <label asp-for="AllowOfflineAccess">OfflineAccess</label>
         </dt>
         <dd class="col-sm-10">
             @Model.AllowOfflineAccess
@@ -65,13 +65,13 @@
             @(string.Join(", ", Model.ClientSecrets))
         </dd>
         <dt class="col-sm-2">
-            <label>PostLogoutRedirectUris</label>
+            <label>LogoutUris</label>
         </dt>
         <dd class="col-sm-10">
             @(string.Join(", ", Model.PostLogoutRedirectUris))
         </dd>
         <dt class="col-sm-2">
-            <label>AllowedCorsOrigins</label>
+            <label>CorsOrigins</label>
         </dt>
         <dd class="col-sm-10">
             @(string.Join(", ", Model.AllowedCorsOrigins))
