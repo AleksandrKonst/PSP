@@ -82,11 +82,6 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             return View(viewModel);
         }
         
-        if (!await roleManager.RoleExistsAsync("Passenger"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("Passenger"));
-        }
-
         var user = mapper.Map<PspUser>(viewModel);
         
         var result = await userManager.CreateAsync(user, viewModel.Password);

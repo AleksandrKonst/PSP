@@ -29,8 +29,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         var users = await (from us in context.Users
             join userRole in context.UserRoles on us.Id equals userRole.UserId
             join role in context.Roles on userRole.RoleId equals role.Id
-            where search == null || (us.UserName.Contains(search) || us.Name.Contains(search) || us.Surname.Contains(search) 
-                                     || us.Patronymic.Contains(search) || role.Name.Contains(search))
+            where (search == null || us.UserName.Contains(search) || us.Name.Contains(search) || us.Surname.Contains(search) 
+                                     || us.Patronymic.Contains(search) || role.Name.Contains(search)) && us.UserName != user.UserName
             select new UserDTO
             {
                 Id = us.Id,

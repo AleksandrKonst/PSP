@@ -33,6 +33,8 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Views\Manage\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Airline\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Airline\Index.cshtml" />
     </ItemGroup>
 
 </Project>

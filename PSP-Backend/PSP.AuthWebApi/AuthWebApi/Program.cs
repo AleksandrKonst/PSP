@@ -1,6 +1,8 @@
 using AuthWebApi;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Data;
+using AuthWebApi.Models.Infrastructure;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,9 +35,12 @@ builder.Services.ConfigureApplicationCookie(config =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddTransient<IClientStore, ClientStore>();
+
 builder.Services.AddIdentityServer()
     .AddAspNetIdentity<PspUser>()
-    .AddInMemoryClients(Config.Clients)
+    .AddClientStore<ClientStore>()
     .AddInMemoryIdentityResources(Config.IdentityResources)
     .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryApiScopes(Config.ApiScopes)
