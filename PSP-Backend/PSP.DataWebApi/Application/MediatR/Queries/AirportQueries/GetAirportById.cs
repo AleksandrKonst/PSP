@@ -1,20 +1,20 @@
-using Application.DTO.PassengerContextDTO;
+using Application.DTO.FlightContextDTO;
 using AutoMapper;
 using FluentValidation;
-using Infrastructure.Repositories.PassengerRepositories.Interfaces;
+using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
 
-namespace Application.MediatR.Queries.DocumentTypeQueries;
+namespace Application.MediatR.Queries.AirportQueries;
 
-public static class GetDocumentTypeById
+public static class GetAirportById
 {
     public record Query(string Code) : IRequest<QueryResult>;
     
-    public record QueryResult(DocumentTypeDTO Result);
+    public record QueryResult(AirportDTO Result);
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator(IDocumentTypeRepository repository)
+        public Validator(IAirportRepository repository)
         {
             RuleFor(x => x.Code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
@@ -23,11 +23,11 @@ public static class GetDocumentTypeById
         }
     }
     
-    public class Handler(IDocumentTypeRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IAirportRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<DocumentTypeDTO>(await repository.GetByCodeAsync(request.Code)));
+            return new QueryResult(mapper.Map<AirportDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

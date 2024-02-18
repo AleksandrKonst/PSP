@@ -4,30 +4,30 @@ using FluentValidation;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
 
-namespace Application.MediatR.Queries.DocumentTypeQueries;
+namespace Application.MediatR.Queries.GenderTypeQueries;
 
-public static class GetDocumentTypeById
+public static class GetGenderTypeById
 {
     public record Query(string Code) : IRequest<QueryResult>;
     
-    public record QueryResult(DocumentTypeDTO Result);
+    public record QueryResult(GenderTypeDTO Result);
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator(IDocumentTypeRepository repository)
+        public Validator(IGenderTypeRepository repository)
         {
             RuleFor(x => x.Code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
-                .WithMessage("Идентификатор типа документа не существует")
+                .WithMessage("Такой пол не существует")
                 .WithErrorCode("PPC-000001");
         }
     }
     
-    public class Handler(IDocumentTypeRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IGenderTypeRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<DocumentTypeDTO>(await repository.GetByCodeAsync(request.Code)));
+            return new QueryResult(mapper.Map<GenderTypeDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

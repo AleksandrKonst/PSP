@@ -13,20 +13,20 @@ public class DocumentTypeRepository(PSPContext context) : IDocumentTypeRepositor
 
     public async Task<DocumentType?> GetByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
 
-    public async Task<int> GetCountAsync() => await context.DocumentTypes.CountAsync();
+    public async Task<long> GetCountAsync() => await context.DocumentTypes.CountAsync();
 
     public async Task<bool> CheckByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).AnyAsync();
     
-    public async Task<bool> AddAsync(DocumentType documentType)
+    public async Task<bool> AddAsync(DocumentType obj)
     {
-        await context.DocumentTypes.AddAsync(documentType);
+        await context.DocumentTypes.AddAsync(obj);
         await context.SaveChangesAsync();
         return true;
     }
     
-    public async Task<bool> UpdateAsync(DocumentType documentType)
+    public async Task<bool> UpdateAsync(DocumentType obj)
     {
-        context.Update(documentType);
+        context.Update(obj);
         await context.SaveChangesAsync();
         return true;
     }

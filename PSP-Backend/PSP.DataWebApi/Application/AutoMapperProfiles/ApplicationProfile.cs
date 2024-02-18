@@ -16,11 +16,15 @@ public class ApplicationProfile : Profile
         CreateMap<PassengerDTO, Passenger>().ReverseMap();
         CreateMap<PassengerTypeDTO, PassengerType>().ReverseMap();
         CreateMap<DocumentTypeDTO, DocumentType>().ReverseMap();
-
+        CreateMap<GenderTypeDTO, GenderType>().ReverseMap();
+        
+        CreateMap<AirlineDTO, Airline>().ReverseMap();
+        CreateMap<AirportDTO, Airport>().ReverseMap();
+        CreateMap<CityDTO, City>().ReverseMap();
         CreateMap<CouponEventDTO, CouponEvent>().ReverseMap();
         CreateMap<FareDTO, Fare>().ReverseMap();
         CreateMap<FlightDTO, Flight>().ReverseMap();
-        CreateMap<SubsidizedCityDTO, SubsidizedRoute>().ReverseMap();
+        CreateMap<SubsidizedDTO, SubsidizedRoute>().ReverseMap();
         
         CreateMap<SearchByPassengerDTO, SelectPassengerDataDTO>()
             .ForMember(p => p.DocumentNumbersLatin, 

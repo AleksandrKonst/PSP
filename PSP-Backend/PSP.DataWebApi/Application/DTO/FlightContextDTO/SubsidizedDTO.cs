@@ -1,6 +1,6 @@
 namespace Application.DTO.FlightContextDTO;
 
-public class SubsidizedCityDTO
+public class SubsidizedDTO
 {
     public string CityStartIataCode { get; set; } = null!;
     

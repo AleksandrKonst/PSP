@@ -22,13 +22,13 @@ public class GetSubsidizedByAppendix
         }
     }
     
-    public record QueryResult(IEnumerable<SubsidizedCityDTO> Result);
+    public record QueryResult(IEnumerable<SubsidizedDTO> Result);
     
     public class Handler(ISubsidizedRouteRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<IEnumerable<SubsidizedCityDTO>>(await repository.GetAllByAppendixAsync(request.Appendix)));
+            return new QueryResult(mapper.Map<IEnumerable<SubsidizedDTO>>(await repository.GetAllByAppendixAsync(request.Appendix)));
         }
     }
 }

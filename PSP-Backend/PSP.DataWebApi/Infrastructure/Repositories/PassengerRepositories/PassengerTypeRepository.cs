@@ -13,20 +13,20 @@ public class PassengerTypeRepository(PSPContext context) : IPassengerTypeReposit
 
     public async Task<PassengerType?> GetByCodeAsync(string code) => await context.PassengerTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
 
-    public async Task<int> GetCountAsync() => await context.PassengerTypes.CountAsync();
+    public async Task<long> GetCountAsync() => await context.PassengerTypes.CountAsync();
 
     public async Task<bool> CheckByCodeAsync(string code) => await context.PassengerTypes.Where(p => p.Code == code).AnyAsync();
     
-    public async Task<bool> AddAsync(PassengerType passengerType)
+    public async Task<bool> AddAsync(PassengerType obj)
     {
-        await context.PassengerTypes.AddAsync(passengerType);
+        await context.PassengerTypes.AddAsync(obj);
         await context.SaveChangesAsync();
         return true;
     }
     
-    public async Task<bool> UpdateAsync(PassengerType passengerType)
+    public async Task<bool> UpdateAsync(PassengerType obj)
     {
-        context.Update(passengerType);
+        context.Update(obj);
         await context.SaveChangesAsync();
         return true;
     }
