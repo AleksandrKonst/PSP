@@ -4,7 +4,7 @@ namespace WebApi.Infrastructure;
 
 public static class PaginationService
 {
-    public static dynamic PaginateAsDynamic(string baseUrl, int index, int count, int total) {
+    public static dynamic PaginateAsDynamic(string baseUrl, int index, int count, long total) {
         dynamic links = new ExpandoObject();
         links.self = new { href = baseUrl };
         if (index < total) {

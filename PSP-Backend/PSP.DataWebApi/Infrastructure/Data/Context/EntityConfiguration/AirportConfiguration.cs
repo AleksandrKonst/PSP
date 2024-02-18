@@ -24,6 +24,12 @@ public class AirportConfiguration : IEntityTypeConfiguration<Airport>
             .HasComment("Код ICAO аэропорта")
             .HasColumnType("character varying")
             .HasColumnName("icao_code");
+        entity.Property(e => e.Latitude)
+            .HasComment("Широта")
+            .HasColumnName("latitude");
+        entity.Property(e => e.Longitude)
+            .HasComment("Долгота")
+            .HasColumnName("longitude");
         entity.Property(e => e.Name)
             .HasComment("Название аэропорта")
             .HasColumnType("character varying")

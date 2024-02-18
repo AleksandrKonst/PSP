@@ -7,9 +7,9 @@ namespace Infrastructure.Repositories.PassengerRepositories;
 
 public class PassengerTypeRepository(PSPContext context) : IPassengerTypeRepository
 {
-    public async Task<List<PassengerType>> GetAllAsync() => await context.PassengerTypes.ToListAsync();
+    public async Task<IEnumerable<PassengerType>> GetAllAsync() => await context.PassengerTypes.ToListAsync();
     
-    public async Task<List<PassengerType>> GetPartAsync(int index, int count) => await context.PassengerTypes.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<PassengerType>> GetPartAsync(int index, int count) => await context.PassengerTypes.Skip(index).Take(count).ToListAsync();
 
     public async Task<PassengerType?> GetByCodeAsync(string code) => await context.PassengerTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
 
@@ -19,14 +19,14 @@ public class PassengerTypeRepository(PSPContext context) : IPassengerTypeReposit
     
     public async Task<bool> AddAsync(PassengerType passengerType)
     {
-        var newPassengerType = await context.PassengerTypes.AddAsync(passengerType);
+        await context.PassengerTypes.AddAsync(passengerType);
         await context.SaveChangesAsync();
         return true;
     }
     
     public async Task<bool> UpdateAsync(PassengerType passengerType)
     {
-        var updatePassengerType = context.Update(passengerType);
+        context.Update(passengerType);
         await context.SaveChangesAsync();
         return true;
     }

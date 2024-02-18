@@ -4,7 +4,8 @@ namespace Infrastructure.Repositories.PassengerRepositories.Interfaces;
 
 public interface IPassengerTypeRepository
 {
-    Task<List<PassengerType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
+    Task<IEnumerable<PassengerType>> GetAllAsync();
+    Task<IEnumerable<PassengerType>> GetPartAsync(int index = 0, int count = Int32.MaxValue);
     Task<PassengerType?> GetByCodeAsync(string code);
     Task<int> GetCountAsync();
     Task<bool> CheckByCodeAsync(string code);

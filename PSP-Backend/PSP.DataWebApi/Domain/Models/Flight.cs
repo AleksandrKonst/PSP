@@ -47,8 +47,6 @@ public class Flight
 
     public virtual ICollection<CouponEvent> CouponEvents { get; set; } = new List<CouponEvent>();
 
-    public virtual ICollection<FlightSegment> FlightSegments { get; set; } = new List<FlightSegment>();
-
     public virtual Airport DepartPlaceNavigation { get; set; } = null!;
 
     public virtual Fare FareCodeNavigation { get; set; } = null!;
