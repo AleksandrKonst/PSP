@@ -10,7 +10,7 @@ public static class GetSubsidizedRouteById
 {
     public record Query(long Code) : IRequest<QueryResult>;
     
-    public record QueryResult(SubsidizedDTO Result);
+    public record QueryResult(SubsidizedRouteDTO Result);
     
     public class Validator : AbstractValidator<Query>
     {
@@ -27,7 +27,7 @@ public static class GetSubsidizedRouteById
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<SubsidizedDTO>(await repository.GetByCodeAsync(request.Code)));
+            return new QueryResult(mapper.Map<SubsidizedRouteDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

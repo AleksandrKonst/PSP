@@ -24,7 +24,7 @@ public class ApplicationProfile : Profile
         CreateMap<CouponEventDTO, CouponEvent>().ReverseMap();
         CreateMap<FareDTO, Fare>().ReverseMap();
         CreateMap<FlightDTO, Flight>().ReverseMap();
-        CreateMap<SubsidizedDTO, SubsidizedRoute>().ReverseMap();
+        CreateMap<SubsidizedRouteDTO, SubsidizedRoute>().ReverseMap();
         CreateMap<QuotaCategoryDTO, QuotaCategory>().ReverseMap();
         CreateMap<TicketTypeDTO, TicketType>().ReverseMap();
         
