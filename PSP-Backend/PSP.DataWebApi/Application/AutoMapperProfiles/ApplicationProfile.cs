@@ -25,6 +25,8 @@ public class ApplicationProfile : Profile
         CreateMap<FareDTO, Fare>().ReverseMap();
         CreateMap<FlightDTO, Flight>().ReverseMap();
         CreateMap<SubsidizedDTO, SubsidizedRoute>().ReverseMap();
+        CreateMap<QuotaCategoryDTO, QuotaCategory>().ReverseMap();
+        CreateMap<TicketTypeDTO, TicketType>().ReverseMap();
         
         CreateMap<SearchByPassengerDTO, SelectPassengerDataDTO>()
             .ForMember(p => p.DocumentNumbersLatin, 
