@@ -1,15 +1,15 @@
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
 
-namespace Application.MediatR.Queries.FareQueries;
+namespace Application.MediatR.Queries.TicketTypeQueries;
 
-public static class GetFareEventCount
+public static class GetTicketTypeCount
 {
     public record Query : IRequest<QueryResult>;
 
     public record QueryResult(long Result);
     
-    public class Handler(IFareRepository repository) : IRequestHandler<Query, QueryResult>
+    public class Handler(ITicketTypeRepository repository) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {

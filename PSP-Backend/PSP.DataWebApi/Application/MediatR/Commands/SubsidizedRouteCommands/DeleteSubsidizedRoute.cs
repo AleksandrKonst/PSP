@@ -1,15 +1,13 @@
-﻿using Application.DTO.FlightContextDTO;
-using AutoMapper;
-using Domain.Models;
+﻿using AutoMapper;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
 
 namespace Application.MediatR.Commands.SubsidizedRouteCommands;
 
-public static class CreateSubsidized
+public static class DeleteSubsidizedRoute
 {
-    public record Command(SubsidizedRouteDTO objDTO) : IRequest<CommandResult>;
+    public record Command(long code) : IRequest<CommandResult>;
     
     public record CommandResult(bool Result);
     
@@ -17,10 +15,10 @@ public static class CreateSubsidized
     {
         public Validator(ISubsidizedRouteRepository repository)
         {
-            RuleFor(x => x.objDTO.Id)
-                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code) == false)
-                .WithMessage("Имеется повторяющийся идентификатор маршрута")
-                .WithErrorCode("PPC-000002");
+            RuleFor(x => x.code)
+                .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
+                .WithMessage("Идентификатор маршрута не существует")
+                .WithErrorCode("PPC-000001");
         }
     }
     
@@ -28,7 +26,7 @@ public static class CreateSubsidized
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            return new CommandResult(await repository.AddAsync(mapper.Map<SubsidizedRoute>(request.objDTO)));
+            return new CommandResult(await repository.DeleteAsync(request.code));
         }
     }
 }

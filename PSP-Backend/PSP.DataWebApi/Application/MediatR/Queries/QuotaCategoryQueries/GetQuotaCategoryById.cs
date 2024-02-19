@@ -4,30 +4,30 @@ using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
 
-namespace Application.MediatR.Queries.FareQueries;
+namespace Application.MediatR.Queries.QuotaCategoryQueries;
 
-public static class GetFareEventById
+public static class GetQuotaCategoryById
 {
     public record Query(string Code) : IRequest<QueryResult>;
     
-    public record QueryResult(FareDTO Result);
+    public record QueryResult(QuotaCategoryDTO Result);
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator(IFareRepository repository)
+        public Validator(IQuotaCategoryRepository repository)
         {
             RuleFor(x => x.Code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
-                .WithMessage("Идентификатор тарифа не существует")
+                .WithMessage("Идентификатор категории квоты не существует")
                 .WithErrorCode("PPC-000001");
         }
     }
     
-    public class Handler(IFareRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IQuotaCategoryRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<FareDTO>(await repository.GetByCodeAsync(request.Code)));
+            return new QueryResult(mapper.Map<QuotaCategoryDTO>(await repository.GetByCodeAsync(request.Code)));
         }
     }
 }

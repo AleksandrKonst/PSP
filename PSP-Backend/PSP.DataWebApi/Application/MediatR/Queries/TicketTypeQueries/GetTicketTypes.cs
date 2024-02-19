@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.TicketTypeQueries;
 
-public static class TicketTypes
+public static class GetTicketTypes
 {
     public record Query(int Index = 0, int Count = int.MaxValue) : IRequest<QueryResult>;
 

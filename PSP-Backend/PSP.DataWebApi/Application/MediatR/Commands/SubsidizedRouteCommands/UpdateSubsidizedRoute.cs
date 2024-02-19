@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Application.MediatR.Commands.SubsidizedRouteCommands;
 
-public static class UpdateSubsidized
+public static class UpdateSubsidizedRoute
 {
     public record Command(SubsidizedRouteDTO objDto) : IRequest<CommandResult>;
     

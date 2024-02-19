@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.FareQueries;
 
-public static class GetFareEvents
+public static class GetFares
 {
     public record Query(int Index = 0, int Count = int.MaxValue) : IRequest<QueryResult>;
 

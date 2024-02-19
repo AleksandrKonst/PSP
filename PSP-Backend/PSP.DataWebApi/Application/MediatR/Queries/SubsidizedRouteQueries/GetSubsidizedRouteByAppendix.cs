@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.SubsidizedRouteQueries;
 
-public class GetSubsidizedByAppendix
+public class GetSubsidizedRouteByAppendix
 {
     public record Query(short Appendix) : IRequest<QueryResult>;
 

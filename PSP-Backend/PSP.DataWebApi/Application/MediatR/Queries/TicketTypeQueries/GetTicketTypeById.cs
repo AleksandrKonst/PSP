@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.TicketTypeQueries;
 
-public static class TicketTypeById
+public static class GetTicketTypeById
 {
     public record Query(short Code) : IRequest<QueryResult>;
     

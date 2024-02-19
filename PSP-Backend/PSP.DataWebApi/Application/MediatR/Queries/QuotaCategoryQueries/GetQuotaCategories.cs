@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.QuotaCategoryQueries;
 
-public static class QuotaCategories
+public static class GetQuotaCategories
 {
     public record Query(int Index = 0, int Count = int.MaxValue) : IRequest<QueryResult>;
 

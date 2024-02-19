@@ -1,7 +1,7 @@
-using System.Dynamic;
+﻿using System.Dynamic;
 using Application.DTO.FlightContextDTO;
-using Application.MediatR.Commands.SubsidizedRouteCommands;
-using Application.MediatR.Queries.SubsidizedRouteQueries;
+using Application.MediatR.Commands.CouponEventCommands;
+using Application.MediatR.Queries.CouponEventQueries;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,31 +14,8 @@ namespace WebApi.Controllers.FlightContext;
 [ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class SubsidizedRouteController(IMediator mediator) : ControllerBase
+public class CouponEventController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("appendix/{appendix}")]
-    [RequestSizeLimit(1 * 1024)]
-    [Produces("application/json")]
-    public async Task<IActionResult> Get(short appendix, CancellationToken cancellationToken)
-    {
-        var requestDateTime = DateTime.Now;
-
-        var query = new GetSubsidizedRouteByAppendix.Query(appendix);
-        var routes = await mediator.Send(query, cancellationToken);
-
-        dynamic response = new ExpandoObject();
-        
-        response.service_data = new
-        {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-        };
-        response.routes = routes.Result;
-        
-        return Ok(response);
-    }
-    
     [HttpGet]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
@@ -46,10 +23,10 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     {
         var requestDateTime = DateTime.Now;
         
-        var queryCount = new GetSubsidizedRouteCount.Query(); 
+        var queryCount = new GetCouponEventCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetSubsidizedRoutes.Query(index, count);
+        var queryPassenger = new GetCouponEvents.Query(index, count);
         var passengers = await mediator.Send(queryPassenger, cancellationToken);
 
         dynamic response = new ExpandoObject();
@@ -74,7 +51,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var query = new GetSubsidizedRouteById.Query(code);
+        var query = new GetCouponEventById.Query(code);
         var passenger = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
@@ -91,12 +68,12 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     [HttpPost]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Post([FromBody] SubsidizedRouteDTO subsidizedRouteDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post([FromBody] CouponEventDTO couponEventDto, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var command = new CreateSubsidizedRoute.Command(subsidizedRouteDto);
+        var command = new CreateCouponEvent.Command(couponEventDto);
         var result = await mediator.Send(command, cancellationToken);
             
         if (result.Result)
@@ -106,22 +83,22 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Субсидированный маршрут добавлен"
+                mesaage = "Событие с купоном добавлено"
             };
             return Ok(response);
         }
-        throw new ResponseException("Ошибка добавления субсидируемого маршрута", "PPC-000500");
+        throw new ResponseException("Ошибка добавления события с купоном", "PPC-000500");
     }
     
     [HttpPut]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Put([FromBody] SubsidizedRouteDTO subsidizedRouteDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Put([FromBody] CouponEventDTO couponEventDto, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var command = new UpdateSubsidizedRoute.Command(subsidizedRouteDto);
+        var command = new UpdateCouponEvent.Command(couponEventDto);
         var result = await mediator.Send(command, cancellationToken);
 
         if (result.Result)
@@ -131,11 +108,11 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Субсидируемый маршрут изменен"
+                mesaage = "Событие с купоном изменено"
             };
             return Ok(response);
         }
-        throw new ResponseException("Ошибка изменения субсидируемого маршрута", "PPC-000500");
+        throw new ResponseException("Ошибка изменения события с купоном", "PPC-000500");
     }
 
     [HttpDelete]
@@ -146,7 +123,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
 
-        var command = new DeleteSubsidizedRoute.Command(code);
+        var command = new DeleteCouponEvent.Command(code);
         var result = await mediator.Send(command, cancellationToken);
 
         if (result.Result)
@@ -156,10 +133,10 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
                 request_id = Guid.NewGuid().ToString(),
                 request_datetime = requestDateTime,
                 response_datetime = DateTime.Now,
-                mesaage = "Субсидируемый маршрут удален"
+                mesaage = "Событие с купоном удалено"
             };
             return Ok(response);
         }
-        throw new ResponseException("Ошибка удаления субсидируемого маршрута", "PPC-000500");
+        throw new ResponseException("Ошибка удаления события с купоном", "PPC-000500");
     }
 }
