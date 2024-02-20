@@ -19,11 +19,15 @@ public static class InfrastructureDI
         services.AddTransient<IPassengerTypeRepository, PassengerTypeRepository>();
         services.AddTransient<IDocumentTypeRepository, DocumentTypeRepository>();
 
-        services.AddTransient<IQuotaCategoryRepository, QuotaCategoryRepository>();
+        services.AddTransient<IAirlineRepository, AirlineRepository>();
+        services.AddTransient<IAirportRepository, AirportRepository>();
+        services.AddTransient<ICityRepository, CityRepository>();
+        services.AddTransient<ICouponEventRepository, CouponEventRepository>();
         services.AddTransient<IFareRepository, FareRepository>();
         services.AddTransient<IFlightRepository, FlightRepository>();
-        services.AddTransient<ICouponEventRepository, CouponEventRepository>();
+        services.AddTransient<IQuotaCategoryRepository, QuotaCategoryRepository>();
         services.AddTransient<ISubsidizedRouteRepository, SubsidizedRouteRepository>();
+        services.AddTransient<ITicketTypeRepository, TicketTypeRepository>();
         
         return services;
     }

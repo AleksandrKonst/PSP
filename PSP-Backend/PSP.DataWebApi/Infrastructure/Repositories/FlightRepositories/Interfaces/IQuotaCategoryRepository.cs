@@ -2,7 +2,7 @@ using Domain.Models;
 
 namespace Infrastructure.Repositories.FlightRepositories.Interfaces;
 
-public interface IQuotaCategoryRepository
+public interface IQuotaCategoryRepository : ICrudRepository<QuotaCategory, string>
 {
-    Task<List<QuotaCategory>> GetAllAsync();
+    
 }

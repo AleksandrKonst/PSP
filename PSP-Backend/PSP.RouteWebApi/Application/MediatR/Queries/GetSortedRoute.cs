@@ -1,5 +1,6 @@
 using Application.DTO;
 using AutoMapper;
+using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.Interfaces;
 using MediatR;
@@ -8,7 +9,7 @@ namespace Application.MediatR.Queries;
 
 public static class GetSortedRoute
 {
-    public record Query(string arrivePlaceName, string departPlaceName, DateTime Date) : IRequest<QueryResult>;
+    public record Query(string departPlaceName, string arrivePlaceName, DateTime Date) : IRequest<QueryResult>;
     
     public record QueryResult(IEnumerable<FlightViewModel> Result);
     
@@ -32,8 +33,57 @@ public static class GetSortedRoute
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<IEnumerable<FlightViewModel>>(
-                await repository.GetAllForClientAsync(request.arrivePlaceName, request.departPlaceName, request.Date)));
+            var flightList = new List<List<Flight>>();
+            var flightQueue = new Queue<List<Flight>>();
+            
+            var flights = await repository.GetAllForClientAsync(request.arrivePlaceName, request.departPlaceName, request.Date);
+            
+            foreach (var flight in flights.Where(f => f.DepartPlaceNavigation.CityIataCodeNavigation.Name == request.departPlaceName))
+            {
+                flightQueue.Enqueue(new List<Flight> { flight });
+            }
+            
+            while (flightQueue.Count > 0)
+            {
+                var currentFlight = flightQueue.Dequeue();
+                var lastAirport = currentFlight.Last().ArrivePlaceNavigation.CityIataCodeNavigation.Name;
+
+                if (lastAirport == request.arrivePlaceName)
+                {
+                    flightList.Add(currentFlight);
+                }
+                else
+                {
+                    foreach (var nextFlight in flights.Where(f => f.DepartPlaceNavigation.CityIataCodeNavigation.Name == lastAirport))
+                    {
+                        if (!currentFlight.Any(f =>
+                                f.DepartPlace == nextFlight.DepartPlace && f.ArrivePlace == nextFlight.ArrivePlace))
+                        {
+                            var newRoute = new List<Flight>(currentFlight) { nextFlight };
+                            flightQueue.Enqueue(newRoute);
+                        }
+                    }
+                }
+            }
+
+            var result = flightList.Select(flight => new FlightViewModel()
+                {
+                    ArrivePlace = flight.Last().ArrivePlace,
+                    ArriveDatetimePlan = flight.Last().ArriveDatetimePlan,
+                    DepartPlace = flight.First().DepartPlace,
+                    DepartDatetimePlan = flight.First().DepartDatetimePlan,
+                    FareCode = flight.First().FareCode,
+                    ArrivePlaceModel = mapper.Map<AirportViewModel>(flight.Last().ArrivePlaceNavigation),
+                    DepartPlaceModel = mapper.Map<AirportViewModel>(flight.First().DepartPlaceNavigation),
+                    Fare = mapper.Map<FareViewModel>(flight.First().FareCodeNavigation),
+                    FlightSegments = mapper.Map<ICollection<FlightSegmentViewModel>>(flight)
+                })
+                .OrderBy(f => f.ArriveDatetimePlan - f.DepartDatetimePlan)
+                .ThenBy(f => f.FlightSegments.Count)
+                .ThenBy(f => f.Fare.Amount)
+                .ToList();
+
+            return new QueryResult(result);
         }
     }
 }

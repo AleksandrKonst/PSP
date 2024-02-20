@@ -7,7 +7,7 @@ public static class GetPassengerTypeCount
 {
     public record Query : IRequest<QueryResult>;
 
-    public record QueryResult(int Result);
+    public record QueryResult(long Result);
     
     public class Handler(IPassengerTypeRepository repository) : IRequestHandler<Query, QueryResult>
     {

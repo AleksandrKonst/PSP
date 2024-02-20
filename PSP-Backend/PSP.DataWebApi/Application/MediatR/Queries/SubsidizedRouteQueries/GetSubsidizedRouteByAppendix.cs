@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.MediatR.Queries.SubsidizedRouteQueries;
 
-public class GetSubsidizedByAppendix
+public class GetSubsidizedRouteByAppendix
 {
     public record Query(short Appendix) : IRequest<QueryResult>;
 
@@ -22,13 +22,13 @@ public class GetSubsidizedByAppendix
         }
     }
     
-    public record QueryResult(IEnumerable<SubsidizedCityDTO> Result);
+    public record QueryResult(IEnumerable<SubsidizedRouteDTO> Result);
     
     public class Handler(ISubsidizedRouteRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            return new QueryResult(mapper.Map<IEnumerable<SubsidizedCityDTO>>(await repository.GetAllByAppendixAsync(request.Appendix)));
+            return new QueryResult(mapper.Map<IEnumerable<SubsidizedRouteDTO>>(await repository.GetAllByAppendixAsync(request.Appendix)));
         }
     }
 }

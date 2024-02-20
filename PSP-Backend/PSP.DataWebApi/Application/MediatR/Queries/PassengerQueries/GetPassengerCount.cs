@@ -7,7 +7,7 @@ public static class GetPassengerCount
 {
     public record Query : IRequest<QueryResult>;
 
-    public record QueryResult(int Result);
+    public record QueryResult(long Result);
     
     public class Handler(IPassengerRepository repository) : IRequestHandler<Query, QueryResult>
     {

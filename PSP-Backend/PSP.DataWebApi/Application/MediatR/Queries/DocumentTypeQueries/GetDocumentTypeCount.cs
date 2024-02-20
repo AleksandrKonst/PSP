@@ -7,7 +7,7 @@ public static class GetDocumentTypeCount
 {
     public record Query : IRequest<QueryResult>;
 
-    public record QueryResult(int Result);
+    public record QueryResult(long Result);
     
     public class Handler(IDocumentTypeRepository repository) : IRequestHandler<Query, QueryResult>
     {

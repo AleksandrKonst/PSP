@@ -14,7 +14,7 @@ public static class GetDocumentTypeById
     
     public class Validator : AbstractValidator<Query>
     {
-        public Validator(IPassengerTypeRepository repository)
+        public Validator(IDocumentTypeRepository repository)
         {
             RuleFor(x => x.Code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
