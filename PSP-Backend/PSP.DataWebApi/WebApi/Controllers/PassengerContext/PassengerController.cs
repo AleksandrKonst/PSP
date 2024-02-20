@@ -4,6 +4,7 @@ using Application.MediatR.Commands.PassengerCommands;
 using Application.MediatR.Queries.PassengerQueries;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Filters;
 using WebApi.Infrastructure;
@@ -17,6 +18,7 @@ namespace WebApi.Controllers.PassengerContext;
 public class PassengerController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = Int32.MaxValue)
@@ -44,6 +46,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
@@ -66,6 +69,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Post([FromBody] PassengerDTO passengerDto, CancellationToken cancellationToken)
@@ -91,6 +95,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
     }
     
     [HttpPut]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Put([FromBody] PassengerDTO passengerDto, CancellationToken cancellationToken)
@@ -116,6 +121,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)

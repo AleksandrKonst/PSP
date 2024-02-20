@@ -4,6 +4,7 @@ using Application.MediatR.Commands.SubsidizedRouteCommands;
 using Application.MediatR.Queries.SubsidizedRouteQueries;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Filters;
 using WebApi.Infrastructure;
@@ -17,6 +18,7 @@ namespace WebApi.Controllers.FlightContext;
 public class SubsidizedRouteController(IMediator mediator) : ControllerBase
 {
     [HttpGet("appendix/{appendix}")]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Get(short appendix, CancellationToken cancellationToken)
@@ -40,6 +42,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = Int32.MaxValue)
@@ -67,6 +70,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> GetById(long code, CancellationToken cancellationToken)
@@ -89,6 +93,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Post([FromBody] SubsidizedRouteDTO subsidizedRouteDto, CancellationToken cancellationToken)
@@ -114,6 +119,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     }
     
     [HttpPut]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Put([FromBody] SubsidizedRouteDTO subsidizedRouteDto, CancellationToken cancellationToken)
@@ -139,6 +145,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete]
+    [Authorize(Roles = "Admin")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Delete(long code, CancellationToken cancellationToken)

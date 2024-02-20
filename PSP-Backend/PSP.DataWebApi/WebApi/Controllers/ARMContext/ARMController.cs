@@ -8,6 +8,7 @@ using Application.MediatR.Queries.ARMQueries;
 using AutoMapper;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Filters;
 
@@ -20,6 +21,7 @@ namespace WebApi.Controllers.ARMContext;
 public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpPost("select")]
+    [Authorize]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
@@ -42,6 +44,7 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     }
     
     [HttpPost("insert")]
+    [Authorize(Roles = "Admin, Airline")]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> PostInsert([FromBody] InsertPassengerRequestDTO  insertPassengerRequests, CancellationToken cancellationToken)
@@ -64,6 +67,7 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     }
     
     [HttpPost("batch")]
+    [Authorize(Roles = "Admin, Airline")]
     [RequestSizeLimit(24 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> BatchInsert([FromBody] IList<InsertPassengerRequestDTO>  insertPassengerRequests, CancellationToken cancellationToken)
@@ -85,6 +89,7 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     }
     
     [HttpPost("delete")]
+    [Authorize(Roles = "Admin, Airline")]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> DeleteInsert([FromBody] DeleteCouponEventRequestDTO insertPassengerRequests, CancellationToken cancellationToken)
@@ -100,6 +105,7 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
     }
     
     [HttpPost("search")]
+    [Authorize]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> SearchPassengerInsert([FromBody] SearchRequestDTO searchRequest, CancellationToken cancellationToken)
