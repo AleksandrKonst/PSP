@@ -69,7 +69,7 @@ public class FareController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Airline")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Post([FromBody] FareDTO fareDto, CancellationToken cancellationToken)
@@ -95,7 +95,7 @@ public class FareController(IMediator mediator) : ControllerBase
     }
     
     [HttpPut]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Airline")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Put([FromBody] FareDTO fareDto, CancellationToken cancellationToken)
