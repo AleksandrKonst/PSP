@@ -7,9 +7,9 @@ namespace Infrastructure.Repositories.PassengerRepositories;
 
 public class PassengerRepository(PSPContext context) : IPassengerRepository
 {
-    public async Task<List<Passenger>> GetAllAsync() => await context.Passengers.ToListAsync();
+    public async Task<IEnumerable<Passenger>> GetAllAsync() => await context.Passengers.ToListAsync();
     
-    public async Task<List<Passenger>> GetPartAsync(int index, int count) => await context.Passengers.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<Passenger>> GetPartAsync(int index, int count) => await context.Passengers.Skip(index).Take(count).ToListAsync();
 
     public async Task<Passenger?> GetByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
     
@@ -28,15 +28,16 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
         return passenger;
     }
     
-    public async Task<int> GetCountAsync() => await context.Passengers.CountAsync();
-
     public async Task<long> GetIdByFullNameAsync(string name, string surname,
         string? patronymic, string gender, DateOnly birthdate) => await context.Passengers.Where(p => p.Name == name &&
             p.Surname == surname &&
             p.Patronymic == patronymic && 
             p.Birthdate == birthdate && 
             p.Gender == gender)
-        .Select(p => p.Id).FirstOrDefaultAsync();
+        .Select(p => p.Id)
+        .FirstOrDefaultAsync();
+    
+    public async Task<long> GetCountAsync() => await context.Passengers.CountAsync();
 
     public async Task<bool> CheckByFullNameAsync(string name, string surname, 
         string? patronymic, string gender, DateOnly birthdate)
@@ -54,14 +55,14 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
 
     public async Task<bool> AddAsync(Passenger passenger)
     {
-        var newPassenger = await context.Passengers.AddAsync(passenger);
+        await context.Passengers.AddAsync(passenger);
         await context.SaveChangesAsync();
         return true;
     }
     
     public async Task<bool> UpdateAsync(Passenger passenger)
     {
-        var updatePassenger = context.Update(passenger);
+        context.Update(passenger);
         await context.SaveChangesAsync();
         return true;
     }

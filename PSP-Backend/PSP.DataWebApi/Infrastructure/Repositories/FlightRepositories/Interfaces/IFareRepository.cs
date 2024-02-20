@@ -2,9 +2,7 @@ using Domain.Models;
 
 namespace Infrastructure.Repositories.FlightRepositories.Interfaces;
 
-public interface IFareRepository
+public interface IFareRepository : ICrudRepository<Fare, string>
 {
-    Task<Fare?> GetByCodeAsync(string code);
-    Task<bool> CheckByCodeAsync(string code);
-    Task<bool> AddAsync(Fare fare);
+    
 }

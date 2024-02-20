@@ -1,26 +1,62 @@
-@model AuthWebApi.Controllers.RegisterViewModel
+@model AuthWebApi.DTO.ViewModels.Auth.RegisterViewModel
 
-<form asp-controller="Auth" asp-action="Register" method="post">
-    <input type="hidden" asp-for="ReturnUrl" />
-    <div>
-        <label>Username</label>
-        <input asp-for="Username" />
-        <span asp-validation-for="Username"></span>
-    </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" />
-        <span asp-validation-for="Password"></span>
-    </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="ConfirmPassword" />
-        <span asp-validation-for="ConfirmPassword"></span>
-    </div>
-    <div>
-        <button type="submit">Sign Up</button>
-    </div>
-</form>
+<div class="row">
+    <div class="col-md-4 auth-form">
+        <h1>Регистрация</h1>
+        <form asp-controller="Auth" asp-action="Register" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="edit-text">
+                <label asp-for="Username" class="control-label">Логин</label>
+                <input asp-for="Username" class="form-control"/>
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Name" class="control-label">Имя</label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Surname" class="control-label">Фамилия</label>
+                <input asp-for="Surname" class="form-control"/>
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Patronymic" class="control-label">Отчество</label>
+                <input asp-for="Patronymic" class="form-control"/>
+                <span asp-validation-for="Patronymic" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Birthday" class="control-label">День рождения</label>
+                <input asp-for="Birthday" class="form-control" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="Password" class="control-label">Пароль</label>
+                <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <label asp-for="ConfirmPassword" class="control-label">Повторите пароль</label>
+                <input asp-for="ConfirmPassword" class="form-control"/>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="edit-text">
+                <button class="btn btn-primary" type="submit">Регистрация</button>
+            </div>
+        </form>
 
-<a asp-controller="Auth" asp-action="Login"
-   asp-route-returnUrl="@Model.ReturnUrl">Back to Login</a>
+        <a asp-controller="Auth" asp-action="Login"
+           asp-route-returnUrl="@Model.ReturnUrl" class="edit-text">Вернуться ко входу</a>
+        
+        <p class="info">Приложению "avs.io" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности и условиями использования.</p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

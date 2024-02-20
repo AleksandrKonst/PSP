@@ -10,5 +10,5 @@ public class PassengerTypeDTO
     
     public List<short> Appendices { get; set; }
     
-    public List<string>? QuotaCategories { get; set; }
+    public List<string> QuotaCategories { get; set; }
 }

@@ -9,8 +9,6 @@ public class PSPContext : DbContext
     public PSPContext(DbContextOptions<PSPContext> options) : base(options)
     {
     }
-
-    public virtual DbSet<FlightSegment> FlightParts { get; set; }
     public virtual DbSet<CouponEvent> CouponEvents { get; set; }
     public virtual DbSet<Passenger> Passengers { get; set; }
     public virtual DbSet<Airline> Airlines { get; set; }
@@ -31,7 +29,6 @@ public class PSPContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new FlightSegmentConfiguration());
         modelBuilder.ApplyConfiguration(new CouponEventConfiguration());
         modelBuilder.ApplyConfiguration(new PassengerConfiguration());
         modelBuilder.ApplyConfiguration(new AirlineConfiguration());

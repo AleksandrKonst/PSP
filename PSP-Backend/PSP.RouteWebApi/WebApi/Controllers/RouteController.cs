@@ -15,13 +15,14 @@ namespace WebApi.Controllers;
 public class RouteController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
+    [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Get(string arrivePlace, string departPlace, string date, CancellationToken cancellationToken)
+    public async Task<IActionResult> Get(string departPlace, string arrivePlace, string date, CancellationToken cancellationToken)
     {
         var requestDateTime = DateTime.Now;
         
-        var queryPassenger = new GetSortedRoute.Query(arrivePlace, departPlace, DateTime.Parse(date).ToUniversalTime());
+        var queryPassenger = new GetSortedRoute.Query(departPlace, arrivePlace, DateTime.Parse(date).ToUniversalTime());
         var routes = await mediator.Send(queryPassenger, cancellationToken);
         
         dynamic response = new ExpandoObject();
@@ -32,7 +33,7 @@ public class RouteController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now
         };
-        response.passengers = routes.Result;
+        response.flights = routes.Result;
         
         return Ok(response);
     }
