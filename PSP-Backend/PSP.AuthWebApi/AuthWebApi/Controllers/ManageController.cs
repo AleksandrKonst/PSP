@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers;
 
-[Authorize]
 [Controller]
+[Authorize(Roles = "Admin, Airline")]
 public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
 {
-    private const int PageSize = 9;
+    private const int PageSize = 8;
 
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)

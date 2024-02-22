@@ -1,9 +1,10 @@
 @model AuthWebApi.DTO.ViewModels.Auth.LoginViewModel
 
-<div class="row" style="margin-top: 8%">
-    <div class="col-md-4 auth-form">
+<div class="row" style="margin-top: 8%; border-radius: 0px">
+    <div class="col-md-4 auth-form" style="border-radius: 0px">
+        <img src="psp.png"/>
         <h1>Вход</h1>
-        <form asp-controller="Auth" asp-action="Login" method="post" >
+        <form asp-controller="Auth" asp-action="Login" method="post">
             <input type="hidden" asp-for="ReturnUrl"/>
             <div class="edit-text">
                 <label asp-for="Username" class="control-label">Логин</label>
@@ -16,14 +17,12 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <button type="submit" class="btn btn-primary">Вход</button>
+                <button type="submit" class="btn btn-primary">ВХОД</button>
+                <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">
+                    Регистрация
+                </a>
             </div>
         </form>
-        <div>
-            <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">
-                У вас нет аккаунта?
-            </a>
-        </div>
         <p class="info">Приложению "avs.io" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности и условиями использования.</p>
     </div>
 </div>

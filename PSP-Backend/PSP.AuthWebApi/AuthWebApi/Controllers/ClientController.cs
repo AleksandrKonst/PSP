@@ -13,14 +13,19 @@ namespace AuthWebApi.Controllers;
 [Authorize]
 public class ClientController(IClientStore clientStore, AuthDbContext context, IMapper mapper) : Controller
 {
-    private const int PageSize = 9;
+    private const int PageSize = 8;
     
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)
     {
         ViewBag.SelectedCategory = "clients";
 
-        var clients = await context.Clients.Where(c => c.ClientId.Contains(search) || search == null).Select(c => c.ClientId).Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+        var clients = await context.Clients
+            .Where(c => c.ClientId.Contains(search) || search == null)
+            .Select(c => c.ClientId)
+            .Skip((page - 1) * PageSize)
+            .Take(PageSize)
+            .ToListAsync();
         
         var indexViewModel = new IndexViewModel()
         {
