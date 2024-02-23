@@ -5,48 +5,47 @@
     ViewData["Title"] = "Edit";
     Layout = "_AdminLayout";
 }
-
 <h1>Изменить пользователя</h1>
 
 <h5>@Model.NormalizedUserName</h5>
 <hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="NormalizedUserName" />
             <div class="form-group edit-text">
-                <label asp-for="Name" class="control-label">Имя</label>
-                <input asp-for="Name" class="form-control" />
+                <label asp-for="Name" class="control-label user-label">Имя</label>
+                <input asp-for="Name" placeholder="Введите имя" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="Surname" class="control-label">Фамилия</label>
-                <input asp-for="Surname" class="form-control" />
+                <label asp-for="Surname" class="control-label user-label">Фамилия</label>
+                <input asp-for="Surname" placeholder="Введите фамилию" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="Patronymic" class="control-label">Отчество</label>
-                <input asp-for="Patronymic" class="form-control" />
+                <label asp-for="Patronymic" class="control-label user-label">Отчество</label>
+                <input asp-for="Patronymic" placeholder="Введите отчество" class="form-control" />
                 <span asp-validation-for="Patronymic" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="Email" class="control-label">Почта</label>
-                <input asp-for="Email" class="form-control" />
+                <label asp-for="Email" class="control-label user-label">Почта</label>
+                <input asp-for="Email" placeholder="Введите почту" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="EmailConfirmed" class="control-label">Почта</label>
-                <input asp-for="EmailConfirmed" class="form-check" />
-                <span asp-validation-for="EmailConfirmed" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="EmailConfirmed" class="form-check-label user-label" for="flexSwitchCheckDefault">Подтверждение почты</label>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="Birthday" class="control-label">День рождения</label>
+                <label asp-for="Birthday" class="control-label user-label">День рождения</label>
                 <input asp-for="Birthday" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
-            <div class="block">
-                <label>Роль</label>
+            <div class="block edit-text">
+                <label class="user-label">Роль</label>
                 <select class="form-select" asp-for="Role" asp-items="@(new SelectList(ViewBag.Roles, nameof(IdentityRole.Name), nameof(IdentityRole.Name)))"></select>
             </div>
             <div class="form-group edit-text">
@@ -54,13 +53,10 @@
             </div>
             <div class="form-group edit-text">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
+                <a asp-action="Index" class="panel-table-link">Вернуться</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Вернуться</a>
 </div>
 
 @section Scripts {

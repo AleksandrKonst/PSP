@@ -5,15 +5,17 @@
     Layout = "_AdminLayout";
 }
 
+<div class="panel-nav">
+    <a class="btn btn-warning" asp-action="Create">Создать клиента</a>
+</div>
+
 <h1>Клиенты</h1>
 
-<p>
-    <a asp-action="Create">Создать клиента</a>
-</p>
+<hr />
 <div>
-    <form asp-action="Index" method="get" class="input-group rounded">
+    <form asp-action="Index" method="get" class="input-group rounded" style="background-color: #ececec">
         <input type="text" name="search" value="@Model.Search" class="form-control rounded" placeholder="Поиск"/>
-        <input type="submit" value="Поиск" class="input-group-text border-0"/>
+        <input type="submit" value="" class="input-group-text border-0 search-submit"/>
     </form>
 </div>
 <table class="table table-striped">
@@ -40,13 +42,13 @@
                 @item
             </td>
             <td>
-                <a asp-action="Info" asp-route-id="@item" class="btn btn-primary">Подробно</a>
+                <a asp-action="Info" asp-route-id="@item" class="panel-table-link">Подробно</a>
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item" class="btn btn-primary">Изменить</a>
+                <a asp-action="Edit" asp-route-id="@item" class="panel-table-link">Изменить</a>
             </td>
             <td>
-                <a asp-action="Delete" asp-route-id="@item" class="btn btn-primary">Удалить</a>
+                <a asp-action="Delete" asp-route-id="@item" class="panel-table-link">Удалить</a>
             </td>
         </tr>
     }
@@ -58,7 +60,7 @@
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-left"></i>
     </a>
-    <p class="page-count">@Model.Page</p>
+    <p class="panel-page-count">@Model.Page</p>
     <a asp-controller="Client" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page < Model.MaxPage ? Model.Page + 1 : Model.Page)" 
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-right"></i>
