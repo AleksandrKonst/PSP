@@ -1,0 +1,28 @@
+@model AuthWebApi.DTO.ViewModels.Role.DeleteViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "_AdminLayout";
+}
+
+<h1>Удалить</h1>
+<hr />
+<h3>Роль @Model.Name</h3>
+<div>
+    <dl class="row edit-box">
+        <div class="col"> <strong>Название</strong> </div>
+        <div class="col">@Model.Name</div>
+        
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>Нормализированное название</strong> </div>
+        <div class="col">@Model.NormalizedName</div>
+        
+        <div class="w-100 edit-text"></div>
+    </dl>
+    <h3>Вы хотите удалить эту роль?</h3>
+    <form asp-action="Delete">
+        <input type="submit" value="Удалить" class="btn btn-danger"/>
+        <a asp-action="Index" class="panel-table-link">Вернуться</a>
+    </form>
+</div>

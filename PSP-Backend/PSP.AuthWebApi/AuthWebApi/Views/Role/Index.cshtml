@@ -1,4 +1,4 @@
-@model AuthWebApi.DTO.ViewModels.Manage.IndexViewModel
+@model AuthWebApi.DTO.ViewModels.Role.IndexViewModel
 
 @{
     ViewData["Title"] = "Users";
@@ -6,8 +6,8 @@
 }
 
 <div class="panel-nav">
-    <a class="btn btn-warning" asp-action="Create">Создать пользователя</a>
-    <a class="btn btn-danger" asp-controller="Role" asp-action="Index">Роли</a>
+    <a class="btn btn-warning" asp-action="Create">Создать Роль</a>
+    <a class="btn btn-danger" asp-controller="Manage" asp-action="Index">Пользователи</a>
     <a class="btn btn-primary" asp-controller="Claim" asp-action="Index">Утверждения</a>
 </div>
 
@@ -24,19 +24,10 @@
     <thead class="thead-dark">
     <tr>
         <th>
-            <label asp-for="@Model.Users.First().Login">Логин</label>
+            <label asp-for="@Model.Roles.First().Name">Имя</label>
         </th>
-        <th class="hide">
-            <label asp-for="@Model.Users.First().FIO">ФИО</label>
-        </th>
-        <th class="hide">
-            <label asp-for="@Model.Users.First().Role">Роль</label>
-        </th>
-        <th class="hide">
-            <label asp-for="@Model.Users.First().Email">Почта</label>
-        </th>
-        <th class="hide">
-            <label asp-for="@Model.Users.First().EmailConfirmed">Подтверждение почты</label>
+        <th>
+            <label asp-for="@Model.Roles.First().NormalizedName">Нормализированное имя</label>
         </th>
         <th>
             <label>Изменить</label>
@@ -47,22 +38,13 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Users) {
+    @foreach (var item in Model.Roles) {
         <tr>
             <td>
-                @item.Login
+                @item.Name
             </td>
-            <td class="hide">
-                @item.FIO
-            </td>
-            <td class="hide">
-                @item.Role
-            </td>
-            <td class="hide">
-                @item.Email
-            </td>
-            <td class="hide">
-                @item.EmailConfirmed
+            <td>
+                @item.NormalizedName
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="panel-table-link">Изменить</a>
@@ -76,12 +58,12 @@
 </table>
 
 <div class="input-group mb-3">
-    <a asp-controller="Manage" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page > 1? Model.Page - 1 : 1)" 
+    <a asp-controller="Role" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page > 1? Model.Page - 1 : 1)" 
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-left"></i>
     </a>
     <p class="panel-page-count">@Model.Page</p>
-    <a asp-controller="Manage" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page < Model.MaxPage ? Model.Page + 1 : Model.Page)" 
+    <a asp-controller="Role" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page < Model.MaxPage ? Model.Page + 1 : Model.Page)" 
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-right"></i>
     </a>

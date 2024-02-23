@@ -1,8 +1,9 @@
+using System.Security.Claims;
 using AuthWebApi.DTO.ViewModels.Auth;
-using AuthWebApi.DTO.ViewModels.Client;
 using AuthWebApi.Models;
 using AutoMapper;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthWebApi.DTO.AutoMapperProfiles;
 
@@ -16,7 +17,14 @@ public class ApplicationProfile : Profile
         CreateMap<ViewModels.Manage.CreateViewModel, PspUser>().ReverseMap();
         CreateMap<UserDTO, PspUser>().ReverseMap();
         CreateMap<ClientEntity, Client>().ReverseMap();
-        CreateMap<InfoViewModel, Client>().ReverseMap();
-        CreateMap<DeleteViewModel, Client>().ReverseMap();
+        CreateMap<ViewModels.Client.InfoViewModel, Client>().ReverseMap();
+        CreateMap<ViewModels.Client.DeleteViewModel, Client>().ReverseMap();
+        CreateMap<ViewModels.Role.DeleteViewModel, IdentityRole>().ReverseMap();
+        CreateMap<ViewModels.Role.EditViewModel, IdentityRole>().ReverseMap();
+        CreateMap<RoleDTO, IdentityRole>().ReverseMap();
+        CreateMap<ClaimDTO, Claim>().ReverseMap();
+        CreateMap<ClaimDTO, IdentityUserClaim<string>>().ReverseMap();
+        CreateMap<ViewModels.Claim.EditViewModel, IdentityUserClaim<string>>().ReverseMap();
+        CreateMap<ViewModels.Claim.DeleteViewModel, IdentityUserClaim<string>>().ReverseMap();
     }
 }

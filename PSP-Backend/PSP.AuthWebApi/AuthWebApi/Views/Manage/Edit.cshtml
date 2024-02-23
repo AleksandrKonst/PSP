@@ -14,6 +14,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="NormalizedUserName" />
             <div class="form-group edit-text">
                 <label asp-for="Name" class="control-label user-label">Имя</label>
@@ -49,7 +50,8 @@
                 <select class="form-select" asp-for="Role" asp-items="@(new SelectList(ViewBag.Roles, nameof(IdentityRole.Name), nameof(IdentityRole.Name)))"></select>
             </div>
             <div class="form-group edit-text">
-                <a asp-action="ChangePassword" asp-route-normalizedUserName="@Model.NormalizedUserName" class="btn btn-primary">Изменить пароль</a>
+                <a asp-action="EditClaim" asp-route-id="@Model.Id" class="btn btn-primary">Изменить утверждения</a>
+                <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn btn-primary">Изменить пароль</a>
             </div>
             <div class="form-group edit-text">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
