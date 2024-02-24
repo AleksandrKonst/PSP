@@ -14,33 +14,28 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group edit-text">
                 <label asp-for="ClientId" class="control-label user-label">ClientId</label>
-                <input asp-for="ClientId" class="form-control" />
+                <input asp-for="ClientId" placeholder="Введите идентификатор" class="form-control" />
                 <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="RequirePkce" class="control-label user-label">RequirePkce</label>
-                <input asp-for="RequirePkce" class="form-check" />
-                <span asp-validation-for="RequirePkce" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequirePkce" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequirePkce" class="form-check-label user-label" for="flexSwitchCheckDefault">RequirePkce</label>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="RequireClientSecret" class="control-label user-label">RequireClientSecret</label>
-                <input asp-for="RequireClientSecret" class="form-check" />
-                <span asp-validation-for="RequireClientSecret" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequireClientSecret" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequireClientSecret" class="form-check-label user-label" for="flexSwitchCheckDefault">RequireClientSecret</label>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="AllowAccessTokensViaBrowser" class="control-label user-label">AllowAccessTokensViaBrowser</label>
-                <input asp-for="AllowAccessTokensViaBrowser" class="form-check" />
-                <span asp-validation-for="AllowAccessTokensViaBrowser" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="AllowAccessTokensViaBrowser" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="AllowAccessTokensViaBrowser" class="form-check-label user-label" for="flexSwitchCheckDefault">AllowAccessTokensViaBrowser</label>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="AllowOfflineAccess" class="control-label user-label">AllowOfflineAccess</label>
-                <input asp-for="AllowOfflineAccess" class="form-check" />
-                <span asp-validation-for="AllowOfflineAccess" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="AllowOfflineAccess" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="AllowOfflineAccess" class="form-check-label user-label" for="flexSwitchCheckDefault">AllowOfflineAccess</label>
             </div>
-            <div class="form-group edit-text">
-                <label asp-for="RequireConsent" class="control-label user-label">RequireConsent</label>
-                <input asp-for="RequireConsent" class="form-check" />
-                <span asp-validation-for="RequireConsent" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequireConsent" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequireConsent" class="form-check-label user-label" for="flexSwitchCheckDefault">RequireConsent</label>
             </div>
             <div class="form-group edit-text">
                 <label asp-for="AllowedGrantTypes" class="control-label user-label">AllowedGrantTypes</label>

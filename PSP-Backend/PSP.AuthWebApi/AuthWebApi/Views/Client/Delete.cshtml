@@ -9,77 +9,85 @@
 <hr />
 <h3>Клиент @Model.ClientId</h3>
 <div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            <label>GrantTypes</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.AllowedGrantTypes))
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="RequirePkce">Pkce</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.RequirePkce
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="RequireClientSecret">ClientSecret</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.RequireClientSecret
-        </dd>
-        <dt class="col-sm-2">
-            <label>RedirectUris</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.RedirectUris))
-        </dd>
-        <dt class="col-sm-2">
-            <label>AllowedScopes</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.AllowedScopes))
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="AllowAccessTokensViaBrowser">ViaBrowser</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.AllowAccessTokensViaBrowser
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="AllowOfflineAccess">OfflineAccess</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.AllowOfflineAccess
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="RequireConsent">RequireConsent</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.RequireConsent
-        </dd>
-        <dt class="col-sm-2">
-            <label>ClientSecrets</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.ClientSecrets))
-        </dd>
-        <dt class="col-sm-2">
-            <label>LogoutUris</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.PostLogoutRedirectUris))
-        </dd>
-        <dt class="col-sm-2">
-            <label>CorsOrigins</label>
-        </dt>
-        <dd class="col-sm-10">
-            @(string.Join(", ", Model.AllowedCorsOrigins))
-        </dd>
+    <dl class="row edit-box">
+        <div class="col"> <strong>AllowedGrantTypes</strong> </div>
+        <div class="col">@(string.Join(", ", Model.AllowedGrantTypes))</div>
+        <div class="w-100 edit-text"></div>
+        
+        
+        <div class="col">
+            <strong>RequirePkce</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="RequirePkce" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col">
+            <strong>RequireClientSecret</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="RequireClientSecret" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>RedirectUris</strong> </div>
+        <div class="col">@(string.Join(", ", Model.RedirectUris))</div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>AllowedScopes</strong> </div>
+        <div class="col">@(string.Join(", ", Model.AllowedScopes))</div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col">
+            <strong>AllowAccessTokensViaBrowser</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="AllowAccessTokensViaBrowser" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col">
+            <strong>AllowOfflineAccess</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="AllowOfflineAccess" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col">
+            <strong>RequireConsent</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="RequireConsent" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>ClientSecrets</strong> </div>
+        <div class="col">@(string.Join(", ", Model.ClientSecrets))</div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>PostLogoutRedirectUris</strong> </div>
+        <div class="col">@(string.Join(", ", Model.PostLogoutRedirectUris))</div>
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>AllowedCorsOrigins</strong> </div>
+        <div class="col">@(string.Join(", ", Model.AllowedCorsOrigins))</div>
+        <div class="w-100 edit-text"></div>
     </dl>
     <h3>Вы хотите удалить этого клиента?</h3>
     <form asp-action="Delete">
-        <input type="submit" value="Удалить" class="btn btn-danger"/> |
-        <a asp-action="Index">Вернуться</a>
+        <input type="submit" value="Удалить" class="btn btn-danger"/>
+        <a asp-action="Index" class="panel-table-link">Вернуться</a>
     </form>
 </div>

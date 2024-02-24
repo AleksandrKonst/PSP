@@ -27,7 +27,6 @@ body {
 }
 
 @media (hover: hover) {
-  /* when hover is supported */
   .logout:hover {
     color: white;
   }
@@ -186,9 +185,15 @@ body {
   margin-top: 25px
 }
 
+@media (max-width: 500px) {
+  .user-form {
+    min-width: 0px;
+  }
+}
+
 /* Auth */
 .auth-box {
-  margin-top: 8%; 
+  margin-top: 80px; 
   border-radius: 0
 }
 
@@ -199,8 +204,18 @@ body {
 .auth-logo {
   width: 200px;
   position: absolute;
-  top: 25%; left: 50%;
+  top: 200px; left: 50%;
   transform: translate(-50%, -50%)
+}
+
+@media (max-height: 700px) {
+  .auth-box {
+    margin-top: 10px;
+  }
+
+  .auth-logo {
+    top: 120px;
+  }
 }
 
 /* Registry */

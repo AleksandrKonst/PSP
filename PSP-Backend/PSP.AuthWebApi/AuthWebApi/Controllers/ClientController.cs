@@ -21,7 +21,7 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
         ViewBag.SelectedCategory = "clients";
 
         var clients = await context.Clients
-            .Where(c => c.ClientId.Contains(search) || search == null)
+            .Where(c => search == null || c.ClientId.ToLower().Contains(search.ToLower()))
             .Select(c => c.ClientId)
             .Skip((page - 1) * PageSize)
             .Take(PageSize)
@@ -78,6 +78,7 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
         }
 
         var result = context.Clients.Remove(client);
+        await context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
     
@@ -103,7 +104,7 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
             AllowAccessTokensViaBrowser = client.AllowAccessTokensViaBrowser,
             AllowOfflineAccess = client.AllowOfflineAccess,
             RequireConsent = client.RequireConsent,
-            ClientSecrets =  client.ClientSecrets == null ? null : string.Join(" ",client.ClientSecrets),
+            ClientSecrets =  client.ClientSecrets == null ? null : string.Join(" ",client.ClientSecrets.Select(c => c.Value)),
             PostLogoutRedirectUris =  client.PostLogoutRedirectUris == null ? null : string.Join(" ",client.PostLogoutRedirectUris),
             AllowedCorsOrigins =  client.AllowedCorsOrigins == null ? null : string.Join(" ",client.AllowedCorsOrigins)
         };
@@ -178,6 +179,19 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Model Error");
+            return View(viewModel);
+        }
+
+        if (viewModel is { RequireClientSecret: true, ClientSecrets: null })
+        {
+            ModelState.AddModelError(string.Empty, "Required Secret");
+            return View(viewModel);
+        }
+        
+        
+        if (context.Clients.Any(c => c.ClientId == viewModel.ClientId))
+        {
+            ModelState.AddModelError(string.Empty, "Client Exist");
             return View(viewModel);
         }
 
