@@ -5,6 +5,8 @@ namespace AuthWebApi.DTO.ViewModels.Manage;
 public class EditViewModel
 {
     [Required]
+    public string Id { get; set; }
+    [Required]
     public string NormalizedUserName { get; set; }
     [Required]
     public string Name { get; set; }

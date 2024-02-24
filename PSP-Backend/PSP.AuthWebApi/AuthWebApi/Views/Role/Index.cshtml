@@ -1,0 +1,70 @@
+@model AuthWebApi.DTO.ViewModels.Role.IndexViewModel
+
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_AdminLayout";
+}
+
+<div class="panel-nav">
+    <a class="btn btn-warning" asp-action="Create">Создать Роль</a>
+    <a class="btn btn-danger" asp-controller="Manage" asp-action="Index">Пользователи</a>
+    <a class="btn btn-primary" asp-controller="Claim" asp-action="Index">Утверждения</a>
+</div>
+
+<h1>Пользователи</h1>
+
+<hr />
+<div>
+    <form asp-action="Index" method="get" class="input-group rounded" style="background-color: #ececec">
+        <input type="text" name="search" value="@Model.Search" class="form-control rounded" placeholder="Поиск"/>
+        <input type="submit" value="" class="input-group-text border-0 search-submit"/>
+    </form>
+</div>
+<table class="table table-striped">
+    <thead class="thead-dark">
+    <tr>
+        <th>
+            <label asp-for="@Model.Roles.First().Name">Имя</label>
+        </th>
+        <th>
+            <label asp-for="@Model.Roles.First().NormalizedName">Нормализированное имя</label>
+        </th>
+        <th>
+            <label>Изменить</label>
+        </th>
+        <th>
+            <label>Удалить</label>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Roles) {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.NormalizedName
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="panel-table-link">Изменить</a>
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="panel-table-link">Удалить</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="input-group mb-3">
+    <a asp-controller="Role" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page > 1? Model.Page - 1 : 1)" 
+       class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
+        <i class="bi bi-arrow-bar-left"></i>
+    </a>
+    <p class="panel-page-count">@Model.Page</p>
+    <a asp-controller="Role" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page < Model.MaxPage ? Model.Page + 1 : Model.Page)" 
+       class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
+        <i class="bi bi-arrow-bar-right"></i>
+    </a>
+</div>

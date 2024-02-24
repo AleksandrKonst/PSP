@@ -1,0 +1,37 @@
+@model AuthWebApi.DTO.ViewModels.Role.EditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_AdminLayout";
+}
+<h1>Изменить роль</h1>
+
+<h5>@Model.Name</h5>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NormalizedName" />
+            <div class="form-group edit-text">
+                <label asp-for="Name" class="control-label user-label">Название</label>
+                <input asp-for="Name" placeholder="Введите имя" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group edit-text">
+                <label asp-for="NormalizedName" class="control-label user-label">Нормализированное название</label>
+                <input asp-for="NormalizedName" placeholder="Введите фамилию" class="form-control" />
+                <span asp-validation-for="NormalizedName" class="text-danger"></span>
+            </div>
+            <div class="form-group edit-text">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+                <a asp-action="Index" class="panel-table-link">Вернуться</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -27,7 +27,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var user = await userManager.FindByNameAsync(viewModel.Username);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "Login or Password Error");
+            ModelState.AddModelError(string.Empty, "Login Error");
             return Redirect(viewModel.ReturnUrl);
         }
 
@@ -35,10 +35,11 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             viewModel.Password, false, false);
         if (result.Succeeded)
         {
+            ModelState.AddModelError(string.Empty, "Password Error");
             return Redirect(viewModel.ReturnUrl);
         }
         
-        ModelState.AddModelError(string.Empty, "Login error");
+        ModelState.AddModelError(string.Empty, "Login Form Error");
         return Redirect(viewModel.ReturnUrl);
     }
     

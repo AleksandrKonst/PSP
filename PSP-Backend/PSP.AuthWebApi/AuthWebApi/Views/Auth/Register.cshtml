@@ -1,59 +1,63 @@
 @model AuthWebApi.DTO.ViewModels.Auth.RegisterViewModel
 
+@{
+    ViewData["Title"] = "Register";
+}
+
 <div class="row">
-    <div class="col-md-4 auth-form">
-        <h1>Регистрация</h1>
-        <form asp-controller="Auth" asp-action="Register" method="post">
+    <div class="col-md-4 user-form">
+        <img src="/psp.png" class="reg-logo" alt="No Logo"/>
+        <form asp-controller="Auth" asp-action="Register" method="post" class="auth-form">
             <input type="hidden" asp-for="ReturnUrl" />
             <div class="edit-text">
-                <label asp-for="Username" class="control-label">Логин</label>
-                <input asp-for="Username" class="form-control"/>
+                <label asp-for="Username" class="control-label user-label">Логин</label>
+                <input asp-for="Username" placeholder="Введите логин" class="form-control"/>
                 <span asp-validation-for="Username" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Email" class="control-label">Email</label>
-                <input asp-for="Email" class="form-control"/>
+                <label asp-for="Email" class="control-label user-label">Email</label>
+                <input asp-for="Email" placeholder="Введите почту" class="form-control"/>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Name" class="control-label">Имя</label>
-                <input asp-for="Name" class="form-control"/>
+                <label asp-for="Name" class="control-label user-label">Имя</label>
+                <input asp-for="Name" placeholder="Введите имя" class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Surname" class="control-label">Фамилия</label>
-                <input asp-for="Surname" class="form-control"/>
+                <label asp-for="Surname" class="control-label user-label">Фамилия</label>
+                <input asp-for="Surname" placeholder="Введите фамилию" class="form-control"/>
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Patronymic" class="control-label">Отчество</label>
-                <input asp-for="Patronymic" class="form-control"/>
+                <label asp-for="Patronymic" class="control-label user-label">Отчество</label>
+                <input asp-for="Patronymic" placeholder="Введите отчество" class="form-control"/>
                 <span asp-validation-for="Patronymic" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Birthday" class="control-label">День рождения</label>
+                <label asp-for="Birthday" class="control-label user-label">День рождения</label>
                 <input asp-for="Birthday" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="Password" class="control-label">Пароль</label>
-                <input asp-for="Password" class="form-control"/>
+                <label asp-for="Password" class="control-label user-label">Пароль</label>
+                <input asp-for="Password" placeholder="Введите пароль" class="form-control"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="edit-text">
-                <label asp-for="ConfirmPassword" class="control-label">Повторите пароль</label>
-                <input asp-for="ConfirmPassword" class="form-control"/>
+                <label asp-for="ConfirmPassword" class="control-label user-label">Повторите пароль</label>
+                <input asp-for="ConfirmPassword" placeholder="Введите пароль" class="form-control"/>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="edit-text">
                 <button class="btn btn-primary" type="submit">Регистрация</button>
+                <a asp-controller="Auth" asp-action="Login"
+                           asp-route-returnUrl="@Model.ReturnUrl" class="edit-text user-link">Вернуться ко входу</a>
             </div>
         </form>
-
-        <a asp-controller="Auth" asp-action="Login"
-           asp-route-returnUrl="@Model.ReturnUrl" class="edit-text">Вернуться ко входу</a>
-        
-        <p class="info">Приложению "avs.io" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности и условиями использования.</p>
+        <p class="user-info">Приложению "PSP" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. 
+            Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности и 
+            условиями использования.</p>
     </div>
 </div>
 

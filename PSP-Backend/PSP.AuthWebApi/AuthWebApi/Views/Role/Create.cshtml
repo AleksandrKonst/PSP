@@ -1,0 +1,30 @@
+@model AuthWebApi.DTO.ViewModels.Role.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "_AdminLayout";
+}
+
+<h1>Создать роль</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group edit-text">
+                <label asp-for="Name" class="control-label user-label">Название</label>
+                <input asp-for="Name" placeholder="Введите название роли" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group edit-text">
+                <button class="btn btn-primary" type="submit">Создать</button>
+                <a asp-action="Index" class="panel-table-link">Вернуться</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

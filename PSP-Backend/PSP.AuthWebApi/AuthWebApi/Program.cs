@@ -44,6 +44,7 @@ builder.Services.AddIdentityServer()
     .AddInMemoryIdentityResources(Config.IdentityResources)
     .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddProfileService<UserProfileService>()
     .AddDeveloperSigningCredential();
 builder.Services.AddAutoMapper(typeof(Program));
 
