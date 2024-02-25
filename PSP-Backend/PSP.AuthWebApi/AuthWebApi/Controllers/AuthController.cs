@@ -1,6 +1,8 @@
 using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
+using AuthWebApi.Service;
 using AutoMapper;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -89,12 +91,31 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         if (result.Succeeded)
         {
             var userFromDb = await userManager.FindByNameAsync(user.UserName);
-            
-            await signInManager.SignInAsync(user, false);
             await userManager.AddToRoleAsync(userFromDb, "Passenger");
-            return Redirect(viewModel.ReturnUrl);
+            
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("ConfirmEmail", "Auth", new { token, email = user.Email }, Request.Scheme);
+            await EmailService.SendEmailAsync(viewModel.Email, confirmationLink);
+            
+            return RedirectToAction(nameof(SuccessRegistration));
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
         return View(viewModel);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+            return BadRequest();
+        var result = await userManager.ConfirmEmailAsync(user, token);
+        return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+    }
+    
+    [HttpGet]
+    public IActionResult SuccessRegistration()
+    {
+        return View();
     }
 }
