@@ -24,7 +24,7 @@ public class ProfileController(RoleManager<IdentityRole> roleManager, UserManage
             return NoContent();
         }
         
-        ViewBag.Role = await roleManager.Roles.FirstAsync();
+        ViewBag.Role = (await userManager.GetRolesAsync(user)).First();
         return View(mapper.Map<DeleteViewModel>(user));
     }
 }

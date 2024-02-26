@@ -241,7 +241,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             return NoContent();
         }
         
-        ViewBag.Role = await roleManager.Roles.FirstAsync();
+        ViewBag.Role = (await userManager.GetRolesAsync(user)).First();
         return View(mapper.Map<DeleteViewModel>(user));
     }
     
