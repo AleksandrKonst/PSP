@@ -4,6 +4,7 @@ using AuthWebApi.Models;
 using AuthWebApi.Service;
 using AutoMapper;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -183,7 +184,6 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         return View();
     }
     
-    [HttpGet]
     public IActionResult ExternalLogin(string provider, string returnUrl)
     {
         if (string.IsNullOrWhiteSpace(provider))
@@ -191,14 +191,10 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             return BadRequest();
         }
         
-        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
-        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-        
-        return Challenge(properties, provider);
+        return Challenge(new AuthenticationProperties { RedirectUri = "/Auth/ExternalLoginCallback" }, provider);
     }
     
-    [Route("ExternalLoginCallback")]
-    public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+    public async Task<IActionResult> ExternalLoginCallback()
     {
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info == null)
