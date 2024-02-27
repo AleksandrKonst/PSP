@@ -2,7 +2,6 @@ using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
 using AuthWebApi.Service;
 using AutoMapper;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -122,15 +121,64 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
     
     [HttpGet]
-    public IActionResult ForgotPassword()
+    public IActionResult ForgotPassword(string returnUrl)
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(forgotPasswordViewModel);
+        var user = await userManager.FindByEmailAsync(forgotPasswordViewModel.Email);
+        if (user == null)
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var callback = Url.Action(nameof(ChangePassword), "Auth", new { token, email = user.Email }, Request.Scheme);
+        await EmailService.SendChangeEmailAsync(forgotPasswordViewModel.Email, callback);
+        
+        return RedirectToAction(nameof(ForgotPasswordConfirmation));
+    }
+    
+    [HttpGet]
+    public IActionResult ForgotPasswordConfirmation()
     {
         return View();
     }
     
     [HttpGet]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+    public IActionResult ChangePassword(string token, string email)
     {
-        return View(forgotPasswordViewModel);
+        var model = new ChangePasswordViewModel { Token = token, Email = email };
+        return View(model);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordViewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(changePasswordViewModel);
+        var user = await userManager.FindByEmailAsync(changePasswordViewModel.Email);
+        if (user == null)
+            RedirectToAction(nameof(ChangePasswordConfirmation));
+        
+        var resetPassResult = await userManager.ResetPasswordAsync(user, changePasswordViewModel.Token, changePasswordViewModel.Password);
+        
+        if (resetPassResult.Succeeded) return RedirectToAction(nameof(ChangePasswordConfirmation));
+        
+        foreach (var error in resetPassResult.Errors)
+        {
+            ModelState.TryAddModelError(error.Code, error.Description);
+        }
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ChangePasswordConfirmation()
+    {
+        return View();
     }
 }

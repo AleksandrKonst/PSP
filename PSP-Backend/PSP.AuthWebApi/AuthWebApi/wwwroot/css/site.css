@@ -208,6 +208,10 @@ body {
   transform: translate(-50%, -50%)
 }
 
+.auth-reg {
+  width: 100%;
+}
+
 @media (max-height: 700px) {
   .auth-box {
     margin-top: 10px;

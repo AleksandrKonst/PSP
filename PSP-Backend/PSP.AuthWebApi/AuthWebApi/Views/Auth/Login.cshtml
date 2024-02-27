@@ -21,11 +21,15 @@
             </div>
             <div class="edit-text">
                 <button type="submit" class="btn btn-primary">Войти</button>
-                <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl" class="user-link">
-                    Регистрация
+                <a asp-controller="Auth" asp-action="ForgotPassword" class="user-link">
+                    Забыли пароль?
                 </a>
             </div>
         </form>
+        <hr/>
+        <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-dark auth-reg">
+            Регистрация
+        </a>
         <p class="user-info">Приложению "PSP" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. 
             Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности 
             и условиями использования.</p>
