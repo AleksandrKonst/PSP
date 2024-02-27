@@ -208,6 +208,10 @@ body {
   transform: translate(-50%, -50%)
 }
 
+.auth-reg {
+  width: 100%;
+}
+
 @media (max-height: 700px) {
   .auth-box {
     margin-top: 10px;
@@ -231,4 +235,20 @@ body {
   background: url("/search.png") no-repeat center;
   background-size: 15px;
   width: 40px;
+}
+
+/* Email */
+.email {
+  text-align: center; 
+  margin-top: 250px;
+  margin-bottom: 50px;
+  font-weight: 700; 
+  font-size: 20px
+}
+
+.email-logo {
+  width: 150px;
+  position: absolute;
+  top: 250px; left: 50%;
+  transform: translate(-50%, -50%)
 }

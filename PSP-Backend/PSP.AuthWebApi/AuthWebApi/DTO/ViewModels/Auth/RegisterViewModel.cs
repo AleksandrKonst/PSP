@@ -4,7 +4,7 @@ namespace AuthWebApi.DTO.ViewModels.Auth;
 
 public class RegisterViewModel
 {
-    public string ReturnUrl { get; set; }
+    public string? ReturnUrl { get; set; }
     [Required]
     public string Username { get; set; }
     [Required]

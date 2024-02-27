@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Confirm";
+}
+
+<div class="row auth-box">
+    <div class="col-md-4 user-form">
+        <img src="/check_circle_icon.png" class="email-logo" alt="No Logo"/>
+        <p class="user-info email">Почта подтверждена</p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
