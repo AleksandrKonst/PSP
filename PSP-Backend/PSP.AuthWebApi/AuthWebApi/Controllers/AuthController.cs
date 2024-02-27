@@ -19,6 +19,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -78,6 +79,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -117,5 +119,18 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     public IActionResult SuccessRegistration()
     {
         return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+    {
+        return View(forgotPasswordViewModel);
     }
 }
