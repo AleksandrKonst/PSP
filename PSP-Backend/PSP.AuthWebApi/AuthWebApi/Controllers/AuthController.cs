@@ -186,15 +186,13 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     
     public IActionResult ExternalLogin(string provider, string returnUrl)
     {
-        if (string.IsNullOrWhiteSpace(provider))
-        {
-            return BadRequest();
-        }
+        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         
-        return Challenge(new AuthenticationProperties { RedirectUri = "/Auth/ExternalLoginCallback" }, provider);
+        return Challenge(properties, provider);
     }
     
-    public async Task<IActionResult> ExternalLoginCallback()
+    public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info == null)
