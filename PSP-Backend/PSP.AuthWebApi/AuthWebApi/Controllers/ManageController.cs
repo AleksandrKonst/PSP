@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
@@ -10,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers;
 
-[Authorize]
 [Controller]
+[Authorize(Roles = "Admin, Airline")]
 public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
 {
-    private const int PageSize = 9;
+    private const int PageSize = 8;
 
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)
@@ -29,8 +30,9 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         var users = await (from us in context.Users
             join userRole in context.UserRoles on us.Id equals userRole.UserId
             join role in context.Roles on userRole.RoleId equals role.Id
-            where (search == null || us.UserName.Contains(search) || us.Name.Contains(search) || us.Surname.Contains(search) 
-                                     || us.Patronymic.Contains(search) || role.Name.Contains(search)) && us.UserName != user.UserName
+            where (search == null || us.UserName.ToLower().Contains(search.ToLower()) || us.Name.ToLower().Contains(search.ToLower()) 
+                   || us.Surname.ToLower().Contains(search.ToLower()) || us.Patronymic.ToLower().Contains(search.ToLower()) 
+                   || role.Name.ToLower().Contains(search.ToLower())) && us.UserName != user.UserName
             select new UserDTO
             {
                 Id = us.Id,
@@ -65,13 +67,13 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
     [AutoValidateAntiforgeryToken]
     public async Task<IActionResult> Create(CreateViewModel viewModel)
     {
+        ViewBag.SelectedCategory = "users";
+        
         if (!ModelState.IsValid)
         {
             ModelState.AddModelError(string.Empty, "Error occurred");
             return View();
         }
-        
-        ViewBag.SelectedCategory = "users";
 
         var user = mapper.Map<PspUser>(viewModel);
         
@@ -82,7 +84,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             await userManager.AddToRoleAsync(userFromDb, viewModel.Role);
             return RedirectToAction(nameof(Create));
         }
-        
+
+        ViewBag.Roles = await roleManager.Roles.ToListAsync();
         ModelState.AddModelError(string.Empty, "User error occurred");
         return View();
     }
@@ -147,7 +150,86 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         ModelState.AddModelError(string.Empty, "Error occurred");
         return View(viewModel);
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> EditClaim(string id)
+    {
+        ViewBag.SelectedCategory = "users";
+        var user = await userManager.FindByIdAsync(id);
 
+        if (user == null)
+        {
+            return NoContent();
+        }
+        
+        var editUser = new EditClaimViewModel()
+        {
+            UserId = user.Id,
+            Claims = await context.UserClaims
+                .Where(u => u.UserId == user.Id)
+                .Select(u => new ClaimDTO()
+                {
+                    Id = u.Id,
+                    UserId = u.UserId,
+                    ClaimType = u.ClaimType,
+                    ClaimValue = u.ClaimValue
+                }).ToListAsync()
+        };
+        
+        return View(editUser);
+    }
+    
+    [HttpPost]
+    [AutoValidateAntiforgeryToken]
+    public async Task<IActionResult> EditClaim(EditClaimViewModel viewModel)
+    {
+        ViewBag.SelectedCategory = "users";
+
+        var user = await userManager.FindByIdAsync(viewModel.UserId);
+
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "User not found");
+            return View(viewModel);
+        }
+
+        var result = await userManager.AddClaimAsync(user, new Claim(viewModel.ClaimType, viewModel.ClaimValue));
+        
+        if (result.Succeeded)
+        {
+            return RedirectToAction(nameof(EditClaim), new {id = viewModel.UserId});
+        }
+        ModelState.AddModelError(string.Empty, "Error occurred");
+        return View(viewModel);
+    }
+    
+    [HttpPost]
+    [AutoValidateAntiforgeryToken]
+    public async Task<IActionResult> DeleteClaim(long id)
+    {
+        ViewBag.SelectedCategory = "users";
+        
+        var claim = await context.UserClaims.Where(u => u.Id == id).FirstAsync();
+        var user = await userManager.FindByIdAsync(claim.UserId);
+        await userManager.RemoveClaimAsync(user, claim.ToClaim());
+
+        var editUser = new EditClaimViewModel()
+        {
+            UserId = user.Id,
+            Claims = await context.UserClaims
+                .Where(u => u.UserId == user.Id)
+                .Select(u => new ClaimDTO()
+                {
+                    Id = u.Id,
+                    UserId = u.UserId,
+                    ClaimType = u.ClaimType,
+                    ClaimValue = u.ClaimValue
+                }).ToListAsync()
+        };
+        
+        return View("EditClaim", editUser);
+    }
+    
     [HttpGet]
     public async Task<IActionResult> Delete(string id)
     {
@@ -159,7 +241,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             return NoContent();
         }
         
-        ViewBag.Role = await roleManager.Roles.FirstAsync();
+        ViewBag.Role = (await userManager.GetRolesAsync(user)).First();
         return View(mapper.Map<DeleteViewModel>(user));
     }
     
@@ -179,16 +261,23 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
     }
     
     [HttpGet]
-    public async Task<IActionResult> ChangePassword(string normalizedUserName)
+    public async Task<IActionResult> ChangePassword(string id)
     {
         ViewBag.SelectedCategory = "users";
+        var user = await userManager.FindByIdAsync(id);
 
-        var user = new ChangePasswordViewModel()
+        if (user == null)
         {
-            NormalizedUserName = normalizedUserName
+            return NoContent();
+        }
+
+        var userChange = new ChangePasswordViewModel()
+        {
+            Id = id,
+            NormalizedUserName = user.NormalizedUserName
         };
         
-        return View(user);
+        return View(userChange);
     }
     
     [HttpPost]
@@ -203,7 +292,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             return View(viewModel);
         }
 
-        var user = await userManager.FindByNameAsync(viewModel.NormalizedUserName);
+        var user = await userManager.FindByNameAsync(viewModel.Id);
         if (user == null)
         {
             throw new ApplicationException($"Unable to load user with NormalizedUserName: {viewModel.NormalizedUserName}.");

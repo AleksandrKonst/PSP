@@ -1,0 +1,57 @@
+@model AuthWebApi.DTO.ViewModels.Manage.EditClaimViewModel
+
+@{
+    ViewData["Title"] = "Edit Claim";
+    Layout = "_AdminLayout";
+}
+<h1>Изменить утверждения пользователя</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="row fw-bold">
+            <div class="col">ClaimType</div>
+            <div class="col">ClaimValue</div>
+            <div class="col">Action</div>
+        </div>
+        @foreach (var claim in Model.Claims)
+        {
+            <div class="row my-1">
+                <div class="col">@claim.ClaimType</div>
+                <div class="col">@claim.ClaimValue</div>
+                <div class="col">
+                    <form asp-action="DeleteClaim">
+                        <input type="hidden" name="id" asp-for="Id" value="@claim.Id" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+        <form asp-action="EditClaim">
+            <div class="row">
+                <input type="hidden" asp-for="UserId" />
+                <div class="col">
+                    <input asp-for="ClaimType" placeholder="Введите тип" class="form-control"/>
+                </div>
+                <div class="col">
+                    <input asp-for="ClaimValue" placeholder="Введите значение" class="form-control"/>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div class="form-group edit-text">
+            <a href="/manage/edit/@Model.UserId" class="panel-table-link">Вернуться</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

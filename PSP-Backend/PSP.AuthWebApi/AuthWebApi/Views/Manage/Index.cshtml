@@ -5,15 +5,19 @@
     Layout = "_AdminLayout";
 }
 
+<div class="panel-nav">
+    <a class="btn btn-warning" asp-action="Create">Создать пользователя</a>
+    <a class="btn btn-danger" asp-controller="Role" asp-action="Index">Роли</a>
+    <a class="btn btn-primary" asp-controller="Claim" asp-action="Index">Утверждения</a>
+</div>
+
 <h1>Пользователи</h1>
 
-<p>
-    <a asp-action="Create">Создать пользователя</a>
-</p>
+<hr />
 <div>
-    <form asp-action="Index" method="get" class="input-group rounded">
+    <form asp-action="Index" method="get" class="input-group rounded" style="background-color: #ececec">
         <input type="text" name="search" value="@Model.Search" class="form-control rounded" placeholder="Поиск"/>
-        <input type="submit" value="Поиск" class="input-group-text border-0"/>
+        <input type="submit" value="" class="input-group-text border-0 search-submit"/>
     </form>
 </div>
 <table class="table table-striped">
@@ -22,16 +26,16 @@
         <th>
             <label asp-for="@Model.Users.First().Login">Логин</label>
         </th>
-        <th>
+        <th class="hide">
             <label asp-for="@Model.Users.First().FIO">ФИО</label>
         </th>
-        <th>
+        <th class="hide">
             <label asp-for="@Model.Users.First().Role">Роль</label>
         </th>
-        <th>
+        <th class="hide">
             <label asp-for="@Model.Users.First().Email">Почта</label>
         </th>
-        <th>
+        <th class="hide">
             <label asp-for="@Model.Users.First().EmailConfirmed">Подтверждение почты</label>
         </th>
         <th>
@@ -48,23 +52,23 @@
             <td>
                 @item.Login
             </td>
-            <td>
+            <td class="hide">
                 @item.FIO
             </td>
-            <td>
+            <td class="hide">
                 @item.Role
             </td>
-            <td>
+            <td class="hide">
                 @item.Email
             </td>
-            <td>
+            <td class="hide">
                 @item.EmailConfirmed
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Изменить</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="panel-table-link">Изменить</a>
             </td>
             <td>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-primary">Удалить</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="panel-table-link">Удалить</a>
             </td>
         </tr>
     }
@@ -76,7 +80,7 @@
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-left"></i>
     </a>
-    <p class="page-count">@Model.Page</p>
+    <p class="panel-page-count">@Model.Page</p>
     <a asp-controller="Manage" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page < Model.MaxPage ? Model.Page + 1 : Model.Page)" 
        class="list-group-item list-group-item-action py-2 ripple arrow" aria-current="true">
         <i class="bi bi-arrow-bar-right"></i>

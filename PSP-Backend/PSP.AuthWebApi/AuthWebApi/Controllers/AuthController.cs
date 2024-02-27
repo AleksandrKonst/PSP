@@ -1,5 +1,6 @@
 using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
+using AuthWebApi.Service;
 using AutoMapper;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +18,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -27,7 +29,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var user = await userManager.FindByNameAsync(viewModel.Username);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "Login or Password Error");
+            ModelState.AddModelError(string.Empty, "Login Error");
             return Redirect(viewModel.ReturnUrl);
         }
 
@@ -35,10 +37,11 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             viewModel.Password, false, false);
         if (result.Succeeded)
         {
+            ModelState.AddModelError(string.Empty, "Password Error");
             return Redirect(viewModel.ReturnUrl);
         }
         
-        ModelState.AddModelError(string.Empty, "Login error");
+        ModelState.AddModelError(string.Empty, "Login Form Error");
         return Redirect(viewModel.ReturnUrl);
     }
     
@@ -75,6 +78,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -88,12 +92,93 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         if (result.Succeeded)
         {
             var userFromDb = await userManager.FindByNameAsync(user.UserName);
-            
-            await signInManager.SignInAsync(user, false);
             await userManager.AddToRoleAsync(userFromDb, "Passenger");
-            return Redirect(viewModel.ReturnUrl);
+            
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("ConfirmEmail", "Auth", new { token, email = user.Email }, Request.Scheme);
+            await EmailService.SendEmailAsync(viewModel.Email, confirmationLink);
+            
+            return RedirectToAction(nameof(SuccessRegistration));
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
         return View(viewModel);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+            return BadRequest();
+        var result = await userManager.ConfirmEmailAsync(user, token);
+        return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+    }
+    
+    [HttpGet]
+    public IActionResult SuccessRegistration()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ForgotPassword(string returnUrl)
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(forgotPasswordViewModel);
+        var user = await userManager.FindByEmailAsync(forgotPasswordViewModel.Email);
+        if (user == null)
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var callback = Url.Action(nameof(ChangePassword), "Auth", new { token, email = user.Email }, Request.Scheme);
+        await EmailService.SendChangeEmailAsync(forgotPasswordViewModel.Email, callback);
+        
+        return RedirectToAction(nameof(ForgotPasswordConfirmation));
+    }
+    
+    [HttpGet]
+    public IActionResult ForgotPasswordConfirmation()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ChangePassword(string token, string email)
+    {
+        var model = new ChangePasswordViewModel { Token = token, Email = email };
+        return View(model);
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordViewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(changePasswordViewModel);
+        var user = await userManager.FindByEmailAsync(changePasswordViewModel.Email);
+        if (user == null)
+            RedirectToAction(nameof(ChangePasswordConfirmation));
+        
+        var resetPassResult = await userManager.ResetPasswordAsync(user, changePasswordViewModel.Token, changePasswordViewModel.Password);
+        
+        if (resetPassResult.Succeeded) return RedirectToAction(nameof(ChangePasswordConfirmation));
+        
+        foreach (var error in resetPassResult.Errors)
+        {
+            ModelState.TryAddModelError(error.Code, error.Description);
+        }
+        return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ChangePasswordConfirmation()
+    {
+        return View();
     }
 }

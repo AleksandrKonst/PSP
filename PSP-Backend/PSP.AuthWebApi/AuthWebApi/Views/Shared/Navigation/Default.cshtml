@@ -1,14 +1,18 @@
 <nav id="sidebarMenu" class="d-lg-block sidebar bg-white">
     <div class="position-sticky">
-        <div class="list-group list-group-flush mx-3">
-            <a asp-controller="Profile" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple @(ViewBag.SelectedCategory == "profile" ? "active" : "")" aria-current="true">
+        <img src="/psp.png" class="sidebar-logo" alt="No Logo"/>
+        <div class="list-group list-group-flush mx-3 sidebar-nav">
+            <a asp-controller="Profile" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple sidebar-button
+@(ViewBag.SelectedCategory == "profile" ? "active" : "")" aria-current="true">
                 <i class="bi bi-person-circle"></i>
             </a>
-            <a asp-controller="Manage" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple @(ViewBag.SelectedCategory == "users" ? "active" : "")">
-                <i class="bi bi-people"></i>
+            <a asp-controller="Manage" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple sidebar-button
+@(ViewBag.SelectedCategory == "users" ? "active" : "")">
+                <i class="bi bi-people-fill"></i>
             </a>
-            <a asp-controller="Client" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple @(ViewBag.SelectedCategory == "clients" ? "active" : "")">
-                <i class="bi bi-cast"></i>
+            <a asp-controller="Client" asp-action="Index" class="list-group-item list-group-item-action py-2 ripple sidebar-button
+@(ViewBag.SelectedCategory == "clients" ? "active" : "")">
+                <i class="bi bi-pc-display"></i>
             </a>
         </div>
     </div>

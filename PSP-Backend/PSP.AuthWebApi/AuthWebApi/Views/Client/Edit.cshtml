@@ -14,70 +14,62 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ClientId" />
-            <div class="form-group edit-text">
-                <label asp-for="RequirePkce" class="control-label">RequirePkce</label>
-                <input asp-for="RequirePkce" class="form-check" />
-                <span asp-validation-for="RequirePkce" class="text-danger"></span>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequirePkce" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequirePkce" class="form-check-label user-label" for="flexSwitchCheckDefault">RequirePkce</label>
+            </div>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequireClientSecret" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequireClientSecret" class="form-check-label user-label" for="flexSwitchCheckDefault">RequireClientSecret</label>
+            </div>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="AllowAccessTokensViaBrowser" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="AllowAccessTokensViaBrowser" class="form-check-label user-label" for="flexSwitchCheckDefault">AllowAccessTokensViaBrowser</label>
+            </div>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="AllowOfflineAccess" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="AllowOfflineAccess" class="form-check-label user-label" for="flexSwitchCheckDefault">AllowOfflineAccess</label>
+            </div>
+            <div class="form-check form-switch edit-text">
+                <input asp-for="RequireConsent" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label asp-for="RequireConsent" class="form-check-label user-label" for="flexSwitchCheckDefault">RequireConsent</label>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="RequireClientSecret" class="control-label">RequireClientSecret</label>
-                <input asp-for="RequireClientSecret" class="form-check" />
-                <span asp-validation-for="RequireClientSecret" class="text-danger"></span>
-            </div>
-            <div class="form-group edit-text">
-                <label asp-for="AllowAccessTokensViaBrowser" class="control-label">AllowAccessTokensViaBrowser</label>
-                <input asp-for="AllowAccessTokensViaBrowser" class="form-check" />
-                <span asp-validation-for="AllowAccessTokensViaBrowser" class="text-danger"></span>
-            </div>
-            <div class="form-group edit-text">
-                <label asp-for="AllowOfflineAccess" class="control-label">AllowOfflineAccess</label>
-                <input asp-for="AllowOfflineAccess" class="form-check" />
-                <span asp-validation-for="AllowOfflineAccess" class="text-danger"></span>
-            </div>
-            <div class="form-group edit-text">
-                <label asp-for="RequireConsent" class="control-label">RequireConsent</label>
-                <input asp-for="RequireConsent" class="form-check" />
-                <span asp-validation-for="RequireConsent" class="text-danger"></span>
-            </div>
-            <div class="form-group edit-text">
-                <label asp-for="AllowedGrantTypes" class="control-label">AllowedGrantTypes</label>
+                <label asp-for="AllowedGrantTypes" class="control-label user-label">AllowedGrantTypes</label>
                 <textarea asp-for="AllowedGrantTypes" class="form-control"></textarea>
                 <span asp-validation-for="AllowedGrantTypes" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="RedirectUris" class="control-label">RedirectUris</label>
+                <label asp-for="RedirectUris" class="control-label user-label">RedirectUris</label>
                 <textarea asp-for="RedirectUris" class="form-control"></textarea>
                 <span asp-validation-for="RedirectUris" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="AllowedScopes" class="control-label">AllowedScopes</label>
+                <label asp-for="AllowedScopes" class="control-label user-label">AllowedScopes</label>
                 <textarea asp-for="AllowedScopes" class="form-control"></textarea>
                 <span asp-validation-for="AllowedScopes" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="AllowedCorsOrigins" class="control-label">AllowedCorsOrigins</label>
+                <label asp-for="AllowedCorsOrigins" class="control-label user-label">AllowedCorsOrigins</label>
                 <textarea asp-for="AllowedCorsOrigins" class="form-control"></textarea>
                 <span asp-validation-for="AllowedCorsOrigins" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="ClientSecrets" class="control-label">ClientSecrets</label>
+                <label asp-for="ClientSecrets" class="control-label user-label">ClientSecrets</label>
                 <textarea asp-for="ClientSecrets" class="form-control"></textarea>
                 <span asp-validation-for="ClientSecrets" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
-                <label asp-for="PostLogoutRedirectUris" class="control-label">PostLogoutRedirectUris</label>
+                <label asp-for="PostLogoutRedirectUris" class="control-label user-label">PostLogoutRedirectUris</label>
                 <textarea asp-for="PostLogoutRedirectUris" class="form-control"></textarea>
                 <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
             </div>
             <div class="form-group edit-text">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
+                <a asp-action="Index" class="panel-table-link">Вернуться</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Вернуться</a>
 </div>
 
 @section Scripts {

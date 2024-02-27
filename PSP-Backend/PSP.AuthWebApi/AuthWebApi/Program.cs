@@ -21,6 +21,7 @@ builder.Services.AddIdentity<PspUser, IdentityRole>(config =>
         config.Password.RequireUppercase = true;
         config.Password.RequireLowercase = true;
         config.User.RequireUniqueEmail = true;
+        config.SignIn.RequireConfirmedEmail = true;
     })
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
@@ -44,6 +45,7 @@ builder.Services.AddIdentityServer()
     .AddInMemoryIdentityResources(Config.IdentityResources)
     .AddInMemoryApiResources(Config.ApiResources)
     .AddInMemoryApiScopes(Config.ApiScopes)
+    .AddProfileService<UserProfileService>()
     .AddDeveloperSigningCredential();
 builder.Services.AddAutoMapper(typeof(Program));
 

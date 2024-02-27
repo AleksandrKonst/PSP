@@ -8,53 +8,50 @@
 
 <h1>Профиль</h1>
 <hr />
-<h3>Пользователя @Model.Username</h3>
 <div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            <label asp-for="Name">Имя</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Name
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="Surname">Фамилия</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Surname
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="Patronymic">Отчество</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Patronymic
-        </dd>
-        <dt class="col-sm-2">
-            <label>Роль</label>
-        </dt>
-        <dd class="col-sm-10">
-            @ViewBag.Role
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="Email">Почта</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Email
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="EmailConfirmed">Подтверждение почты</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.EmailConfirmed
-        </dd>
-        <dt class="col-sm-2">
-            <label asp-for="Birthday">День рождения</label>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Birthday
-        </dd>
+    <dl class="row edit-box">
+        <div class="col"> <strong>Имя</strong> </div>
+        <div class="col">@Model.Name</div>
+        
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>Фамилия</strong> </div>
+        <div class="col">@Model.Surname</div>
+        
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>Отчество</strong> </div>
+        <div class="col">@Model.Patronymic</div>
+        
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>Роль</strong> </div>
+        <div class="col">@ViewBag.Role</div>
+        
+        <div class="w-100 edit-text"></div>
+        
+        <div class="col"> <strong>Почта</strong> </div>
+        <div class="col">@Model.Email</div>
+        
+        <div class="w-100 edit-text"></div>
+
+        <div class="col">
+            <strong>Подтверждение почты</strong>
+        </div>
+        <div class="col">
+            <div class="form-check form-switch">
+                <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+            </div>
+        </div>
+        
+        <div class="w-100 edit-text"></div>
+
+        <div class="col"> <strong>День рождения</strong> </div>
+        <div class="col">@Model.Birthday</div>
+        
+        <div class="w-100 edit-text"></div>
     </dl>
     <div>
-        <a asp-controller="Manage" asp-action="Edit" asp-route-id="@User.GetSubjectId()" class="btn btn-primary">Изменить</a> | <a asp-action="Index">Вернуться</a>
+        <a asp-controller="Manage" asp-action="Edit" asp-route-id="@User.GetSubjectId()" class="btn btn-primary">Изменить</a>
     </div>
 </div>
