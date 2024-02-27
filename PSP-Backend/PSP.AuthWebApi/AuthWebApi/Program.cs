@@ -51,8 +51,8 @@ builder.Services.AddIdentityServer()
 builder.Services.AddAuthentication()
     .AddYandex(options =>
     {
-        options.ClientId = "44e78c9feddc4e23980586255a8eaaa7";
-        options.ClientSecret = "308c2f61275c415481a540180a86b247";
+        options.ClientId = "adf944112ee74aaca09676257c64016a";
+        options.ClientSecret = "c73aaa4b285a43739a940ba8d83a9533";
         options.CallbackPath = "/Auth/ExternalLoginCallback";
     });
 
