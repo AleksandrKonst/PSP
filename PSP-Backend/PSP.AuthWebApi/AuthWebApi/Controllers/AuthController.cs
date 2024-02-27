@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
 using AuthWebApi.Service;
@@ -180,5 +181,55 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     public IActionResult ChangePasswordConfirmation()
     {
         return View();
+    }
+    
+    [HttpGet]
+    public IActionResult ExternalLogin(string provider, string returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(provider))
+        {
+            return BadRequest();
+        }
+        
+        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        
+        return Challenge(properties, provider);
+    }
+    
+    [Route("ExternalLoginCallback")]
+    public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+    {
+        var info = await signInManager.GetExternalLoginInfoAsync();
+        if (info == null)
+        {
+            return RedirectToAction("Login");
+        }
+    
+        var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index","Manage");
+        }
+
+        var user = new PspUser()
+        {
+            UserName = info.Principal.FindFirstValue(ClaimTypes.Name),
+            Name = "Яндекс",
+            Surname = "Яндекс"
+        };
+        
+        var resultReg = await userManager.CreateAsync(user);
+
+        if (!resultReg.Succeeded) return BadRequest();
+        
+        var userFromDb = await userManager.FindByNameAsync(user.UserName);
+        await userManager.AddToRoleAsync(userFromDb, "Passenger");
+        var identityResult = await userManager.AddLoginAsync(user, info);
+
+        if (!identityResult.Succeeded) return BadRequest();
+        
+        await signInManager.SignInAsync(user, false);
+        return RedirectToAction("Index","Manage");
     }
 }

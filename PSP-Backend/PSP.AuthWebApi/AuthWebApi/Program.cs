@@ -47,6 +47,15 @@ builder.Services.AddIdentityServer()
     .AddInMemoryApiScopes(Config.ApiScopes)
     .AddProfileService<UserProfileService>()
     .AddDeveloperSigningCredential();
+
+builder.Services.AddAuthentication()
+    .AddYandex(options =>
+    {
+        options.ClientId = "44e78c9feddc4e23980586255a8eaaa7";
+        options.ClientSecret = "308c2f61275c415481a540180a86b247";
+        options.CallbackPath = "/Auth/ExternalLoginCallback";
+    });
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();

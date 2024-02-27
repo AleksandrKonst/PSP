@@ -30,6 +30,10 @@
         <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-dark auth-reg">
             Регистрация
         </a>
+        <form asp-controller="Auth" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" class="yandex-form">
+            <button type="submit" name="provider" value="Yandex" class="btn yandex"></button>
+        </form>
+        
         <p class="user-info">Приложению "PSP" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. 
             Прежде чем начать работу с приложением "PSP", вы можете ознакомиться с его политикой конфиденциальности 
             и условиями использования.</p>
