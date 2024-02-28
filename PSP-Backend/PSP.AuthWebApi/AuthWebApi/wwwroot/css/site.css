@@ -148,6 +148,10 @@ body {
   margin-top: 15px;
 }
 
+.edit-but {
+  margin-top: 15px;
+}
+
 .edit-box {
   max-width: 500px !important;
 }
@@ -212,17 +216,42 @@ body {
   width: 100%;
 }
 
-.yandex {
-  background: url("/yandex.png") no-repeat center;
+.logo {
+  width: 20px;
+  height: 20px;
+  margin-top: -5px;
+}
+
+.vk-form {
   width: 100%;
+  margin-top: 20px;
+  background-color: #0077FF;
+  border-radius: 10px;
   height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .yandex-form {
-  width: 100%; 
-  margin-top: 20px; 
-  background-color: #000000; 
-  border-radius: 10px
+  width: 100%;
+  margin-top: 20px;
+  background-color: #000000;
+  border-radius: 10px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.external-button {
+  width: 100%
+}
+
+.external-text {
+  margin: 10px;
+  color: white; 
+  font-size: 16px;
 }
 
 @media (max-height: 700px) {

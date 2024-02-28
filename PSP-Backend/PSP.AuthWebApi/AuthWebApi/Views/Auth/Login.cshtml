@@ -31,7 +31,14 @@
             Регистрация
         </a>
         <form asp-controller="Auth" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" class="yandex-form">
-            <button type="submit" name="provider" value="Yandex" class="btn yandex"></button>
+            <button type="submit" name="provider" value="Yandex" class="btn external-button">
+                <p class="external-text"> <img src="/yandex.png" class="logo" alt="Yandex"/> Войти через Яндекс ID</p>
+            </button>
+        </form>
+        <form asp-controller="Auth" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" class="vk-form">
+            <button type="submit" name="provider" value="Vkontakte" class="btn external-button">
+                <p class="external-text"> <img src="/vk-white-icon.png" class="logo" alt="Vkontakte"/> Войти через VK ID</p>
+            </button>
         </form>
         
         <p class="user-info">Приложению "PSP" будет предоставлен доступ к вашим данным: имени, адресу электронной почты. 

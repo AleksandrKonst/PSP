@@ -215,7 +215,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             EmailConfirmed = true
         };
         
-        var resultReg = await userManager.CreateAsync(user, "5Su&per1234qw3*1@561#");
+        var resultReg = await userManager.CreateAsync(user);
 
         if (!resultReg.Succeeded) return BadRequest();
         
