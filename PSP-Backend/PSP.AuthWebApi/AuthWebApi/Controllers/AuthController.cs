@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AuthWebApi.DTO.ViewModels.Auth;
 using AuthWebApi.Models;
 using AuthWebApi.Service;
@@ -180,5 +181,51 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     public IActionResult ChangePasswordConfirmation()
     {
         return View();
+    }
+    
+    public IActionResult ExternalLogin(string provider, string returnUrl)
+    {
+        var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        
+        return Challenge(properties, provider);
+    }
+    
+    public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
+    {
+        var info = await signInManager.GetExternalLoginInfoAsync();
+        if (info == null)
+        {
+            return RedirectToAction("Login");
+        }
+    
+        var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
+        if (result.Succeeded)
+        {
+            return Redirect(returnUrl);
+        }
+        
+        var user = new PspUser()
+        {
+            UserName = info.Principal.FindFirstValue(ClaimTypes.Name),
+            Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
+            Birthday = DateOnly.Parse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) ?? "2000-01-01"),
+            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+            EmailConfirmed = true
+        };
+        
+        var resultReg = await userManager.CreateAsync(user);
+
+        if (!resultReg.Succeeded) return BadRequest();
+        
+        var userFromDb = await userManager.FindByNameAsync(user.UserName);
+        await userManager.AddToRoleAsync(userFromDb, "Admin");
+        var identityResult = await userManager.AddLoginAsync(user, info);
+
+        if (!identityResult.Succeeded) return BadRequest();
+        
+        await signInManager.SignInAsync(user, false);
+        return Redirect(returnUrl);
     }
 }

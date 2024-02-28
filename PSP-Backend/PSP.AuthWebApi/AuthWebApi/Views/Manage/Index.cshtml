@@ -62,7 +62,9 @@
                 @item.Email
             </td>
             <td class="hide">
-                @item.EmailConfirmed
+                <div class="form-check form-switch">
+                    <input asp-for="@item.EmailConfirmed" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+                </div>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="panel-table-link">Изменить</a>
