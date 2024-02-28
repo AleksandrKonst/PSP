@@ -53,7 +53,7 @@ builder.Services.AddAuthentication()
     {
         options.ClientId = "adf944112ee74aaca09676257c64016a";
         options.ClientSecret = "c73aaa4b285a43739a940ba8d83a9533";
-        options.CallbackPath = "/Auth/ExternalLoginCallback";
+        options.CallbackPath = "/Auth/yandex";
     });
 
 builder.Services.AddAutoMapper(typeof(Program));

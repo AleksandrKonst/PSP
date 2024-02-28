@@ -4,7 +4,6 @@ using AuthWebApi.Models;
 using AuthWebApi.Service;
 using AutoMapper;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -203,27 +202,30 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, false);
         if (result.Succeeded)
         {
-            return RedirectToAction("Index","Manage");
+            return Redirect(returnUrl);
         }
-
+        
         var user = new PspUser()
         {
             UserName = info.Principal.FindFirstValue(ClaimTypes.Name),
-            Name = "Яндекс",
-            Surname = "Яндекс"
+            Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
+            Birthday = DateOnly.Parse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) ?? "2000-01-01"),
+            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+            EmailConfirmed = true
         };
         
-        var resultReg = await userManager.CreateAsync(user);
+        var resultReg = await userManager.CreateAsync(user, "5Su&per1234qw3*1@561#");
 
         if (!resultReg.Succeeded) return BadRequest();
         
         var userFromDb = await userManager.FindByNameAsync(user.UserName);
-        await userManager.AddToRoleAsync(userFromDb, "Passenger");
+        await userManager.AddToRoleAsync(userFromDb, "Admin");
         var identityResult = await userManager.AddLoginAsync(user, info);
 
         if (!identityResult.Succeeded) return BadRequest();
         
         await signInManager.SignInAsync(user, false);
-        return RedirectToAction("Index","Manage");
+        return Redirect(returnUrl);
     }
 }
