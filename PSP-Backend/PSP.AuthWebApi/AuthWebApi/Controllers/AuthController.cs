@@ -207,7 +207,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         
         var user = new PspUser()
         {
-            UserName = info.Principal.FindFirstValue(ClaimTypes.Name),
+            UserName = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
             Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
             Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
             Birthday = DateOnly.Parse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) ?? "2000-01-01"),

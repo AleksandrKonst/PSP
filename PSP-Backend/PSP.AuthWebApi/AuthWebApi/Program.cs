@@ -3,6 +3,7 @@ using AuthWebApi.Models;
 using AuthWebApi.Models.Data;
 using AuthWebApi.Models.Infrastructure;
 using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,11 +58,10 @@ builder.Services.AddAuthentication()
     })
     .AddVkontakte(options =>
     {
+        options.Scope.Add("email");
         options.ClientId = "51863166";
         options.ClientSecret = "vEo11t3WIkNLe2zcAm1z";
         options.CallbackPath = "/Auth/vk";
-        options.Scope.Add("user_id");
-        options.Scope.Add("email");
     });
 
 builder.Services.AddCors(options => options.AddPolicy(name: "PSP",
