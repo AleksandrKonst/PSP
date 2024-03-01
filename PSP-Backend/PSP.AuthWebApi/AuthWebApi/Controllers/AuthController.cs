@@ -207,7 +207,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         
         var user = new PspUser()
         {
-            UserName = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
+            UserName = $"{info.LoginProvider}-{info.Principal.FindFirstValue( ClaimTypes.NameIdentifier)}",
             Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
             Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
             Birthday = DateOnly.Parse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) ?? "2000-01-01"),
@@ -220,7 +220,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         if (!resultReg.Succeeded) return BadRequest();
         
         var userFromDb = await userManager.FindByNameAsync(user.UserName);
-        await userManager.AddToRoleAsync(userFromDb, "Admin");
+        await userManager.AddToRoleAsync(userFromDb, "Passenger");
         var identityResult = await userManager.AddLoginAsync(user, info);
 
         if (!identityResult.Succeeded) return BadRequest();
