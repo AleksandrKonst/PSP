@@ -12,7 +12,7 @@ namespace AuthWebApi.Controllers;
 [Controller]
 public class ClaimController(AuthDbContext context, IMapper mapper) : Controller
 {
-    private const int PageSize = 8;
+    private const int PageSize = 10;
 
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)

@@ -15,7 +15,7 @@ namespace AuthWebApi.Controllers;
 [Authorize(Roles = "Admin, Airline")]
 public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
 {
-    private const int PageSize = 8;
+    private const int PageSize = 10;
 
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)

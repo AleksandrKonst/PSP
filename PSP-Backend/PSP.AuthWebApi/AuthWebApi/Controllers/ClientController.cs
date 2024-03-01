@@ -13,7 +13,7 @@ namespace AuthWebApi.Controllers;
 [Authorize]
 public class ClientController(IClientStore clientStore, AuthDbContext context, IMapper mapper) : Controller
 {
-    private const int PageSize = 8;
+    private const int PageSize = 10;
     
     [HttpGet]
     public async Task<IActionResult> Index(string search, int page = 1)
