@@ -1,10 +1,14 @@
 using Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
+using WebApi.Middleware;
+using WebApi.Reporters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Configure Endpoints Routing
+builder.Services.AddSingleton<MetricReporter>();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions =>
     apiBehaviorOptions.InvalidModelStateResponseFactory = actionContext => {
         return new BadRequestObjectResult(new {
@@ -48,6 +52,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMetricServer();
+app.UseMiddleware<ResponseMetricMiddleware>();
 app.MapControllers();
 app.UseHealthChecks("/health");
 app.Run();

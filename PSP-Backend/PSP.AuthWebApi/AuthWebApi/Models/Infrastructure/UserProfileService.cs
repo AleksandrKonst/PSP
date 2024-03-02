@@ -24,7 +24,7 @@ public class UserProfileService(UserManager<PspUser> userManager, RoleManager<Id
             new("login", user.UserName),
             new("name", user.Name),
             new("surname", user.Surname),
-            new("patronymic", user.Patronymic),
+            new("patronymic", user.Patronymic ?? " "),
             new("email", user.Email),
             new("birthday", user.Birthday.Value.ToString("yyyy-MM-dd")),
             new("roles", roles.First())
