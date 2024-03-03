@@ -21,10 +21,18 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(apiBehaviorOptions
                 })
         });
     });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("NotForPassenger", md =>
+    {
+        md.RequireRole("Admin");
+        md.RequireRole("Airline");
+    });
+});
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = "https://localhost:7161"; //Use Environment param
+        options.Authority = Environment.GetEnvironmentVariable("AUTH_ROUTE") ?? "https://localhost:7161";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false
@@ -32,7 +40,12 @@ builder.Services.AddAuthentication("Bearer")
     });
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
-builder.Services.AddApiVersioning();
+builder.Services.AddApiVersioning(config =>
+    {
+        config.DefaultApiVersion = new ApiVersion(int.Parse(Environment.GetEnvironmentVariable("MAJOR_VERSION") ?? "1") , 
+            int.Parse(Environment.GetEnvironmentVariable("MINOR_VERSION") ?? "0"));
+        config.AssumeDefaultVersionWhenUnspecified = true;
+    });
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 
