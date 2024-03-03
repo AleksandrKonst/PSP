@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication("IdentityApiKey")
     .AddJwtBearer("IdentityApiKey", options =>
     {
-        options.Authority = "https://localhost:7161";
+        options.Authority = Environment.GetEnvironmentVariable("AUTH_ROUTE") ?? "https://localhost:7161";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false
