@@ -17,6 +17,7 @@ public class ApplicationProfile : Profile
         CreateMap<PassengerTypeDTO, PassengerType>().ReverseMap();
         CreateMap<DocumentTypeDTO, DocumentType>().ReverseMap();
         CreateMap<GenderTypeDTO, GenderType>().ReverseMap();
+        CreateMap<PassangerCouponEventDTO, CouponEvent>().ReverseMap();
         
         CreateMap<AirlineDTO, Airline>().ReverseMap();
         CreateMap<AirportDTO, Airport>().ReverseMap();

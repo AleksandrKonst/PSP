@@ -11,8 +11,8 @@ using WebApi.Infrastructure;
 
 namespace WebApi.Controllers.FlightContext;
 
+[Authorize]
 [ApiController]
-[ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
 public class AirlineController(IMediator mediator) : ControllerBase
@@ -21,7 +21,7 @@ public class AirlineController(IMediator mediator) : ControllerBase
     [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = Int32.MaxValue)
+    public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = 10)
     {
         var requestDateTime = DateTime.Now;
         
@@ -45,7 +45,7 @@ public class AirlineController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{code}")]
     [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
@@ -95,7 +95,7 @@ public class AirlineController(IMediator mediator) : ControllerBase
     }
     
     [HttpPut]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "NotForPassenger")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> Put([FromBody] AirlineDTO airlineDto, CancellationToken cancellationToken)

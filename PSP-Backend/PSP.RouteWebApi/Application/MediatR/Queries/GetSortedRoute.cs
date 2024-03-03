@@ -9,7 +9,7 @@ namespace Application.MediatR.Queries;
 
 public static class GetSortedRoute
 {
-    public record Query(string departPlaceName, string arrivePlaceName, DateTime Date) : IRequest<QueryResult>;
+    public record Query(string departPlaceName, string arrivePlaceName, DateOnly Date) : IRequest<QueryResult>;
     
     public record QueryResult(IEnumerable<FlightViewModel> Result);
     
@@ -36,7 +36,7 @@ public static class GetSortedRoute
             var flightList = new List<List<Flight>>();
             var flightQueue = new Queue<List<Flight>>();
             
-            var flights = await repository.GetAllForClientAsync(request.arrivePlaceName, request.departPlaceName, request.Date);
+            var flights = await repository.GetAllForClientAsync(request.arrivePlaceName, request.departPlaceName, request.Date.ToDateTime(new TimeOnly()).ToUniversalTime());
             
             foreach (var flight in flights.Where(f => f.DepartPlaceNavigation.CityIataCodeNavigation.Name == request.departPlaceName))
             {
