@@ -10,9 +10,6 @@ public class ChangePasswordViewModel
     public string NormalizedUserName { get; set; }
     [Required]
     [DataType("Password")]
-    public string CurrentPassword { get; set; }
-    [Required]
-    [DataType("Password")]
     public string Password { get; set; }
     [Required]
     [Compare("Password")]
