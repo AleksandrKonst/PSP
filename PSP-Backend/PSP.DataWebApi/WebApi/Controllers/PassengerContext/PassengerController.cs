@@ -11,17 +11,17 @@ using WebApi.Infrastructure;
 
 namespace WebApi.Controllers.PassengerContext;
 
+[Authorize]
 [ApiController]
-[ApiVersion("1.0")]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
 public class PassengerController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize(Policy = "NotForPassenger")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = Int32.MaxValue)
+    public async Task<IActionResult> Get(CancellationToken cancellationToken, int index = 0, int count = 10)
     {
         var requestDateTime = DateTime.Now;
         
@@ -46,7 +46,7 @@ public class PassengerController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    [AllowAnonymous]
+    [Authorize(Policy = "NotForPassenger")]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)

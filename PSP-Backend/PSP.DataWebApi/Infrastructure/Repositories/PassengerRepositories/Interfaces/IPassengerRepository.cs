@@ -9,14 +9,14 @@ public interface IPassengerRepository
     Task<Passenger?> GetByIdAsync(long id);
     Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname,
         string? patronymic, string gender, DateOnly birthdate, List<int> year);
+    Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname,
+        string? patronymic, DateOnly birthdate, List<int> year);
+    Task<Passenger?> GetByFullNameAsync(string name, string surname,
+        string? patronymic, DateOnly birthdate);
     Task<long> GetCountAsync();
-    Task<long> GetIdByFullNameAsync(string name, string surname,
-        string? patronymic, string gender, DateOnly birthdate);
-    
     Task<bool> CheckByFullNameAsync(string name, string surname,
         string? patronymic, string gender, DateOnly birthdate);
     Task<bool> CheckByIdAsync(long id);
-
     Task<bool> AddAsync(Passenger passenger);
     Task<bool> UpdateAsync(Passenger passenger);
     Task<bool> DeleteAsync(long id);

@@ -28,13 +28,25 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
         return passenger;
     }
     
-    public async Task<long> GetIdByFullNameAsync(string name, string surname,
-        string? patronymic, string gender, DateOnly birthdate) => await context.Passengers.Where(p => p.Name == name &&
+    public async Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname, 
+        string? patronymic, DateOnly birthdate, List<int> year)
+    {
+        var passenger = await context.Passengers
+            .Where(p => p.Name == name && 
+                        p.Surname == surname && 
+                        p.Patronymic == patronymic && 
+                        p.Birthdate == birthdate)
+            .Include(p => p.CouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
+            .FirstOrDefaultAsync();
+        
+        return passenger;
+    }
+    
+    public async Task<Passenger?> GetByFullNameAsync(string name, string surname,
+        string? patronymic, DateOnly birthdate) => await context.Passengers.Where(p => p.Name == name &&
             p.Surname == surname &&
             p.Patronymic == patronymic && 
-            p.Birthdate == birthdate && 
-            p.Gender == gender)
-        .Select(p => p.Id)
+            p.Birthdate == birthdate)
         .FirstOrDefaultAsync();
     
     public async Task<long> GetCountAsync() => await context.Passengers.CountAsync();

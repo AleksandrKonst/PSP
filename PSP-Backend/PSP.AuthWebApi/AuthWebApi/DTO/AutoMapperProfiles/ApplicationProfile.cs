@@ -16,6 +16,7 @@ public class ApplicationProfile : Profile
         CreateMap<ViewModels.Manage.DeleteViewModel, PspUser>().ReverseMap();
         CreateMap<ViewModels.Manage.CreateViewModel, PspUser>().ReverseMap();
         CreateMap<UserDTO, PspUser>().ReverseMap();
+        CreateMap<EditUserDTO, PspUser>().ReverseMap();
         CreateMap<ClientEntity, Client>().ReverseMap();
         CreateMap<ViewModels.Client.InfoViewModel, Client>().ReverseMap();
         CreateMap<ViewModels.Client.DeleteViewModel, Client>().ReverseMap();

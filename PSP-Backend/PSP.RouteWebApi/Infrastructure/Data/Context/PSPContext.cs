@@ -18,7 +18,7 @@ public class PSPContext : DbContext
     public virtual DbSet<Fare> Fare { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Server=localhost; Port=5432;Database=PSP_Data;User Id=postgres;Password=1243");
+        => optionsBuilder.UseNpgsql(Environment.GetEnvironmentVariable("DB_ROUTE") ?? "Server=localhost; Port=5432;Database=PSP_Data;User Id=postgres;Password=1243");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
