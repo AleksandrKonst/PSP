@@ -14,3 +14,6 @@
 
 # Elasticsearch
 ![image](https://github.com/AleksandrKonst/PSP/assets/40522320/45ec3720-1a9c-46b6-99d1-c92136ef39db)
+
+# Prometheus
+![image](https://github.com/AleksandrKonst/PSP/assets/40522320/9239225f-190f-4e34-b01e-e9c04fe6b328)
