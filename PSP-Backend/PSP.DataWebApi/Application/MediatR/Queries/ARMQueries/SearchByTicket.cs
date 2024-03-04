@@ -4,6 +4,7 @@ using AutoMapper;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Queries.ARMQueries;
 
@@ -29,7 +30,7 @@ public static class SearchByTicket
         }
     }
     
-    public class Handler(ICouponEventRepository couponEventRepository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(ICouponEventRepository couponEventRepository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -37,6 +38,7 @@ public static class SearchByTicket
             {
                 CouponEvents = mapper.Map<List<CouponEventDTO>>(await couponEventRepository.GetAllAsync(request.SearchByTicketDto.TicketType, request.SearchByTicketDto.TicketNumber))
             };
+            logger.LogInformation($"Search {nameof(SearchByTicket)}");
             return new QueryResult(coupon);
         }
     }

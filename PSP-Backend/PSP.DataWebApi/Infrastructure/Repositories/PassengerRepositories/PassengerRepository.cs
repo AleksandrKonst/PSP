@@ -7,11 +7,11 @@ namespace Infrastructure.Repositories.PassengerRepositories;
 
 public class PassengerRepository(PSPContext context) : IPassengerRepository
 {
-    public async Task<IEnumerable<Passenger>> GetAllAsync() => await context.Passengers.ToListAsync();
+    public async Task<IEnumerable<Passenger>> GetAllAsync() => await context.Passengers.AsNoTracking().ToListAsync();
     
-    public async Task<IEnumerable<Passenger>> GetPartAsync(int index, int count) => await context.Passengers.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<Passenger>> GetPartAsync(int index, int count) => await context.Passengers.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<Passenger?> GetByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).FirstOrDefaultAsync();
+    public async Task<Passenger?> GetByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
     
     public async Task<Passenger?> GetByFullNameWithCouponEventAsync(string name, string surname, 
         string? patronymic, string gender, DateOnly birthdate, List<int> year)
@@ -23,6 +23,7 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
                         p.Birthdate == birthdate && 
                         p.Gender == gender)
             .Include(p => p.CouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         
         return passenger;
@@ -37,6 +38,7 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
                         p.Patronymic == patronymic && 
                         p.Birthdate == birthdate)
             .Include(p => p.CouponEvents.Where(dc => year.Contains(dc.OperationDatetimeUtc.Year)))
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         
         return passenger;
@@ -47,9 +49,10 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
             p.Surname == surname &&
             p.Patronymic == patronymic && 
             p.Birthdate == birthdate)
+        .AsNoTracking()
         .FirstOrDefaultAsync();
     
-    public async Task<long> GetCountAsync() => await context.Passengers.CountAsync();
+    public async Task<long> GetCountAsync() => await context.Passengers.AsNoTracking().CountAsync();
 
     public async Task<bool> CheckByFullNameAsync(string name, string surname, 
         string? patronymic, string gender, DateOnly birthdate)
@@ -59,11 +62,11 @@ public class PassengerRepository(PSPContext context) : IPassengerRepository
                         p.Surname == surname && 
                         p.Patronymic == patronymic && 
                         p.Birthdate == birthdate && 
-                        p.Gender == gender).AnyAsync();
+                        p.Gender == gender).AsNoTracking().AnyAsync();
         return result;
     }
     
-    public async Task<bool> CheckByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).AnyAsync();
+    public async Task<bool> CheckByIdAsync(long id) => await context.Passengers.Where(p => p.Id == id).AsNoTracking().AnyAsync();
 
     public async Task<bool> AddAsync(Passenger passenger)
     {

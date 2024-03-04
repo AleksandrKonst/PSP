@@ -2,6 +2,7 @@
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.QuotaCategoryCommands;
 
@@ -22,10 +23,11 @@ public static class DeleteQuotaCategory
         }
     }
     
-    public class Handler(IQuotaCategoryRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(IQuotaCategoryRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Delete {nameof(DeleteQuotaCategory)}");
             return new CommandResult(await repository.DeleteAsync(request.code));
         }
     }

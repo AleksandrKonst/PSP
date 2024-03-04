@@ -22,10 +22,9 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
                 dynamic exception = new ExpandoObject();
                 if (responseException.ErrorCode != null) exception.code = responseException.ErrorCode;
                 exception.message = responseException.Message;
+                errorList.Add(exception);
                 
                 logger.LogError($"ErrorCode: {responseException.ErrorCode} | ErrorMessage: {responseException.Message}");
-                
-                errorList.Add(exception);
             
                 var result = new ObjectResult(new
                 {

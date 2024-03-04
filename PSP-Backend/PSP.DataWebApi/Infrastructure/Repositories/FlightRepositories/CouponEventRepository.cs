@@ -7,19 +7,19 @@ namespace Infrastructure.Repositories.FlightRepositories;
 
 public class CouponEventRepository(PSPContext context) : ICouponEventRepository
 {
-    public async Task<IEnumerable<CouponEvent>> GetAllAsync() => await context.CouponEvents.ToListAsync();
+    public async Task<IEnumerable<CouponEvent>> GetAllAsync() => await context.CouponEvents.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<CouponEvent>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.CouponEvents.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<CouponEvent>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.CouponEvents.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<CouponEvent?> GetByCodeAsync(long id) => await context.CouponEvents.Where(p => p.Id == id).FirstOrDefaultAsync();
+    public async Task<CouponEvent?> GetByCodeAsync(long id) => await context.CouponEvents.Where(p => p.Id == id).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.CouponEvents.CountAsync();
+    public async Task<long> GetCountAsync() => await context.CouponEvents.AsNoTracking().CountAsync();
 
-    public async Task<List<CouponEvent>> GetAllAsync(int ticketType, string ticketNumber) => await context.CouponEvents.Where(c => c.TicketType == ticketType && c.TicketNumber == ticketNumber).ToListAsync();
+    public async Task<List<CouponEvent>> GetAllAsync(int ticketType, string ticketNumber) => await context.CouponEvents.Where(c => c.TicketType == ticketType && c.TicketNumber == ticketNumber).AsNoTracking().ToListAsync();
 
-    public async Task<bool> CheckByCodeAsync(long code) => await context.CouponEvents.Where(p => p.Id == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(long code) => await context.CouponEvents.Where(p => p.Id == code).AsNoTracking().AnyAsync();
     
-    public async Task<bool> CheckByIdAsync(long id) => await context.CouponEvents.Where(c => c.Id == id).AnyAsync();
+    public async Task<bool> CheckByIdAsync(long id) => await context.CouponEvents.Where(c => c.Id == id).AsNoTracking().AnyAsync();
 
     public async Task<bool> AddAsync(CouponEvent couponEvent)
     {

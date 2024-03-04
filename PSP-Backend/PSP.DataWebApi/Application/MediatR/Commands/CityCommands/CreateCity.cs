@@ -1,9 +1,11 @@
 ﻿using Application.DTO.FlightContextDTO;
+using Application.MediatR.Commands.AirportCommands;
 using AutoMapper;
 using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.CityCommands;
 
@@ -24,10 +26,11 @@ public static class CreateCity
         }
     }
     
-    public class Handler(ICityRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(ICityRepository repository, IMapper mapper, ILogger<CreateAirport.Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Create {nameof(CreateCity)}");
             return new CommandResult(await repository.AddAsync(mapper.Map<City>(request.objDTO)));
         }
     }

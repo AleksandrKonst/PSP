@@ -105,7 +105,7 @@ ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, 
     return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]!))
     {
         AutoRegisterTemplate = true,
-        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        IndexFormat = $"route-{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
         NumberOfReplicas = 1,
         NumberOfShards = 2
     };

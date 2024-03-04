@@ -14,7 +14,7 @@ namespace AuthWebApi.Controllers.REST;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("profile/api")]
-public class ProfileApiController(RoleManager<IdentityRole> roleManager, UserManager<PspUser> userManager, IMapper mapper) : ControllerBase
+public class ProfileApiController(RoleManager<IdentityRole> roleManager, UserManager<PspUser> userManager, IMapper mapper, ILogger<ProfileApiController> logger) : ControllerBase
 {
     [HttpGet("{id}")]
     [RequestSizeLimit(1 * 1024)]
@@ -82,6 +82,7 @@ public class ProfileApiController(RoleManager<IdentityRole> roleManager, UserMan
                     response_datetime = DateTime.Now,
                     mesaage = "Пользователь изменен"
                 };
+                logger.LogInformation("Post User");
                 return Ok(response); 
             }
         }
@@ -117,6 +118,7 @@ public class ProfileApiController(RoleManager<IdentityRole> roleManager, UserMan
         };
         response.result = "Succeeded";
 
+        logger.LogInformation("ChangePassword");
         return Ok(response); 
     }
 }

@@ -4,6 +4,7 @@ using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.AirlineCommands;
 
@@ -24,10 +25,11 @@ public static class CreateAirline
         }
     }
     
-    public class Handler(IAirlineRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(IAirlineRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Create {nameof(CreateAirline)}");
             return new CommandResult(await repository.AddAsync(mapper.Map<Airline>(request.objDTO)));
         }
     }

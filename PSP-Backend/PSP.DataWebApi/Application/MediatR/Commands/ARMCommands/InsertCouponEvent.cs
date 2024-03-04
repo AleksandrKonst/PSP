@@ -15,6 +15,7 @@ using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.ARMCommands;
 
@@ -34,7 +35,7 @@ public static class InsertCouponEvent
     }
     
     public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, 
-        IFlightRepository flightRepository, IFareRepository fareRepository, IPassengerTypeRepository passengerTypeRepository, IMapper mapper, IMediator mediator) : IRequestHandler<Command, CommandResult>
+        IFlightRepository flightRepository, IFareRepository fareRepository, IPassengerTypeRepository passengerTypeRepository, IMapper mapper, IMediator mediator, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -194,6 +195,7 @@ public static class InsertCouponEvent
                     }
                 }
             }
+            logger.LogInformation($"Create {nameof(InsertCouponEvent)}");
             return new CommandResult(passengers);
         }
     }

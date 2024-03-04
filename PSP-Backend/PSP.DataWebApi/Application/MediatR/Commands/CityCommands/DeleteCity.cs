@@ -2,6 +2,7 @@
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.CityCommands;
 
@@ -22,10 +23,11 @@ public static class DeleteCity
         }
     }
     
-    public class Handler(ICityRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(ICityRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Delete{nameof(DeleteCity)}");
             return new CommandResult(await repository.DeleteAsync(request.code));
         }
     }  

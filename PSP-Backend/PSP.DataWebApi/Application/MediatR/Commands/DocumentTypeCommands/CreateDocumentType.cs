@@ -4,6 +4,7 @@ using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.DocumentTypeCommands;
 
@@ -29,10 +30,11 @@ public static class CreateDocumentType
         }
     }
     
-    public class Handler(IDocumentTypeRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(IDocumentTypeRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Create {nameof(CreateDocumentType)}");
             return new CommandResult(await repository.AddAsync(mapper.Map<DocumentType>(request.DocumentTypeDto)));
         }
     }
