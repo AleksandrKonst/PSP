@@ -11,7 +11,7 @@ namespace WebApi.Controllers;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class RouteController(IMediator mediator) : ControllerBase
+public class RouteController(IMediator mediator, ILogger<RouteController> logger) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]

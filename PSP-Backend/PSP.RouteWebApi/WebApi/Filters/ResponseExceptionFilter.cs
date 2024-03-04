@@ -22,7 +22,9 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
                 dynamic exception = new ExpandoObject();
                 if (responseException.ErrorCode != null) exception.code = responseException.ErrorCode;
                 exception.message = responseException.Message;
-            
+                
+                logger.LogError($"ErrorCode: {responseException.ErrorCode} | ErrorMessage: {responseException.Message}");
+                
                 errorList.Add(exception);
             
                 var result = new ObjectResult(new
@@ -47,6 +49,8 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
                     exception.code = error.ErrorCode;
                     exception.message = error.ErrorMessage;
                     errorList.Add(exception);
+                    
+                    logger.LogError($"ErrorCode: {error.ErrorCode} | ErrorMessage: {error.ErrorMessage}");
                 }
             
                 var result = new ObjectResult(new
@@ -70,6 +74,8 @@ public class ResponseExceptionFilter(ILogger<ResponseExceptionFilter> logger) : 
                 exception.message = context.Exception.Message;
                 errorList.Add(exception);
             
+                logger.LogError($"ErrorCode: PFC-000500 | ErrorMessage: {context.Exception.Message}");
+                
                 var result = new ObjectResult(new
                 {
                     trace_id = Guid.NewGuid().ToString(),
