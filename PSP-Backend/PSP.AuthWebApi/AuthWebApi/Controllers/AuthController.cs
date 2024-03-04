@@ -4,13 +4,16 @@ using AuthWebApi.Models;
 using AuthWebApi.Service;
 using AutoMapper;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthWebApi.Controllers;
 
+[AllowAnonymous]
+[Controller]
 public class AuthController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, RoleManager<IdentityRole> roleManager, IMapper mapper) : Controller
+        IIdentityServerInteractionService interactionService, IMapper mapper) : Controller
 {
     [HttpGet]
     public IActionResult Login(string returnUrl)
@@ -30,23 +33,23 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var user = await userManager.FindByNameAsync(viewModel.Username);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "Login Error");
-            return Redirect(viewModel.ReturnUrl);
+            ModelState.AddModelError(string.Empty, "Неверный логин");
+            return View(new LoginViewModel(){ReturnUrl = viewModel.ReturnUrl});
         }
 
         var result = await signInManager.PasswordSignInAsync(user,
             viewModel.Password, false, false);
         if (result.Succeeded)
         {
-            ModelState.AddModelError(string.Empty, "Password Error");
             return Redirect(viewModel.ReturnUrl);
         }
         
-        ModelState.AddModelError(string.Empty, "Login Form Error");
-        return Redirect(viewModel.ReturnUrl);
+        ModelState.AddModelError(string.Empty, "Неверный пароль");
+        return View(new LoginViewModel(){ReturnUrl = viewModel.ReturnUrl});
     }
     
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Logout(string logoutId)
     {
         await signInManager.SignOutAsync();
@@ -62,6 +65,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
     
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
@@ -92,17 +96,27 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var result = await userManager.CreateAsync(user, viewModel.Password);
         if (result.Succeeded)
         {
-            var userFromDb = await userManager.FindByNameAsync(user.UserName);
+            var userFromDb = await userManager.FindByNameAsync(user.UserName!);
+            if (userFromDb == null)
+                return BadRequest();
             await userManager.AddToRoleAsync(userFromDb, "Passenger");
             
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action("ConfirmEmail", "Auth", new { token, email = user.Email }, Request.Scheme);
+            if (confirmationLink == null)
+                return BadRequest();
             await EmailService.SendEmailAsync(viewModel.Email, confirmationLink);
             
             return RedirectToAction(nameof(SuccessRegistration));
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
         return View(viewModel);
+    }
+    
+    [HttpGet]
+    public IActionResult SuccessRegistration()
+    {
+        return View();
     }
     
     [HttpGet]
@@ -113,12 +127,6 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             return BadRequest();
         var result = await userManager.ConfirmEmailAsync(user, token);
         return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
-    }
-    
-    [HttpGet]
-    public IActionResult SuccessRegistration()
-    {
-        return View();
     }
     
     [HttpGet]
@@ -133,11 +141,16 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     {
         if (!ModelState.IsValid)
             return View(forgotPasswordViewModel);
+        
         var user = await userManager.FindByEmailAsync(forgotPasswordViewModel.Email);
         if (user == null)
-            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            return RedirectToAction(nameof(Login));
+        
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var callback = Url.Action(nameof(ChangePassword), "Auth", new { token, email = user.Email }, Request.Scheme);
+        
+        if (callback == null)
+            return RedirectToAction(nameof(Login));
         await EmailService.SendChangeEmailAsync(forgotPasswordViewModel.Email, callback);
         
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
@@ -157,14 +170,19 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
     }
     
     [HttpPost]
+    [Authorize]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordViewModel)
     {
         if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Model error");
             return View(changePasswordViewModel);
+        }
+        
         var user = await userManager.FindByEmailAsync(changePasswordViewModel.Email);
         if (user == null)
-            RedirectToAction(nameof(ChangePasswordConfirmation));
+            return RedirectToAction(nameof(Login));
         
         var resetPassResult = await userManager.ResetPasswordAsync(user, changePasswordViewModel.Token, changePasswordViewModel.Password);
         
@@ -183,6 +201,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         return View();
     }
     
+    [HttpPost]
     public IActionResult ExternalLogin(string provider, string returnUrl)
     {
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
@@ -191,6 +210,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         return Challenge(properties, provider);
     }
     
+    [HttpGet]
     public async Task<IActionResult> ExternalLoginCallback(string returnUrl)
     {
         var info = await signInManager.GetExternalLoginInfoAsync();
@@ -208,21 +228,22 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         var user = new PspUser()
         {
             UserName = $"{info.LoginProvider}-{info.Principal.FindFirstValue( ClaimTypes.NameIdentifier)}",
-            Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
+            Name = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "External404",
+            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "External404",
             Birthday = DateOnly.Parse(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) ?? "2000-01-01"),
             Email = info.Principal.FindFirstValue(ClaimTypes.Email),
             EmailConfirmed = true
         };
         
         var resultReg = await userManager.CreateAsync(user);
-
         if (!resultReg.Succeeded) return BadRequest();
         
         var userFromDb = await userManager.FindByNameAsync(user.UserName);
+        if (userFromDb == null)
+            return BadRequest();
         await userManager.AddToRoleAsync(userFromDb, "Passenger");
+        
         var identityResult = await userManager.AddLoginAsync(user, info);
-
         if (!identityResult.Succeeded) return BadRequest();
         
         await signInManager.SignInAsync(user, false);

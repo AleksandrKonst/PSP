@@ -8,27 +8,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Controller]
 public class ClaimController(AuthDbContext context, IMapper mapper) : Controller
 {
     private const int PageSize = 10;
 
     [HttpGet]
-    public async Task<IActionResult> Index(string search, int page = 1)
+    public async Task<IActionResult> Index(string? search, int page = 1)
     {
         ViewBag.SelectedCategory = "users";
         
         var claims = await context.UserClaims
-            .Where(r => search == null || r.ClaimType.ToLower().Contains(search.ToLower()) 
-                                       || r.ClaimValue.ToLower().Contains(search.ToLower()))
+            .Where(r => search == null || r.ClaimType!.ToLower().Contains(search.ToLower()) 
+                                       || r.ClaimValue!.ToLower().Contains(search.ToLower()))
             .Skip((page - 1) * PageSize)
             .Take(PageSize)
+            .AsNoTracking()
             .ToListAsync();
         
         var indexViewModel = new IndexViewModel()
         {
-            Search = search,
+            Search = search ?? "",
             MaxPage = claims.Count / PageSize + 1,
             Page = page,
             Claims = mapper.Map<IEnumerable<ClaimDTO>>(claims)

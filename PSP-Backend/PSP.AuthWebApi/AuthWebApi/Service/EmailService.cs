@@ -18,7 +18,7 @@ public static class EmailService
         
         var emailMessage = new MimeMessage();
  
-        emailMessage.From.Add(MailboxAddress.Parse("lIdiotl@yandex.ru"));
+        emailMessage.From.Add(MailboxAddress.Parse("Портал Субсидируемых Перелетов"));
         emailMessage.To.Add(MailboxAddress.Parse(email));
         emailMessage.Subject = "Активация аккаунта";
         emailMessage.Body = builder.ToMessageBody();

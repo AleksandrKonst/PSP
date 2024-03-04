@@ -1,18 +1,21 @@
 using AuthWebApi;
+using AuthWebApi.Middleware;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Data;
 using AuthWebApi.Models.Infrastructure;
+using AuthWebApi.Reporters;
 using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<MetricReporter>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PSPAuthContext")));
+    options.UseNpgsql(Environment.GetEnvironmentVariable("DB_ROUTE") ?? builder.Configuration.GetConnectionString("PSPAuthContext")));
 
 builder.Services.AddIdentity<PspUser, IdentityRole>(config =>
     {
@@ -29,7 +32,7 @@ builder.Services.AddIdentity<PspUser, IdentityRole>(config =>
 
 builder.Services.ConfigureApplicationCookie(config =>
 {
-    config.Cookie.Name = "PSP.IdentityServer.Cookie";
+    config.Cookie.Name = Environment.GetEnvironmentVariable("COOKIE_NANE") ?? "PSP.IdentityServer.Cookie";
     config.Cookie.SameSite = SameSiteMode.None;
     config.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     config.LoginPath = "/Auth/Login";
@@ -52,16 +55,16 @@ builder.Services.AddIdentityServer()
 builder.Services.AddAuthentication()
     .AddYandex(options =>
     {
-        options.ClientId = "adf944112ee74aaca09676257c64016a";
-        options.ClientSecret = "c73aaa4b285a43739a940ba8d83a9533";
-        options.CallbackPath = "/Auth/yandex";
+        options.ClientId = Environment.GetEnvironmentVariable("YANDEX_CLIENTID") ?? "adf944112ee74aaca09676257c64016a";
+        options.ClientSecret = Environment.GetEnvironmentVariable("YANDEX_SECRET") ?? "c73aaa4b285a43739a940ba8d83a9533";
+        options.CallbackPath = Environment.GetEnvironmentVariable("YANDEX_CALLBACK_PATH") ?? "/Auth/yandex";
     })
     .AddVkontakte(options =>
     {
         options.Scope.Add("email");
-        options.ClientId = "51863166";
-        options.ClientSecret = "vEo11t3WIkNLe2zcAm1z";
-        options.CallbackPath = "/Auth/vk";
+        options.ClientId = Environment.GetEnvironmentVariable("VK_CLIENTID") ?? "51863166";
+        options.ClientSecret = Environment.GetEnvironmentVariable("VK_SECRET") ?? "vEo11t3WIkNLe2zcAm1z";
+        options.CallbackPath = Environment.GetEnvironmentVariable("VK_CALLBACK_PATH") ?? "/Auth/vk";
     });
 
 builder.Services.AddCors(options => options.AddPolicy(name: "PSP",
@@ -71,6 +74,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "PSP",
     }));
 
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 app.UseHttpsRedirection();
@@ -79,6 +83,9 @@ app.UseRouting();
 app.UseCors("PSP");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMetricServer();
+app.UseMiddleware<ResponseMetricMiddleware>();
 app.UseIdentityServer();
 app.MapDefaultControllerRoute();
+app.UseHealthChecks("/health");
 app.Run();
