@@ -7,15 +7,15 @@ namespace Infrastructure.Repositories.FlightRepositories;
 
 public class AirlineRepository(PSPContext context) : IAirlineRepository
 {
-    public async Task<IEnumerable<Airline>> GetAllAsync() => await context.Airlines.ToListAsync();
+    public async Task<IEnumerable<Airline>> GetAllAsync() => await context.Airlines.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<Airline>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.Airlines.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<Airline>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.Airlines.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<Airline?> GetByCodeAsync(string code) => await context.Airlines.Where(p => p.IataCode == code).FirstOrDefaultAsync();
+    public async Task<Airline?> GetByCodeAsync(string code) => await context.Airlines.Where(p => p.IataCode == code).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.Airlines.CountAsync();
+    public async Task<long> GetCountAsync() => await context.Airlines.AsNoTracking().CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(string code) => await context.Airlines.Where(p => p.IataCode == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(string code) => await context.Airlines.Where(p => p.IataCode == code).AsNoTracking().AnyAsync();
     
     public async Task<bool> AddAsync(Airline obj)
     {

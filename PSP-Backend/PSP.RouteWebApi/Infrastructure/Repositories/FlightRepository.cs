@@ -16,6 +16,7 @@ public class FlightRepository(PSPContext context) : IFlightRepository
                 .ThenInclude(f => f.CityIataCodeNavigation)
             .Include(f => f.AirlineCodeNavigation)
             .Include(f => f.FareCodeNavigation)
+            .AsNoTracking()
             .ToListAsync();
 
         return flights;

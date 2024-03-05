@@ -8,6 +8,7 @@ using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Queries.ARMQueries;
 
@@ -70,7 +71,7 @@ public static class SearchByPasseneger
         }
     }
     
-    public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -127,6 +128,7 @@ public static class SearchByPasseneger
             {
                 throw new ResponseException("PPC-000001", "Идентификатор пассажира не существует");
             }
+            logger.LogInformation($"Search {nameof(SearchByPasseneger)}");
             return new QueryResult(passenger);
         }
     }

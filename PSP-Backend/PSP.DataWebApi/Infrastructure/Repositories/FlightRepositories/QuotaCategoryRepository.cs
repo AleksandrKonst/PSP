@@ -7,15 +7,15 @@ namespace Infrastructure.Repositories.FlightRepositories;
 
 public class QuotaCategoryRepository(PSPContext context) : IQuotaCategoryRepository
 {
-    public async Task<IEnumerable<QuotaCategory>> GetAllAsync() => await context.QuotaCategories.ToListAsync();
+    public async Task<IEnumerable<QuotaCategory>> GetAllAsync() => await context.QuotaCategories.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<QuotaCategory>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.QuotaCategories.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<QuotaCategory>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.QuotaCategories.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<QuotaCategory?> GetByCodeAsync(string code) => await context.QuotaCategories.Where(p => p.Code == code).FirstOrDefaultAsync();
+    public async Task<QuotaCategory?> GetByCodeAsync(string code) => await context.QuotaCategories.Where(p => p.Code == code).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.QuotaCategories.CountAsync();
+    public async Task<long> GetCountAsync() => await context.QuotaCategories.AsNoTracking().CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(string code) => await context.QuotaCategories.Where(p => p.Code == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(string code) => await context.QuotaCategories.Where(p => p.Code == code).AsNoTracking().AnyAsync();
     
     public async Task<bool> AddAsync(QuotaCategory obj)
     {

@@ -7,15 +7,15 @@ namespace Infrastructure.Repositories.FlightRepositories;
 
 public class CityRepository(PSPContext context) : ICityRepository
 {
-    public async Task<IEnumerable<City>> GetAllAsync() => await context.Cities.ToListAsync();
+    public async Task<IEnumerable<City>> GetAllAsync() => await context.Cities.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<City>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.Cities.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<City>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.Cities.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<City?> GetByCodeAsync(string code) => await context.Cities.Where(p => p.IataCode == code).FirstOrDefaultAsync();
+    public async Task<City?> GetByCodeAsync(string code) => await context.Cities.Where(p => p.IataCode == code).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.Cities.CountAsync();
+    public async Task<long> GetCountAsync() => await context.Cities.AsNoTracking().CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(string code) => await context.Cities.Where(p => p.IataCode == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(string code) => await context.Cities.Where(p => p.IataCode == code).AsNoTracking().AnyAsync();
     
     public async Task<bool> AddAsync(City obj)
     {

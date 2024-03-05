@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.PassengerTypeCommands;
 
@@ -22,10 +23,11 @@ public static class DeletePassengerType
         }
     }
     
-    public class Handler(IPassengerTypeRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(IPassengerTypeRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Delete {nameof(DeletePassengerType)}");
             return new CommandResult(await repository.DeleteAsync(request.Code));
         }
     }

@@ -4,6 +4,7 @@ using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.CouponEventCommands;
 
@@ -24,10 +25,11 @@ public static class CreateCouponEvent
         }
     }
     
-    public class Handler(ICouponEventRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(ICouponEventRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Create {nameof(CreateCouponEvent)}");
             return new CommandResult(await repository.AddAsync(mapper.Map<CouponEvent>(request.CouponEventDto)));
         }
     }

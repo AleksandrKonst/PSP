@@ -7,15 +7,15 @@ namespace Infrastructure.Repositories.PassengerRepositories;
 
 public class DocumentTypeRepository(PSPContext context) : IDocumentTypeRepository
 {
-    public async Task<IEnumerable<DocumentType>> GetAllAsync() => await context.DocumentTypes.ToListAsync();
+    public async Task<IEnumerable<DocumentType>> GetAllAsync() => await context.DocumentTypes.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<DocumentType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.DocumentTypes.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<DocumentType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.DocumentTypes.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<DocumentType?> GetByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
+    public async Task<DocumentType?> GetByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.DocumentTypes.CountAsync();
+    public async Task<long> GetCountAsync() => await context.DocumentTypes.AsNoTracking().CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(string code) => await context.DocumentTypes.Where(p => p.Code == code).AsNoTracking().AnyAsync();
     
     public async Task<bool> AddAsync(DocumentType obj)
     {

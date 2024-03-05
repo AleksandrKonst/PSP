@@ -7,15 +7,15 @@ namespace Infrastructure.Repositories.FlightRepositories;
 
 public class TicketTypeRepository(PSPContext context) : ITicketTypeRepository
 {
-    public async Task<IEnumerable<TicketType>> GetAllAsync() => await context.TicketTypes.ToListAsync();
+    public async Task<IEnumerable<TicketType>> GetAllAsync() => await context.TicketTypes.AsNoTracking().ToListAsync();
 
-    public async Task<IEnumerable<TicketType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.TicketTypes.Skip(index).Take(count).ToListAsync();
+    public async Task<IEnumerable<TicketType>> GetPartAsync(int index = 0, int count = Int32.MaxValue) => await context.TicketTypes.Skip(index).Take(count).AsNoTracking().ToListAsync();
 
-    public async Task<TicketType?> GetByCodeAsync(short code) => await context.TicketTypes.Where(p => p.Code == code).FirstOrDefaultAsync();
+    public async Task<TicketType?> GetByCodeAsync(short code) => await context.TicketTypes.Where(p => p.Code == code).AsNoTracking().FirstOrDefaultAsync();
 
-    public async Task<long> GetCountAsync() => await context.TicketTypes.CountAsync();
+    public async Task<long> GetCountAsync() => await context.TicketTypes.AsNoTracking().CountAsync();
 
-    public async Task<bool> CheckByCodeAsync(short code) => await context.TicketTypes.Where(p => p.Code == code).AnyAsync();
+    public async Task<bool> CheckByCodeAsync(short code) => await context.TicketTypes.Where(p => p.Code == code).AsNoTracking().AnyAsync();
     
     public async Task<bool> AddAsync(TicketType obj)
     {

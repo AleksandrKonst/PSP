@@ -13,7 +13,7 @@ namespace AuthWebApi.Controllers;
 [AllowAnonymous]
 [Controller]
 public class AuthController(SignInManager<PspUser> signInManager, UserManager<PspUser> userManager,
-        IIdentityServerInteractionService interactionService, IMapper mapper) : Controller
+        IIdentityServerInteractionService interactionService, IMapper mapper, ILogger<AuthController> logger) : Controller
 {
     [HttpGet]
     public IActionResult Login(string returnUrl)
@@ -41,6 +41,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             viewModel.Password, false, false);
         if (result.Succeeded)
         {
+            logger.LogInformation($"Login: {user.UserName}. Email {user.Email}");
             return Redirect(viewModel.ReturnUrl);
         }
         
@@ -107,6 +108,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
                 return BadRequest();
             await EmailService.SendEmailAsync(viewModel.Email, confirmationLink);
             
+            logger.LogInformation($"Register: {user.UserName}. Email {user.Email}");
             return RedirectToAction(nameof(SuccessRegistration));
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
@@ -153,6 +155,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
             return RedirectToAction(nameof(Login));
         await EmailService.SendChangeEmailAsync(forgotPasswordViewModel.Email, callback);
         
+        logger.LogInformation($"ForgotPassword Confirm: {user.UserName}. Email {user.Email}");
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
     }
     
@@ -186,7 +189,11 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         
         var resetPassResult = await userManager.ResetPasswordAsync(user, changePasswordViewModel.Token, changePasswordViewModel.Password);
         
-        if (resetPassResult.Succeeded) return RedirectToAction(nameof(ChangePasswordConfirmation));
+        if (resetPassResult.Succeeded)
+        {
+            logger.LogInformation($"ChangePassword: {user.UserName}. Email {user.Email}");
+            return RedirectToAction(nameof(ChangePasswordConfirmation));
+        }
         
         foreach (var error in resetPassResult.Errors)
         {
@@ -247,6 +254,7 @@ public class AuthController(SignInManager<PspUser> signInManager, UserManager<Ps
         if (!identityResult.Succeeded) return BadRequest();
         
         await signInManager.SignInAsync(user, false);
+        logger.LogInformation($"ExternalLoginCallback: {user.UserName}. Email {user.Email}");
         return Redirect(returnUrl);
     }
 }
