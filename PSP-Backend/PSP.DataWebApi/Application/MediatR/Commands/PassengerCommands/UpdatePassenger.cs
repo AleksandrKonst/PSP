@@ -4,6 +4,7 @@ using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.PassengerCommands;
 
@@ -24,10 +25,11 @@ public static class UpdatePassenger
         }
     }
     
-    public class Handler(IPassengerRepository repository, IMapper mapper) : IRequestHandler<Command, CommandResult>
+    public class Handler(IPassengerRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Update {nameof(UpdatePassenger)}");
             return new CommandResult(await repository.UpdateAsync(mapper.Map<Passenger>(request.PassengerDto)));
         }
     }

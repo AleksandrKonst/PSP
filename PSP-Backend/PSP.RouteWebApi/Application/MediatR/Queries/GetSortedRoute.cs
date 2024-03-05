@@ -4,6 +4,7 @@ using Domain.Models;
 using FluentValidation;
 using Infrastructure.Repositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Queries;
 
@@ -29,7 +30,8 @@ public static class GetSortedRoute
         }
     }
     
-    public class Handler(IFlightRepository repository, IMapper mapper) : IRequestHandler<Query, QueryResult>
+    public class Handler(IFlightRepository repository, IMapper mapper, ILogger<Handler> logger)
+        : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -82,7 +84,8 @@ public static class GetSortedRoute
                 .ThenBy(f => f.FlightSegments.Count)
                 .ThenBy(f => f.Fare.Amount)
                 .ToList();
-
+            
+            logger.LogInformation("Route send");
             return new QueryResult(result);
         }
     }

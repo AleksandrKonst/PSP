@@ -2,7 +2,6 @@ namespace Application.DTO;
 
 public class FlightViewModel
 {
-    
     public string DepartPlace { get; set; }
     
     public DateTime DepartDatetimePlan { get; set; }
@@ -32,9 +31,9 @@ public class FlightSegmentViewModel
     
     public string ArrivePlace { get; set; }
     
-    public DateTime DepartDatetime { get; set; }
+    public DateTime DepartDatetimePlan { get; set; }
     
-    public DateTime ArriveDatetime { get; set; }
+    public DateTime ArriveDatetimePlan { get; set; }
     
     public AirlineViewModel Airline{ get; set; }
 }

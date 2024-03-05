@@ -15,19 +15,19 @@ public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mappe
     private const int PageSize = 10;
 
     [HttpGet]
-    public async Task<IActionResult> Index(string search, int page = 1)
+    public async Task<IActionResult> Index(string? search, int page = 1)
     {
         ViewBag.SelectedCategory = "users";
         
         var roles = await roleManager.Roles
-            .Where(r => search == null || r.Name.ToLower().Contains(search.ToLower()))
+            .Where(r => search == null || r.Name!.ToLower().Contains(search.ToLower()))
             .Skip((page - 1) * PageSize)
             .Take(PageSize)
             .ToListAsync();
         
         var indexViewModel = new IndexViewModel()
         {
-            Search = search,
+            Search = search ?? "",
             MaxPage = roles.Count / PageSize + 1,
             Page = page,
             Roles = mapper.Map<IEnumerable<RoleDTO>>(roles)

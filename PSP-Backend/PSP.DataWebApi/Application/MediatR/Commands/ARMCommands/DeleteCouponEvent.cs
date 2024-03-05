@@ -2,6 +2,7 @@ using Application.DTO.ArmContextDTO.Delete;
 using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Commands.ARMCommands;
 
@@ -27,10 +28,11 @@ public static class DeleteCouponEvent
         }
     }
     
-    public class Handler(ICouponEventRepository repository) : IRequestHandler<Command, CommandResult>
+    public class Handler(ICouponEventRepository repository, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
+            logger.LogInformation($"Delete {nameof(DeleteCouponEvent)}");
             return new CommandResult(await repository.DeleteByTicketAsync(request.DeleteCouponEventRequestDto.OperationType, 
                 request.DeleteCouponEventRequestDto.TicketType, 
                 request.DeleteCouponEventRequestDto.TicketNumber, 

@@ -10,13 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthWebApi.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class ClientController(IClientStore clientStore, AuthDbContext context, IMapper mapper) : Controller
 {
     private const int PageSize = 10;
     
     [HttpGet]
-    public async Task<IActionResult> Index(string search, int page = 1)
+    public async Task<IActionResult> Index(string? search, int page = 1)
     {
         ViewBag.SelectedCategory = "clients";
 
@@ -25,11 +25,12 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
             .Select(c => c.ClientId)
             .Skip((page - 1) * PageSize)
             .Take(PageSize)
+            .AsNoTracking()
             .ToListAsync();
         
         var indexViewModel = new IndexViewModel()
         {
-            Search = search,
+            Search = search ?? "",
             MaxPage = clients.Count / PageSize + 1,
             Page = page,
             Clients = clients

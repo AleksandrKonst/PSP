@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthWebApi.Controllers;
 
 [Controller]
-[Authorize(Roles = "Admin, Airline")]
+[Authorize(Roles = "Admin")]
 public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
 {
     private const int PageSize = 10;
@@ -76,11 +76,15 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         }
 
         var user = mapper.Map<PspUser>(viewModel);
-        
+
         var result = await userManager.CreateAsync(user, viewModel.Password);
         if (result.Succeeded)
         {
-            var userFromDb = await userManager.FindByNameAsync(user.UserName);
+            var userFromDb = await userManager.FindByNameAsync(user.UserName!);
+            if (userFromDb == null)
+            {
+                return NoContent();
+            }
             await userManager.AddToRoleAsync(userFromDb, viewModel.Role);
             return RedirectToAction(nameof(Create));
         }
@@ -171,8 +175,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
                 {
                     Id = u.Id,
                     UserId = u.UserId,
-                    ClaimType = u.ClaimType,
-                    ClaimValue = u.ClaimValue
+                    ClaimType = u.ClaimType ?? "NUll",
+                    ClaimValue = u.ClaimValue ?? "NUll"
                 }).ToListAsync()
         };
         
@@ -211,6 +215,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         
         var claim = await context.UserClaims.Where(u => u.Id == id).FirstAsync();
         var user = await userManager.FindByIdAsync(claim.UserId);
+        if (user == null)
+            return RedirectToAction(nameof(Index));
         await userManager.RemoveClaimAsync(user, claim.ToClaim());
 
         var editUser = new EditClaimViewModel()
@@ -222,8 +228,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
                 {
                     Id = u.Id,
                     UserId = u.UserId,
-                    ClaimType = u.ClaimType,
-                    ClaimValue = u.ClaimValue
+                    ClaimType = u.ClaimType ?? "NULL",
+                    ClaimValue = u.ClaimValue ?? "NULL"
                 }).ToListAsync()
         };
         
@@ -274,7 +280,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         var userChange = new ChangePasswordViewModel()
         {
             Id = id,
-            NormalizedUserName = user.NormalizedUserName
+            NormalizedUserName = user.NormalizedUserName ?? "NOT_FOUND"
         };
         
         return View(userChange);
@@ -292,13 +298,15 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             return View(viewModel);
         }
 
-        var user = await userManager.FindByNameAsync(viewModel.Id);
+        var user = await userManager.FindByIdAsync(viewModel.Id);
         if (user == null)
         {
             throw new ApplicationException($"Unable to load user with NormalizedUserName: {viewModel.NormalizedUserName}.");
         }
-
-        var addPasswordResult = await userManager.ChangePasswordAsync(user, viewModel.CurrentPassword, viewModel.Password);
+        
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        
+        var addPasswordResult = await userManager.ResetPasswordAsync(user, token, viewModel.Password);
         if (!addPasswordResult.Succeeded)
         {
             ModelState.AddModelError(string.Empty, "Change Password False");

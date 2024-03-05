@@ -1,7 +1,10 @@
+using System.Reflection;
 using Application;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Prometheus;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using WebApi.Middleware;
 using WebApi.Reporters;
 
@@ -39,6 +42,10 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 builder.Services.AddSwaggerGen();
+
+ConfigureLogging();
+builder.Host.UseSerilog();
+
 builder.Services.AddHealthChecks();
 builder.Services.AddApiVersioning(config =>
     {
@@ -70,3 +77,36 @@ app.UseMiddleware<ResponseMetricMiddleware>();
 app.MapControllers();
 app.UseHealthChecks("/health");
 app.Run();
+
+void ConfigureLogging()
+{
+    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+    var configuration = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile(
+            $"appsettings.{environment}.json", optional: true
+        )
+        .Build();
+    
+    Log.Logger = new LoggerConfiguration()
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .WriteTo.Debug()
+        .WriteTo.Console()
+        .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment!))
+        .Enrich.WithProperty("Environment", environment)
+        .ReadFrom.Configuration(configuration)
+        .CreateLogger();
+}
+
+ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
+{
+    return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]!))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = $"route-{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        NumberOfReplicas = 1,
+        NumberOfShards = 2
+    };
+}

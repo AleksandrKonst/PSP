@@ -10,6 +10,7 @@ using FluentValidation;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Queries.ARMQueries;
 
@@ -33,7 +34,7 @@ public static class SelectPassengerQuotaCount
     }
     
     public class Handler(IPassengerRepository passengerRepository, IQuotaCategoryRepository quotaCategoryRepository, 
-        IMediator mediator, IMapper mapper) : IRequestHandler<Query, QueryResult>
+        IMediator mediator, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -194,6 +195,7 @@ public static class SelectPassengerQuotaCount
                 passengers.Add(passenger);
             }
 
+            logger.LogInformation($"Select {nameof(SelectPassengerQuotaCount)}");
             return new QueryResult(passengers);
         }
     }
