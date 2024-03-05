@@ -30,7 +30,8 @@ public static class GetSortedRoute
         }
     }
     
-    public class Handler(IFlightRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Query, QueryResult>
+    public class Handler(IFlightRepository repository, IMapper mapper, ILogger<Handler> logger)
+        : IRequestHandler<Query, QueryResult>
     {
         public async Task<QueryResult> Handle(Query request, CancellationToken cancellationToken)
         {
