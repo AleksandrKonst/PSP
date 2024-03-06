@@ -5,9 +5,9 @@ using Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
-using Test.Mocks;
+using UnitTests.Mocks;
 
-namespace Test;
+namespace UnitTests;
 
 public class RouteTest
 {
