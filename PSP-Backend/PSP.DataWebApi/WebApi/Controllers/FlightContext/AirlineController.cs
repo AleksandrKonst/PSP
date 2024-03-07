@@ -40,7 +40,7 @@ public class AirlineController(IMediator mediator) : ControllerBase
             response_datetime = DateTime.Now,
             links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
         };
-        response.passengers = passengers.Result;
+        response.airline = passengers.Result;
         
         return Ok(response);
     }
@@ -63,7 +63,7 @@ public class AirlineController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.airline = passenger.Result;
         
         return Ok(response);
     }
