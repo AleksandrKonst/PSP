@@ -26,7 +26,7 @@ public static class CreateCity
         }
     }
     
-    public class Handler(ICityRepository repository, IMapper mapper, ILogger<CreateAirport.Handler> logger) : IRequestHandler<Command, CommandResult>
+    public class Handler(ICityRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {

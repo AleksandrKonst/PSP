@@ -25,7 +25,7 @@ public static class UpdateAirport
         }
     }
     
-    public class Handler(IAirportRepository repository, IMapper mapper, ILogger<CreateAirport.Handler> logger) : IRequestHandler<Command, CommandResult>
+    public class Handler(IAirportRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
