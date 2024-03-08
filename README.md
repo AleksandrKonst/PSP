@@ -1,5 +1,7 @@
 # "PSP" Портал субсидированных перевозок
 
+[![.NET Core Desktop](https://github.com/AleksandrKonst/PSP/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/AleksandrKonst/PSP/actions/workflows/dotnet-desktop.yml)
+
 [Портал Субсидируемых перевозок] https://doc.psp.z-it.ru/
 
 # Вход/Регистрация
