@@ -1,0 +1,52 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "master", "dev" ]
+  pull_request:
+    branches: [ "master", "dev" ]
+
+jobs:
+  psp-data:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Install Restore
+      run: dotnet restore PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln --configuration Debug
+
+    - name: Build
+      run: dotnet build PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln --configuration Debug
+    - name: Test with the dotnet CLI
+      run: dotnet test PSP-Backend/PSP.DataWebApi/UnitTests/UnitTests.csproj --configuration Debug
+
+  psp-route:
+      strategy:
+        matrix:
+          configuration: [Debug, Release]
+      runs-on: windows-latest
+  
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+  
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Install Restore
+        run: dotnet restore PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln --configuration Debug
+  
+      - name: Build
+        run: dotnet PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln --configuration Debug
+      - name: Test with the dotnet CLI
+        run: dotnet test PSP-Backend/PSP.RouteWebApi/UnitTests/UnitTests.csproj --configuration Debug
