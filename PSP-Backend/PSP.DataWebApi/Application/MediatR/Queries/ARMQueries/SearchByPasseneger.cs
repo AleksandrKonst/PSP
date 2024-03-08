@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.MediatR.Queries.ARMQueries;
 
-public static class SearchByPasseneger
+public static class SearchByPassenger
 {
     public record Query(SearchByPassengerDTO SearchByPassengerDto) : IRequest<QueryResult>;
     
@@ -128,7 +128,7 @@ public static class SearchByPasseneger
             {
                 throw new ResponseException("PPC-000001", "Идентификатор пассажира не существует");
             }
-            logger.LogInformation($"Search {nameof(SearchByPasseneger)}");
+            logger.LogInformation($"Search {nameof(SearchByPassenger)}");
             return new QueryResult(passenger);
         }
     }

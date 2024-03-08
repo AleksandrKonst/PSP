@@ -10,7 +10,7 @@ namespace AuthWebApi.Controllers;
 
 [Authorize(Roles = "Admin")]
 [Controller]
-public class ClaimController(AuthDbContext context, IMapper mapper) : Controller
+public class ClaimController(AuthDbContext context, IMapper mapper, ILogger<AuthController> logger) : Controller
 {
     private const int PageSize = 10;
 
@@ -81,6 +81,8 @@ public class ClaimController(AuthDbContext context, IMapper mapper) : Controller
 
         context.UserClaims.Update(claim);
         await context.SaveChangesAsync();
+        
+        logger.LogInformation($"Edit: {claim.ClaimType} : {claim.ClaimValue}");
         return RedirectToAction(nameof(Edit), new {claim.Id});
     }
 
@@ -111,6 +113,8 @@ public class ClaimController(AuthDbContext context, IMapper mapper) : Controller
 
         context.UserClaims.Remove(claim);
         await context.SaveChangesAsync();
+        
+        logger.LogInformation($"Delete: {claim.ClaimType} : {claim.ClaimValue}");
         return RedirectToAction(nameof(Index));
     }
 }

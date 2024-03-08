@@ -1,7 +1,7 @@
 using Application.DTO;
 using Domain.Models;
 
-namespace Test.Mocks;
+namespace UnitTests.Mocks;
 
 public static class RouteMocks
 {

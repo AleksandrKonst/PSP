@@ -45,7 +45,7 @@ public class AirportController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{code}")]
     [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]

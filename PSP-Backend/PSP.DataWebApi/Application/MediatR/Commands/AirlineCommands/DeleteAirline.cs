@@ -14,7 +14,7 @@ public static class DeleteAirline
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(IAirportRepository repository)
+        public Validator(IAirlineRepository repository)
         {
             RuleFor(x => x.code)
                 .MustAsync(async (code, cancellationToken) => await repository.CheckByCodeAsync(code))
@@ -23,7 +23,7 @@ public static class DeleteAirline
         }
     }
     
-    public class Handler(IAirportRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
+    public class Handler(IAirlineRepository repository, IMapper mapper, ILogger<Handler> logger) : IRequestHandler<Command, CommandResult>
     {
         public async Task<CommandResult> Handle(Command request, CancellationToken cancellationToken)
         {
