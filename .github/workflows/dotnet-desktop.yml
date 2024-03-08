@@ -22,18 +22,18 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Install Restore
-      run: dotnet restore PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln --configuration Debug
+      run: dotnet restore PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln
 
     - name: Build
-      run: dotnet build PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln --configuration Debug
+      run: dotnet build PSP-Backend/PSP.DataWebApi/PSP.DataWebApi.sln
     - name: Test with the dotnet CLI
-      run: dotnet test PSP-Backend/PSP.DataWebApi/UnitTests/UnitTests.csproj --configuration Debug
+      run: dotnet test PSP-Backend/PSP.DataWebApi/UnitTests/UnitTests.csproj
 
   psp-route:
       strategy:
         matrix:
-          configuration: [Debug, Release]
-      runs-on: windows-latest
+          os: [windows-latest]
+      runs-on: ${{matrix.os}}
   
       steps:
       - name: Checkout
@@ -44,9 +44,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Install Restore
-        run: dotnet restore PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln --configuration Debug
+        run: dotnet restore PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln
   
       - name: Build
-        run: dotnet PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln --configuration Debug
+        run: dotnet PSP-Backend/PSP.RouteWebApi/PSP.RouteWebApi.sln
       - name: Test with the dotnet CLI
-        run: dotnet test PSP-Backend/PSP.RouteWebApi/UnitTests/UnitTests.csproj --configuration Debug
+        run: dotnet test PSP-Backend/PSP.RouteWebApi/UnitTests/UnitTests.csproj
