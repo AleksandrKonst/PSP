@@ -1,9 +1,11 @@
 using Application.AutoMapperProfiles;
 using Application.DTO.FlightContextDTO;
+using Application.MediatR.Commands.FareCommands;
 using Application.MediatR.Queries.FareQueries;
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using UnitTests.Mocks;
@@ -68,5 +70,71 @@ public class FareTest
         var trueResult = new List<FareDTO>() {FareMocks.GetFareDTO()};
         
         Assert.Equal(JsonConvert.SerializeObject(trueResult), JsonConvert.SerializeObject(result));
+    }
+    
+    [Fact]
+    public async void CreateFare()
+    {
+        var mockRepo = new Mock<IFareRepository>();
+        mockRepo.Setup(repo => repo.AddAsync(It.IsAny<Fare>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<CreateFare.Handler>>();
+        
+        var handler = new CreateFare.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new CreateFare.Command(FareMocks.GetFareDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void DeleteFare()
+    {
+        var mockRepo = new Mock<IFareRepository>();
+        mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<string>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<DeleteFare.Handler>>();
+        
+        var handler = new DeleteFare.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new DeleteFare.Command("5NI"), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void UpdateFare()
+    {
+        var mockRepo = new Mock<IFareRepository>();
+        mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Fare>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<UpdateFare.Handler>>();
+        
+        var handler = new UpdateFare.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new UpdateFare.Command(FareMocks.GetFareDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
     }
 }

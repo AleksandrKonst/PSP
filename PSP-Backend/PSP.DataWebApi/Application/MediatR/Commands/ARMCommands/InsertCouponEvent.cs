@@ -180,7 +180,7 @@ public static class InsertCouponEvent
                         
                         passengers.Add(new InsertPassengerResponseDTO()
                         {
-                            Id = passengerDb.Id,
+                            Id = passengerData.Id,
                             TicketProperties = new InsertTicketPropertiesDTO()
                             {
                                 PassengerTypesPreConfirmed = true,

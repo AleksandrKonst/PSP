@@ -1,9 +1,11 @@
 using Application.AutoMapperProfiles;
 using Application.DTO.FlightContextDTO;
+using Application.MediatR.Commands.FlightCommands;
 using Application.MediatR.Queries.FlightQueries;
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using UnitTests.Mocks;
@@ -68,5 +70,71 @@ public class FlightTest
         var trueResult = new List<FlightDTO>() {FlightMocks.GetFlightDTO()};
         
         Assert.Equal(JsonConvert.SerializeObject(trueResult), JsonConvert.SerializeObject(result));
+    }
+    
+    [Fact]
+    public async void CreateFlight()
+    {
+        var mockRepo = new Mock<IFlightRepository>();
+        mockRepo.Setup(repo => repo.AddAsync(It.IsAny<Flight>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<CreateFlight.Handler>>();
+        
+        var handler = new CreateFlight.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new CreateFlight.Command(FlightMocks.GetFlightDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void DeleteFlight()
+    {
+        var mockRepo = new Mock<IFlightRepository>();
+        mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<DeleteFlight.Handler>>();
+        
+        var handler = new DeleteFlight.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new DeleteFlight.Command(179), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void UpdateFlight()
+    {
+        var mockRepo = new Mock<IFlightRepository>();
+        mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Flight>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<UpdateFlight.Handler>>();
+        
+        var handler = new UpdateFlight.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new UpdateFlight.Command(FlightMocks.GetFlightDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
     }
 }

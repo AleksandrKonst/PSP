@@ -1,9 +1,11 @@
 using Application.AutoMapperProfiles;
 using Application.DTO.PassengerContextDTO;
+using Application.MediatR.Commands.DocumentTypeCommands;
 using Application.MediatR.Queries.DocumentTypeQueries;
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.Repositories.PassengerRepositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using UnitTests.Mocks;
@@ -69,5 +71,71 @@ public class DocumentTypeTest
         var trueResult = new List<DocumentTypeDTO>() {DocumentTypeMocks.GetDocumentTypeDTO()};
         
         Assert.Equal(JsonConvert.SerializeObject(trueResult), JsonConvert.SerializeObject(result));
+    }
+    
+    [Fact]
+    public async void CreateDocumentType()
+    {
+        var mockRepo = new Mock<IDocumentTypeRepository>();
+        mockRepo.Setup(repo => repo.AddAsync(It.IsAny<DocumentType>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<CreateDocumentType.Handler>>();
+        
+        var handler = new CreateDocumentType.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new CreateDocumentType.Command(DocumentTypeMocks.GetDocumentTypeDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void DeleteDocumentType()
+    {
+        var mockRepo = new Mock<IDocumentTypeRepository>();
+        mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<string>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<DeleteDocumentType.Handler>>();
+        
+        var handler = new DeleteDocumentType.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new DeleteDocumentType.Command("00"), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void UpdateDocumentType()
+    {
+        var mockRepo = new Mock<IDocumentTypeRepository>();
+        mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<DocumentType>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<UpdateDocumentType.Handler>>();
+        
+        var handler = new UpdateDocumentType.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new UpdateDocumentType.Command(DocumentTypeMocks.GetDocumentTypeDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
     }
 }

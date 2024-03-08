@@ -1,9 +1,11 @@
 using Application.AutoMapperProfiles;
 using Application.DTO.FlightContextDTO;
+using Application.MediatR.Commands.CouponEventCommands;
 using Application.MediatR.Queries.CouponEventQueries;
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using UnitTests.Mocks;
@@ -68,5 +70,71 @@ public class CouponEventTest
         var trueResult = new List<CouponEventDTO>() {CouponEventMocks.GetCouponEventDTO()};
         
         Assert.Equal(JsonConvert.SerializeObject(trueResult), JsonConvert.SerializeObject(result));
+    }
+    
+    [Fact]
+    public async void CreateCouponEvent()
+    {
+        var mockRepo = new Mock<ICouponEventRepository>();
+        mockRepo.Setup(repo => repo.AddAsync(It.IsAny<CouponEvent>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<CreateCouponEvent.Handler>>();
+        
+        var handler = new CreateCouponEvent.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new CreateCouponEvent.Command(CouponEventMocks.GetCouponEventDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void DeleteCouponEvent()
+    {
+        var mockRepo = new Mock<ICouponEventRepository>();
+        mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<long>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<DeleteCouponEvent.Handler>>();
+        
+        var handler = new DeleteCouponEvent.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new DeleteCouponEvent.Command(1), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void UpdateCouponEvent()
+    {
+        var mockRepo = new Mock<ICouponEventRepository>();
+        mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<CouponEvent>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<UpdateCouponEvent.Handler>>();
+        
+        var handler = new UpdateCouponEvent.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new UpdateCouponEvent.Command(CouponEventMocks.GetCouponEventDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
     }
 }

@@ -1,5 +1,6 @@
 using System.Dynamic;
 using Application.DTO.ArmContextDTO.General;
+using Application.DTO.ArmContextDTO.Insert;
 using Application.DTO.ArmContextDTO.Search;
 using Application.DTO.ArmContextDTO.Select;
 using Application.DTO.FlightContextDTO;
@@ -151,7 +152,7 @@ public class ARMMocks
                     QuotaCode = "invalid",
                     FlightCode = 179,
                     TicketType = 1,
-                    TicketNumber = "2344555790"
+                    TicketNumber = "2344555790",
                 }
             }
         };
@@ -206,6 +207,94 @@ public class ARMMocks
             }
         };
         
+        return result;
+    }
+    
+    public static InsertPassengerRequestDTO GetInsertPassengerRequestDTO()
+    {
+        var result = new InsertPassengerRequestDTO()
+        {
+            OperationType = "issued",
+            OperationDatetime = "2023-03-01 16:10:00.000",
+            OperationPlace = "AVIA CENTER LLC (MOSCOW)",
+            Passengers = new List<InsertPassengerDataDTO>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Name = "Виталий",
+                    Surname = "Райко",
+                    Patronymic = "Дмитриевич",
+                    Birthdate = new DateOnly(2002,7,18),
+                    Gender = "M",
+                    DocumentType = "01",
+                    DocumentNumber = "46464565656",
+                    TicketType = 1,
+                    TicketNumber = "2344555790",
+                    QuotaBalancesYears = new List<int>() {2023}
+                }
+            },
+            Coupons = new List<InsertCouponDTO>()
+            {
+                new()
+                {
+                    AirlineCode = "SU",
+                    FlightNumber = 180,
+                    OperationPlace = "AVIA CENTER LLC (MOSCOW)",
+                    DepartPlace = "VVO",
+                    DepartTimePlan = "2023-03-01 16:10:00.000",
+                    ArrivePlace = "SVO",
+                    ArriveTimePlan ="2023-03-01 16:10:00.000",
+                    PnrCode = "5NR",
+                    Fares = new List<InsertFaresDTO>()
+                    {
+                        new()
+                        {
+                            PassengerId = 1,
+                            PassengerType = "invalid_23",
+                            Code = "5NI",
+                            Amount = 760000,
+                            Currency = "RUB",
+                            Special = true
+                        }
+                    }
+                }
+            }
+        };
+        return result;
+    }
+    
+    public static InsertPassengerResponseDTO InsertPassengerResponseDTO()
+    {
+        var result = new InsertPassengerResponseDTO()
+        {
+            Id = 1,
+            TicketProperties = new InsertTicketPropertiesDTO()
+            {
+                PassengerTypesPreConfirmed = true,
+                ContainsQuotaRoutes = true
+            },
+            QuotaBalances = new List<InsertQuotaBalanceDTO>()
+            {
+                new()
+                {
+                    Year = 2023,
+                    UsedDocumentCount = 1,
+                    Changed = true,
+                    CategoryBalances = new List<CategoryBalanceDTO>()
+                    {
+                        new()
+                        {
+                            Category = "invalid",
+                            Available = 4,
+                            Issued = 2,
+                            Refund = 0,
+                            Used = 0
+                        }
+                    }
+                }
+            }
+        };
         return result;
     }
 }

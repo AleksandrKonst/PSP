@@ -1,9 +1,11 @@
 using Application.AutoMapperProfiles;
 using Application.DTO.FlightContextDTO;
+using Application.MediatR.Commands.CityCommands;
 using Application.MediatR.Queries.CityQueries;
 using AutoMapper;
 using Domain.Models;
 using Infrastructure.Repositories.FlightRepositories.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using UnitTests.Mocks;
@@ -68,5 +70,71 @@ public class CityTest
         var trueResult = new List<CityDTO>() {CityMocks.GetCityDTO()};
         
         Assert.Equal(JsonConvert.SerializeObject(trueResult), JsonConvert.SerializeObject(result));
+    }
+    
+    [Fact]
+    public async void CreateCity()
+    {
+        var mockRepo = new Mock<ICityRepository>();
+        mockRepo.Setup(repo => repo.AddAsync(It.IsAny<City>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<CreateCity.Handler>>();
+        
+        var handler = new CreateCity.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new CreateCity.Command(CityMocks.GetCityDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void DeleteCity()
+    {
+        var mockRepo = new Mock<ICityRepository>();
+        mockRepo.Setup(repo => repo.DeleteAsync(It.IsAny<string>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<DeleteCity.Handler>>();
+        
+        var handler = new DeleteCity.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new DeleteCity.Command("MVO"), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
+    }
+    
+    [Fact]
+    public async void UpdateCity()
+    {
+        var mockRepo = new Mock<ICityRepository>();
+        mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<City>())).ReturnsAsync(true);
+        
+        var mockMapper = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new ApplicationProfile());
+        });
+        
+        var mockLogger = new Mock<ILogger<UpdateCity.Handler>>();
+        
+        var handler = new UpdateCity.Handler(mockRepo.Object, mockMapper.CreateMapper(), mockLogger.Object);
+        
+        var queryResult = await handler.Handle(new UpdateCity.Command(CityMocks.GetCityDTO()), new CancellationToken());
+        var result = queryResult.Result;
+        var trueResult = true;
+        
+        Assert.Equal(trueResult, result);
     }
 }
