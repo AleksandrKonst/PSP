@@ -10,7 +10,7 @@ namespace AuthWebApi.Controllers;
 
 [Authorize]
 [Controller]
-public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mapper) : Controller
+public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mapper, ILogger<AuthController> logger) : Controller
 {
     private const int PageSize = 10;
 
@@ -61,6 +61,7 @@ public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mappe
             return View();
         }
         await roleManager.CreateAsync(new IdentityRole(viewModel.Name));
+        logger.LogInformation($"Create: {viewModel.Name}");
         return RedirectToAction(nameof(Create));
     }
 
@@ -107,6 +108,7 @@ public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mappe
         var result = await roleManager.UpdateAsync(role);
         if (result.Succeeded)
         {
+            logger.LogInformation($"Edit: {viewModel.Name}");
             return RedirectToAction(nameof(Edit), new {role.Id});
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
@@ -139,6 +141,7 @@ public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mappe
         }
 
         var result = await roleManager.DeleteAsync(role);
+        logger.LogInformation($"Delete: {role.Name}");
         return RedirectToAction(nameof(Index));
     }
 }

@@ -13,7 +13,7 @@ namespace AuthWebApi.Controllers;
 
 [Controller]
 [Authorize(Roles = "Admin")]
-public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context) : Controller
+public class ManageController(UserManager<PspUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AuthDbContext context, ILogger<AuthController> logger) : Controller
 {
     private const int PageSize = 10;
 
@@ -86,6 +86,8 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
                 return NoContent();
             }
             await userManager.AddToRoleAsync(userFromDb, viewModel.Role);
+            
+            logger.LogInformation($"Create: {user.UserName}. Email {user.Email}");
             return RedirectToAction(nameof(Create));
         }
 
@@ -148,6 +150,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
             if (roleResult.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, viewModel.Role);
+                logger.LogInformation($"Edit: {user.UserName}. Email {user.Email}");
                 return RedirectToAction(nameof(Edit), new {user.Id});
             }
         }
@@ -201,6 +204,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         
         if (result.Succeeded)
         {
+            logger.LogInformation($"EditClaim: {user.UserName}. Email {user.Email}. ClaimType {viewModel.ClaimType}. ClaimValue {viewModel.ClaimValue}");
             return RedirectToAction(nameof(EditClaim), new {id = viewModel.UserId});
         }
         ModelState.AddModelError(string.Empty, "Error occurred");
@@ -233,6 +237,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
                 }).ToListAsync()
         };
         
+        logger.LogInformation($"DeleteClaim: {user.UserName}. Email {user.Email}. ClaimType {claim.ClaimType}. ClaimValue {claim.ClaimValue}");
         return View("EditClaim", editUser);
     }
     
@@ -263,6 +268,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         }
 
         var result = await userManager.DeleteAsync(user);
+        logger.LogInformation($"Delete: {user.UserName}. Email {user.Email}");
         return RedirectToAction(nameof(Index));
     }
     
@@ -310,6 +316,7 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         if (!addPasswordResult.Succeeded)
         {
             ModelState.AddModelError(string.Empty, "Change Password False");
+            logger.LogInformation($"ChangePassword: {user.UserName}. Email {user.Email}");
             return View(viewModel);
         }
 

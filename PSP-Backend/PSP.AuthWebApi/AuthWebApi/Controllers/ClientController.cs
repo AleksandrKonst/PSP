@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthWebApi.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class ClientController(IClientStore clientStore, AuthDbContext context, IMapper mapper) : Controller
+public class ClientController(IClientStore clientStore, AuthDbContext context, IMapper mapper, ILogger<AuthController> logger) : Controller
 {
     private const int PageSize = 10;
     
@@ -80,6 +80,8 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
 
         var result = context.Clients.Remove(client);
         await context.SaveChangesAsync();
+        
+        logger.LogInformation($"Delete: {client.ClientId}");
         return RedirectToAction(nameof(Index));
     }
     
@@ -157,6 +159,7 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
             context.Clients.Update(clientEntity);
             await context.SaveChangesAsync();
         
+            logger.LogInformation($"Edit: {client.ClientId}");
             return RedirectToAction(nameof(Edit), new {client.ClientId});
         }
 
@@ -223,6 +226,7 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
         var result = await context.Clients.AddAsync(clientEntity);
         await context.SaveChangesAsync();
         
+        logger.LogInformation($"Create: {client.ClientId}");
         return RedirectToAction(nameof(Create));
     }
 }
