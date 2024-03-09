@@ -289,6 +289,11 @@ body {
   width: 40px;
 }
 
+/* File */
+.file-submit {
+  display: inline-block;
+}
+
 /* Email */
 .email {
   text-align: center; 

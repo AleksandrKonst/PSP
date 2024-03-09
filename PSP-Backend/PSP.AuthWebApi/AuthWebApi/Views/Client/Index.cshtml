@@ -7,6 +7,9 @@
 
 <div class="panel-nav">
     <a class="btn btn-warning" asp-action="Create">Создать клиента</a>
+    <form asp-action="ExportCsv" method="post" class="file-submit">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-down"></i></button>
+    </form>
 </div>
 
 <h1>Клиенты</h1>
