@@ -9,6 +9,9 @@
     <a class="btn btn-warning" asp-action="Create">Создать пользователя</a>
     <a class="btn btn-danger" asp-controller="Role" asp-action="Index">Роли</a>
     <a class="btn btn-primary" asp-controller="Claim" asp-action="Index">Утверждения</a>
+    <form asp-action="ExportCsv" method="post" class="file-submit">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-down"></i></button>
+    </form>
 </div>
 
 <h1>Пользователи</h1>

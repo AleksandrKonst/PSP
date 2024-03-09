@@ -1,3 +1,4 @@
+using System.Text;
 using AuthWebApi.DTO.ViewModels.Client;
 using AuthWebApi.Models;
 using AuthWebApi.Models.Data;
@@ -37,6 +38,27 @@ public class ClientController(IClientStore clientStore, AuthDbContext context, I
         };
         
         return View(indexViewModel);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ExportCsv()
+    {
+        var clients = await context.Clients.ToListAsync();
+
+        var builder = new StringBuilder();
+        builder.AppendLine("ClientId,ClientSecrets,RequirePkce,RequireClientSecret,RedirectUris,AllowedScopes,AllowAccessTokensViaBrowser,AllowOfflineAccess,RequireConsent,PostLogoutRedirectUris,AllowedCorsOrigins");
+
+        foreach (var client in clients)
+        {
+            client.MapDataFromEntity();
+            builder.AppendLine($"{client.ClientId},{string.Join(":",client.Client.ClientSecrets.Select(c => c.Value))},{client.Client.RequirePkce}," +
+                               $"{client.Client.RequireClientSecret},{(client.Client.RedirectUris == null ? null : string.Join(":",client.Client.RedirectUris))}," +
+                               $"{(client.Client.AllowedScopes == null ? null : string.Join(":",client.Client.AllowedScopes))},{client.Client.AllowAccessTokensViaBrowser}," +
+                               $"{client.Client.AllowOfflineAccess},{client.Client.RequireConsent},{(client.Client.PostLogoutRedirectUris == null ? null : string.Join(":",client.Client.PostLogoutRedirectUris))}," +
+                               $"{(client.Client.AllowedCorsOrigins == null ? null : string.Join(":",client.Client.AllowedCorsOrigins))}");
+        }
+        
+        return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "clients.csv");
     }
     
     [HttpGet]
