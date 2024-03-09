@@ -1,3 +1,4 @@
+using System.Text;
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Role;
 using AutoMapper;
@@ -34,6 +35,22 @@ public class RoleController(RoleManager<IdentityRole> roleManager, IMapper mappe
         };
         
         return View(indexViewModel);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ExportCsv()
+    {
+        var roles = await roleManager.Roles.ToListAsync();
+
+        var builder = new StringBuilder();
+        builder.AppendLine("Id,Name,NormalizedName");
+
+        foreach (var role in roles)
+        {
+            builder.AppendLine($"{role.Id},{role.Name},{role.NormalizedName}");
+        }
+        
+        return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "roles.csv");
     }
     
     [HttpGet]

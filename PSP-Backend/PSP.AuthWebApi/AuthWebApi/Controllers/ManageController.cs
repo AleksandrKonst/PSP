@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using AuthWebApi.DTO;
 using AuthWebApi.DTO.ViewModels.Manage;
 using AuthWebApi.Models;
@@ -53,6 +54,22 @@ public class ManageController(UserManager<PspUser> userManager, RoleManager<Iden
         };
         
         return View(indexViewModel);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ExportCsv()
+    {
+        var users = await context.Users.ToListAsync();
+
+        var builder = new StringBuilder();
+        builder.AppendLine("UserName,Name,Surname,Patronymic,Birthday,Email,EmailConfirm,Role");
+
+        foreach (var user in users)
+        {
+            builder.AppendLine($"{user.UserName},{user.Name},{user.Surname},{user.Patronymic},{user.Birthday},{user.Email},{user.EmailConfirmed},{(await userManager.GetRolesAsync(user)).First()}");
+        }
+        
+        return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "users.csv");
     }
     
     [HttpGet]
