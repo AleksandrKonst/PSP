@@ -1,0 +1,212 @@
+services:
+  PSPData:
+    container_name: psp_data
+    image: pspdatawebapi
+    build:
+      context: ./PSP-Backend/PSP.DataWebApi
+      dockerfile: WebApi/Dockerfile
+    ports:
+      - 7148:443
+    networks:
+      - DbData
+      - prometheus
+      - elastic
+      - services-network
+    depends_on:
+      - dbData
+      - PSPAuth
+    volumes:
+      - ./certs:/https/
+    environment:
+      ASPNETCORE_HTTP_PORTS: 80
+      ASPNETCORE_HTTPS_PORTS: 443
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
+      AUTH_ROUTE: https://psp_auth:443
+      MAJOR_VERSION: 1
+      MINOR_VERSION: 0
+      ELASTIC_ROUTE: http://elasticsearch:9200
+      
+  PSPRoute:
+    container_name: psp_route
+    image: psproutewebapi
+    build:
+      context: ./PSP-Backend/PSP.RouteWebApi
+      dockerfile: WebApi/Dockerfile
+    ports:
+      - 7066:443
+    networks:
+      - DbData
+      - prometheus
+      - elastic
+      - services-network
+    depends_on:
+      - dbData
+      - PSPAuth
+    volumes:
+      - ./certs:/https/
+    environment:
+      ASPNETCORE_HTTP_PORTS: 80
+      ASPNETCORE_HTTPS_PORTS: 443
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
+      AUTH_ROUTE: https://psp_auth:443
+      MAJOR_VERSION: 1
+      MINOR_VERSION: 0
+      ELASTIC_ROUTE: http://elasticsearch:9200
+      
+  PSPAuth:
+    container_name: psp_auth
+    image: pspauthwebapi
+    build:
+      context: ./PSP-Backend/PSP.AuthWebApi
+      dockerfile: /AuthWebApi/Dockerfile
+    ports:
+      - 7161:443
+    networks:
+      - DbAuth
+      - prometheus
+      - elastic
+      - services-network
+    depends_on:
+      - dbAuth
+    volumes:
+      - ./certs:/https/
+    environment:
+      ASPNETCORE_HTTP_PORTS: 80
+      ASPNETCORE_HTTPS_PORTS: 443
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      DB_ROUTE: Server=postgres_auth;Port=5433;Database=PSP_Auth;User Id=postgres;Password=1243
+      ELASTIC_ROUTE: http://elasticsearch:9200
+  
+  dbData:
+    container_name: postgres_data
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1243
+      POSTGRES_DB: PSP_Data
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./dump/initData.sql:/docker-entrypoint-initdb.d/init.sql
+      - initData-data-db:/var/lib/postgresql/data
+    networks:
+      - DbData
+        
+  dbAuth:
+    container_name: postgres_auth
+    image: postgres
+    restart: always
+    expose:
+      - "5433"
+    command: -p 5433
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1243
+      POSTGRES_DB: PSP_Auth
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./dump/initAuth.sql:/docker-entrypoint-initdb.d/init.sql
+      - initAuth-data-db:/var/lib/postgresql/data
+    networks:
+      - DbAuth
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:7.2
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@psp.ru
+      PGADMIN_DEFAULT_PASSWORD: 1243
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - DbData
+      - DbAuth
+    depends_on:
+      - dbData
+      - dbAuth
+  
+  prometheus:
+    container_name: psp-prometheus
+    image: prom/prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - prometheus
+        
+  grafana:
+    container_name: psp-grafana
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=your_password
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana:/var/lib/grafana
+    networks:
+      - prometheus
+  
+  elasticsearch:
+    container_name: psp-elasticsearch
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    networks:
+      - elastic
+          
+  kibana:
+    container_name: psp-kibana
+    restart: always
+    image: docker.elastic.co/kibana/kibana:8.12.2
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - elastic
+        
+networks:
+  elastic:
+    driver: bridge
+  prometheus:
+    driver: bridge
+  DbData:
+    driver: bridge
+  DbAuth:
+    driver: bridge
+  services-network:
+    driver: bridge
+    
+volumes:
+  elasticsearch-data:
+  prometheus-data:
+  grafana:
+  test-data-db:
+  initData-data-db:
+  initAuth-data-db:
+  pgadmin-data:
