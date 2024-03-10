@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+    
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'PSPData'
+    scheme: https
+    static_configs:
+      - targets: [ 'psp_data:443' ]
+
+  - job_name: 'PSPRoute'
+    scheme: https
+    static_configs:
+      - targets: [ 'psp_route:443' ]
+        
+  - job_name: 'PSPAuth'
+    scheme: https
+    static_configs:
+      - targets: [ 'psp_auth:443' ]
