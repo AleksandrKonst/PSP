@@ -46,14 +46,31 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddTransient<IClientStore, ClientStore>();
 
-builder.Services.AddIdentityServer()
-    .AddAspNetIdentity<PspUser>()
-    .AddClientStore<ClientStore>()
-    .AddInMemoryIdentityResources(Config.IdentityResources)
-    .AddInMemoryApiResources(Config.ApiResources)
-    .AddInMemoryApiScopes(Config.ApiScopes)
-    .AddProfileService<UserProfileService>()
-    .AddDeveloperSigningCredential();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddIdentityServer()
+        .AddAspNetIdentity<PspUser>()
+        .AddClientStore<ClientStore>()
+        .AddInMemoryIdentityResources(Config.IdentityResources)
+        .AddInMemoryApiResources(Config.ApiResources)
+        .AddInMemoryApiScopes(Config.ApiScopes)
+        .AddProfileService<UserProfileService>()
+        .AddDeveloperSigningCredential();
+}
+else
+{
+    builder.Services.AddIdentityServer(x =>
+        {
+            x.IssuerUri = "https://psp_auth:443";
+        })
+        .AddAspNetIdentity<PspUser>()
+        .AddClientStore<ClientStore>()
+        .AddInMemoryIdentityResources(Config.IdentityResources)
+        .AddInMemoryApiResources(Config.ApiResources)
+        .AddInMemoryApiScopes(Config.ApiScopes)
+        .AddProfileService<UserProfileService>()
+        .AddDeveloperSigningCredential();
+}
 
 builder.Services.AddAuthentication()
     .AddYandex(options =>

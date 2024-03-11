@@ -1,5 +1,5 @@
 services:
-  PSPData:
+  psp_data:
     container_name: psp_data
     image: pspdatawebapi
     build:
@@ -11,25 +11,26 @@ services:
       - DbData
       - prometheus
       - elastic
-      - services-network
     depends_on:
       - dbData
-      - PSPAuth
+      - psp_auth
     volumes:
-      - ./certs:/https/
+      - ./certs/DataApi/certs:/https/
+      - type: bind
+        source: ./certs/aspnetapp-root-cert.cer
+        target: /https-root/aspnetapp-root-cert.cer
     environment:
-      ASPNETCORE_HTTP_PORTS: 80
       ASPNETCORE_HTTPS_PORTS: 443
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
       DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
       AUTH_ROUTE: https://psp_auth:443
       MAJOR_VERSION: 1
       MINOR_VERSION: 0
       ELASTIC_ROUTE: http://elasticsearch:9200
       
-  PSPRoute:
+  psp_route:
     container_name: psp_route
     image: psproutewebapi
     build:
@@ -41,25 +42,26 @@ services:
       - DbData
       - prometheus
       - elastic
-      - services-network
     depends_on:
       - dbData
-      - PSPAuth
+      - psp_auth
     volumes:
-      - ./certs:/https/
+      - ./certs/RouteApi/certs:/https/
+      - type: bind
+        source: ./certs/aspnetapp-root-cert.cer
+        target: /https-root/aspnetapp-root-cert.cer
     environment:
-      ASPNETCORE_HTTP_PORTS: 80
       ASPNETCORE_HTTPS_PORTS: 443
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
       DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
       AUTH_ROUTE: https://psp_auth:443
       MAJOR_VERSION: 1
       MINOR_VERSION: 0
       ELASTIC_ROUTE: http://elasticsearch:9200
       
-  PSPAuth:
+  psp_auth:
     container_name: psp_auth
     image: pspauthwebapi
     build:
@@ -71,19 +73,42 @@ services:
       - DbAuth
       - prometheus
       - elastic
-      - services-network
     depends_on:
       - dbAuth
     volumes:
-      - ./certs:/https/
+      - ./certs/IdentityServer/certs:/https/
+      - type: bind
+        source: ./certs/aspnetapp-root-cert.cer
+        target: /https-root/aspnetapp-root-cert.cer
     environment:
-      ASPNETCORE_HTTP_PORTS: 80
       ASPNETCORE_HTTPS_PORTS: 443
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-identity-server.pfx
       DB_ROUTE: Server=postgres_auth;Port=5433;Database=PSP_Auth;User Id=postgres;Password=1243
       ELASTIC_ROUTE: http://elasticsearch:9200
+      
+  psp_gateway:
+    container_name: psp_gateway
+    image: pspgateway
+    build:
+      context: ./PSP-Backend/PSP.Gateway
+      dockerfile: /Gateway/Dockerfile
+    ports:
+      - 7111:443
+    depends_on:
+      - psp_auth
+    volumes:
+      - ./certs/Api/certs:/https/
+      - type: bind
+        source: ./certs/aspnetapp-root-cert.cer
+        target: /https-root/aspnetapp-root-cert.cer
+    environment:
+      ASPNETCORE_HTTPS_PORTS: 443
+      ASPNETCORE_URLS: "https://+;"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
+      AUTH_ROUTE: https://psp_auth:443
   
   dbData:
     container_name: postgres_data
@@ -198,8 +223,6 @@ networks:
   DbData:
     driver: bridge
   DbAuth:
-    driver: bridge
-  services-network:
     driver: bridge
     
 volumes:
