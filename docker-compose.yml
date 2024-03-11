@@ -87,6 +87,28 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-identity-server.pfx
       DB_ROUTE: Server=postgres_auth;Port=5433;Database=PSP_Auth;User Id=postgres;Password=1243
       ELASTIC_ROUTE: http://elasticsearch:9200
+      
+  psp_gateway:
+    container_name: psp_gateway
+    image: pspgateway
+    build:
+      context: ./PSP-Backend/PSP.Gateway
+      dockerfile: /Gateway/Dockerfile
+    ports:
+      - 7111:443
+    depends_on:
+      - psp_auth
+    volumes:
+      - ./certs/Api/certs:/https/
+      - type: bind
+        source: ./certs/aspnetapp-root-cert.cer
+        target: /https-root/aspnetapp-root-cert.cer
+    environment:
+      ASPNETCORE_HTTPS_PORTS: 443
+      ASPNETCORE_URLS: "https://+;"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
+      AUTH_ROUTE: https://psp_auth:443
   
   dbData:
     container_name: postgres_data

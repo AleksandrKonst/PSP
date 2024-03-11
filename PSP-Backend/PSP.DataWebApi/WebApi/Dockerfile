@@ -1,4 +1,10 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /
+RUN mkdir -p /https-root
+COPY ["WebApi/aspnetapp-root-cert.cer", "/https-root/aspnetapp-root-cert.cer"]
+COPY ["WebApi/docker-entrypoint.sh", "/docker-entrypoint.sh"]
+RUN chmod +x docker-entrypoint.sh
+RUN ./docker-entrypoint.sh
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
