@@ -57,6 +57,11 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddStackExchangeRedisCache(options => {
+    options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONNECT") ?? "localhost";
+    options.InstanceName = "PSP-Data";
+});
+
 //Add Any DI Configuration Block
 builder.Services.AddApplication(builder.Configuration);
 
