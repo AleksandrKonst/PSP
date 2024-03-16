@@ -66,7 +66,7 @@ services:
     image: pspauthwebapi
     build:
       context: ./PSP-Backend/PSP.AuthWebApi
-      dockerfile: /AuthWebApi/Dockerfile
+      dockerfile: AuthWebApi/Dockerfile
     ports:
       - 7161:443
     networks:
@@ -93,7 +93,7 @@ services:
     image: pspgateway
     build:
       context: ./PSP-Backend/PSP.Gateway
-      dockerfile: /Gateway/Dockerfile
+      dockerfile: Gateway/Dockerfile
     ports:
       - 7111:443
     depends_on:
