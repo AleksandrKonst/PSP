@@ -71,7 +71,7 @@ public class CityController(IMediator mediator, IDistributedCache distributedCac
         return Ok(response);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{code}")]
     [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]

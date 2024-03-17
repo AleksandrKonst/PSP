@@ -7,13 +7,13 @@ $ErrorActionPreference = "Stop"
 
 $rootCN = "IdentityServerDockerDemoRootCert"
 $identityServerCNs = "psp_auth", "localhost"
-$webApiCNs = "web-api", "localhost"
+$gatewayCNs = "psp_gateway", "localhost"
 $dataApiCNs = "psp_data", "localhost"
 $routeApiCNs = "psp_route", "localhost"
 
 $alreadyExistingCertsRoot = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq "CN=$rootCN"}
 $alreadyExistingCertsIdentityServer = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq ("CN={0}" -f $identityServerCNs[0])}
-$alreadyExistingCertsApi = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq ("CN={0}" -f $webApiCNs[0])}
+$alreadyExistingCertsGateway = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq ("CN={0}" -f $gatewayCNs[0])}
 $alreadyExistingCertsDataApi = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq ("CN={0}" -f $dataApiCNs[0])}
 $alreadyExistingCertsRouteApi = Get-ChildItem -Path Cert:\LocalMachine\My -Recurse | Where-Object {$_.Subject -eq ("CN={0}" -f $routeApiCNs[0])}
 
@@ -34,12 +34,12 @@ if ($alreadyExistingCertsIdentityServer.Count -eq 1) {
 
 #api
 
-if ($alreadyExistingCertsApi.Count -eq 1) {
+if ($alreadyExistingCertsGateway.Count -eq 1) {
     Write-Output "Skipping creating API certificate as it already exists."
-    $webApiCert = [Microsoft.CertificateServices.Commands.Certificate] $alreadyExistingCertsApi[0]
+    $gatewayCert = [Microsoft.CertificateServices.Commands.Certificate] $alreadyExistingCertsGateway[0]
 } else {
     # Create a SAN cert for both web-api and localhost.
-    $webApiCert = New-SelfSignedCertificate -DnsName $webApiCNs -Signer $testRootCA -CertStoreLocation Cert:\LocalMachine\My
+    $gatewayCert = New-SelfSignedCertificate -DnsName $gatewayCNs -Signer $testRootCA -CertStoreLocation Cert:\LocalMachine\My
 }
 
 if ($alreadyExistingCertsDataApi.Count -eq 1) {
@@ -63,21 +63,21 @@ $password = ConvertTo-SecureString -String "1703" -Force -AsPlainText
 
 $rootCertPathPfx = "certs"
 $identityServerCertPath = "src/IdentityServer/certs"
-$webApiCertPath = "src/Api/certs"
+$webGatewayCertCertPath = "src/Gateway/certs"
 $webDataApiCertPath = "src/DataApi/certs"
 $webRouteApiCertPath = "src/RouteApi/certs"
 
 [System.IO.Directory]::CreateDirectory($rootCertPathPfx) | Out-Null
 [System.IO.Directory]::CreateDirectory($identityServerCertPath) | Out-Null
-[System.IO.Directory]::CreateDirectory($webApiCertPath) | Out-Null
+[System.IO.Directory]::CreateDirectory($webGatewayCertCertPath) | Out-Null
 [System.IO.Directory]::CreateDirectory($webDataApiCertPath) | Out-Null
 [System.IO.Directory]::CreateDirectory($webRouteApiCertPath) | Out-Null
 
 Export-PfxCertificate -Cert $testRootCA -FilePath "$rootCertPathPfx/aspnetapp-root-cert.pfx" -Password $password | Out-Null
 Export-PfxCertificate -Cert $identityServerCert -FilePath "$identityServerCertPath/aspnetapp-identity-server.pfx" -Password $password | Out-Null
-Export-PfxCertificate -Cert $webApiCert -FilePath "$webApiCertPath/aspnetapp-web-api.pfx" -Password $password | Out-Null
-Export-PfxCertificate -Cert $webDataApiCert -FilePath "$webDataApiCertPath/aspnetapp-web-api.pfx" -Password $password | Out-Null
-Export-PfxCertificate -Cert $webRouteApiCert -FilePath "$webRouteApiCertPath/aspnetapp-web-api.pfx" -Password $password | Out-Null
+Export-PfxCertificate -Cert $gatewayCert -FilePath "$webGatewayCertCertPath/aspnetapp-gateway-api.pfx" -Password $password | Out-Null
+Export-PfxCertificate -Cert $webDataApiCert -FilePath "$webDataApiCertPath/aspnetapp-data-api.pfx" -Password $password | Out-Null
+Export-PfxCertificate -Cert $webRouteApiCert -FilePath "$webRouteApiCertPath/aspnetapp-route-api.pfx" -Password $password | Out-Null
 
 # Export .cer to be converted to .crt to be trusted within the Docker container.
 $rootCertPathCer = "certs/aspnetapp-root-cert.cer"
