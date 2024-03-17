@@ -26,7 +26,7 @@ public class ARMController(IMediator mediator, IMapper mapper, IDistributedCache
     [Authorize(Policy = "NotForPassenger")]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
+    public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO> selectPassengerRequests, CancellationToken cancellationToken)
     { 
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
@@ -119,7 +119,7 @@ public class ARMController(IMediator mediator, IMapper mapper, IDistributedCache
         if (searchRequest.SearchType == "passenger")
         {
             SearchPassengerResponseDTO? searchPassengerResponse = null;
-            var searchPassengerResponseString = await distributedCache.GetStringAsync(searchRequest.Name + searchRequest.Surname 
+            var searchPassengerResponseString = await distributedCache.GetStringAsync("SearchByPassenger" + searchRequest.Name + searchRequest.Surname 
                 + searchRequest.Patronymic + searchRequest.Gender + searchRequest.Birthdate);
             if (searchPassengerResponseString != null) searchPassengerResponse = JsonSerializer.Deserialize<SearchPassengerResponseDTO>(searchPassengerResponseString);
             
@@ -131,7 +131,7 @@ public class ARMController(IMediator mediator, IMapper mapper, IDistributedCache
                 if (coupon != null)
                 {
                     searchPassengerResponseString = JsonSerializer.Serialize(coupon);
-                    await distributedCache.SetStringAsync(searchRequest.Name + searchRequest.Surname + searchRequest.Patronymic 
+                    distributedCache.SetStringAsync("SearchByPassenger" + searchRequest.Name + searchRequest.Surname + searchRequest.Patronymic 
                                                           + searchRequest.Gender + searchRequest.Birthdate, searchPassengerResponseString, new DistributedCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
@@ -145,8 +145,29 @@ public class ARMController(IMediator mediator, IMapper mapper, IDistributedCache
         }
         else if (searchRequest.SearchType == "ticket")
         {
-            var query = new SearchByTicket.Query(mapper.Map<SearchByTicketDTO>(searchRequest));
-            coupon = (await mediator.Send(query, cancellationToken)).Result;
+            SearchTicketResponseDTO? searchTicketResponseDto = null;
+            var searchTicketResponseString = await distributedCache.GetStringAsync("SearchByTicket" + searchRequest.TicketType + searchRequest.TicketNumber);
+            if (searchTicketResponseString != null) searchTicketResponseDto = JsonSerializer.Deserialize<SearchTicketResponseDTO>(searchTicketResponseString);
+            
+            if (searchTicketResponseDto == null)
+            {
+                var query = new SearchByTicket.Query(mapper.Map<SearchByTicketDTO>(searchRequest));
+                coupon = (await mediator.Send(query, cancellationToken)).Result;
+                
+                if (coupon != null)
+                {
+                    searchTicketResponseString = JsonSerializer.Serialize(coupon);
+                    distributedCache.SetStringAsync("SearchByTicket" + searchRequest.TicketType + searchRequest.TicketNumber
+                        , searchTicketResponseString, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    });
+                }
+            }
+            else
+            {
+                coupon = searchTicketResponseDto;
+            }
         }
         else
         {

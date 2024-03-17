@@ -28,8 +28,8 @@ public class FlightController(IMediator mediator) : ControllerBase
         var queryCount = new GetFlightCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetFlights.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
+        var query = new GetFlights.Query(index, count);
+        var flights = await mediator.Send(query, cancellationToken);
 
         dynamic response = new ExpandoObject();
         
@@ -40,7 +40,7 @@ public class FlightController(IMediator mediator) : ControllerBase
             response_datetime = DateTime.Now,
             links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
         };
-        response.passengers = passengers.Result;
+        response.flights = flights.Result;
         
         return Ok(response);
     }
@@ -55,7 +55,7 @@ public class FlightController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetFlightById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var flight = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +63,7 @@ public class FlightController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.flight = flight.Result;
         
         return Ok(response);
     }

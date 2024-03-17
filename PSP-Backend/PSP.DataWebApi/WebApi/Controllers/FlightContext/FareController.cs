@@ -28,8 +28,8 @@ public class FareController(IMediator mediator) : ControllerBase
         var queryCount = new GetFareCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetFares.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
+        var query = new GetFares.Query(index, count);
+        var fares = await mediator.Send(query, cancellationToken);
 
         dynamic response = new ExpandoObject();
         
@@ -40,7 +40,7 @@ public class FareController(IMediator mediator) : ControllerBase
             response_datetime = DateTime.Now,
             links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
         };
-        response.passengers = passengers.Result;
+        response.fares = fares.Result;
         
         return Ok(response);
     }
@@ -55,7 +55,7 @@ public class FareController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetFareById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var fare = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +63,7 @@ public class FareController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.fare = fare.Result;
         
         return Ok(response);
     }
