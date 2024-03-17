@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.FlightContextDTO;
 using Application.MediatR.Commands.CityCommands;
 using Application.MediatR.Queries.CityQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.FlightContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class CityController(IMediator mediator) : ControllerBase
+public class CityController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,24 +30,48 @@ public class CityController(IMediator mediator) : ControllerBase
         var queryCount = new GetCityCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetCities.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
+        IEnumerable<CityDTO>? cityCache = null;
+        var cityCacheString = await distributedCache.GetStringAsync($"City-{index}-{count}");
+        if (cityCacheString != null) cityCache = JsonSerializer.Deserialize<IEnumerable<CityDTO>>(cityCacheString);
+        
+        if (cityCache == null)
         {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        response.passengers = passengers.Result;
+            var query = new GetCities.Query(index, count);
+            var cities = await mediator.Send(query, cancellationToken);
+            
+            cityCacheString = JsonSerializer.Serialize(cities.Result);
+            distributedCache.SetStringAsync($"City-{index}-{count}", cityCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.cities = cities.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.cities = cityCache;
+        }
         
         return Ok(response);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{code}")]
     [AllowAnonymous]
     [RequestSizeLimit(1 * 1024)]
     [Produces("application/json")]
@@ -55,7 +81,7 @@ public class CityController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetCityById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var city = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +89,7 @@ public class CityController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.city = city.Result;
         
         return Ok(response);
     }

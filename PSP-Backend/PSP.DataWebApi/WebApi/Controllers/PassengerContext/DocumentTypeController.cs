@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.PassengerContextDTO;
 using Application.MediatR.Commands.DocumentTypeCommands;
 using Application.MediatR.Queries.DocumentTypeQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.PassengerContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class DocumentTypeController(IMediator mediator) : ControllerBase
+public class DocumentTypeController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
@@ -27,21 +29,44 @@ public class DocumentTypeController(IMediator mediator) : ControllerBase
         
         var queryCount = new GetDocumentTypeCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
-
-        var queryPassenger = new GetDocumentTypes.Query(index, count);
-        var documentTypes = await mediator.Send(queryPassenger, cancellationToken);
         
         dynamic result = new ExpandoObject();
         
-        result.service_data = new
-        {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        result.passengers = documentTypes.Result;
+        IEnumerable<DocumentTypeDTO>? documentTypeCache = null;
+        var documentTypeCacheString = await distributedCache.GetStringAsync($"DocumentType-{index}-{count}");
+        if (documentTypeCacheString != null) documentTypeCache = JsonSerializer.Deserialize<IEnumerable<DocumentTypeDTO>>(documentTypeCacheString);
         
+        if (documentTypeCache == null)
+        {
+            var query = new GetDocumentTypes.Query(index, count);
+            var documentTypes = await mediator.Send(query, cancellationToken);
+        
+            documentTypeCacheString = JsonSerializer.Serialize(documentTypes.Result);
+            distributedCache.SetStringAsync($"DocumentType-{index}-{count}", documentTypeCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            result.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            result.documentTypes = documentTypes.Result;
+        }
+        else
+        {
+            result.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            result.documentTypes = documentTypeCache;
+        }
         return Ok(result);
     }
     
@@ -54,8 +79,8 @@ public class DocumentTypeController(IMediator mediator) : ControllerBase
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
         
-        var queryPassenger = new GetDocumentTypeById.Query(id);
-        var documentType = await mediator.Send(queryPassenger, cancellationToken);
+        var query = new GetDocumentTypeById.Query(id);
+        var documentType = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +88,7 @@ public class DocumentTypeController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = documentType.Result;
+        response.documentType = documentType.Result;
         
         return Ok(response);
     }

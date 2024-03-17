@@ -16,7 +16,9 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
         "AllowedScopes": [
-          "api"
+          "api",
+          "openid", 
+          "profile"
         ]
       }
     },
@@ -39,7 +41,9 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "IdentityApiKey",
         "AllowedScopes": [
-          "api"
+          "api",
+          "openid",
+          "profile"
         ]
       }
     },

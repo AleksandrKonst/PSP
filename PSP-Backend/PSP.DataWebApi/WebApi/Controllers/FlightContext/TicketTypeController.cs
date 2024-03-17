@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.FlightContextDTO;
 using Application.MediatR.Commands.TicketTypeCommands;
 using Application.MediatR.Queries.TicketTypeQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.FlightContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class TicketTypeController(IMediator mediator) : ControllerBase
+public class TicketTypeController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,19 +30,43 @@ public class TicketTypeController(IMediator mediator) : ControllerBase
         var queryCount = new GetTicketTypeCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetTicketTypes.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
+        IEnumerable<TicketTypeDTO>? ticketTypeCache = null;
+        var ticketTypeCacheString = await distributedCache.GetStringAsync($"TicketType-{index}-{count}");
+        if (ticketTypeCacheString != null) ticketTypeCache = JsonSerializer.Deserialize<IEnumerable<TicketTypeDTO>>(ticketTypeCacheString);
+        
+        if (ticketTypeCache == null)
         {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        response.passengers = passengers.Result;
+            var query = new GetTicketTypes.Query(index, count);
+            var ticketTypes = await mediator.Send(query, cancellationToken);
+            
+            ticketTypeCacheString = JsonSerializer.Serialize(ticketTypes.Result);
+            distributedCache.SetStringAsync($"TicketType-{index}-{count}", ticketTypeCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.ticketTypes = ticketTypes.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.ticketTypes = ticketTypeCache;
+        }
         
         return Ok(response);
     }
@@ -55,7 +81,7 @@ public class TicketTypeController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetTicketTypeById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var ticketType = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +89,7 @@ public class TicketTypeController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.ticketType = ticketType.Result;
         
         return Ok(response);
     }

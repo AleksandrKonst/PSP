@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.FlightContextDTO;
 using Application.MediatR.Commands.QuotaCategoryCommands;
 using Application.MediatR.Queries.QuotaCategoryQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.FlightContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class QuotaCategoryController(IMediator mediator) : ControllerBase
+public class QuotaCategoryController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,19 +30,43 @@ public class QuotaCategoryController(IMediator mediator) : ControllerBase
         var queryCount = new GetQuotaCategoryCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetQuotaCategories.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
+        IEnumerable<QuotaCategoryDTO>? quotaCategoryCache = null;
+        var quotaCategoryCacheString = await distributedCache.GetStringAsync($"QuotaCategory-{index}-{count}");
+        if (quotaCategoryCacheString != null) quotaCategoryCache = JsonSerializer.Deserialize<IEnumerable<QuotaCategoryDTO>>(quotaCategoryCacheString);
+        
+        if (quotaCategoryCache == null)
         {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        response.passengers = passengers.Result;
+            var query = new GetQuotaCategories.Query(index, count);
+            var quotaCategory = await mediator.Send(query, cancellationToken);
+            
+            quotaCategoryCacheString = JsonSerializer.Serialize(quotaCategory.Result);
+            distributedCache.SetStringAsync($"QuotaCategory-{index}-{count}", quotaCategoryCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.quotaCategories = quotaCategory.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.quotaCategories = quotaCategoryCache;
+        }
         
         return Ok(response);
     }
@@ -55,7 +81,7 @@ public class QuotaCategoryController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetQuotaCategoryById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var quotaCategory = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +89,7 @@ public class QuotaCategoryController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.quotaCategory = quotaCategory.Result;
         
         return Ok(response);
     }

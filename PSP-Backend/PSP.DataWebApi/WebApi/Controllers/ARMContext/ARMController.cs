@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.ArmContextDTO.Delete;
 using Application.DTO.ArmContextDTO.Insert;
 using Application.DTO.ArmContextDTO.Search;
@@ -10,6 +11,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 
 namespace WebApi.Controllers.ARMContext;
@@ -18,13 +20,13 @@ namespace WebApi.Controllers.ARMContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
+public class ARMController(IMediator mediator, IMapper mapper, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpPost("select")]
     [Authorize(Policy = "NotForPassenger")]
     [RequestSizeLimit(8 * 1024)]
     [Produces("application/json")]
-    public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO>  selectPassengerRequests, CancellationToken cancellationToken)
+    public async Task<IActionResult> PostSelect([FromBody] IList<SelectPassengerRequestDTO> selectPassengerRequests, CancellationToken cancellationToken)
     { 
         var requestDateTime = DateTime.Now;
         dynamic response = new ExpandoObject();
@@ -116,13 +118,56 @@ public class ARMController(IMediator mediator, IMapper mapper) : ControllerBase
         
         if (searchRequest.SearchType == "passenger")
         {
-            var query = new SearchByPassenger.Query(mapper.Map<SearchByPassengerDTO>(searchRequest));
-            coupon = (await mediator.Send(query, cancellationToken)).Result;
+            SearchPassengerResponseDTO? searchPassengerResponse = null;
+            var searchPassengerResponseString = await distributedCache.GetStringAsync("SearchByPassenger" + searchRequest.Name + searchRequest.Surname 
+                + searchRequest.Patronymic + searchRequest.Gender + searchRequest.Birthdate);
+            if (searchPassengerResponseString != null) searchPassengerResponse = JsonSerializer.Deserialize<SearchPassengerResponseDTO>(searchPassengerResponseString);
+            
+            if (searchPassengerResponse == null)
+            {
+                var query = new SearchByPassenger.Query(mapper.Map<SearchByPassengerDTO>(searchRequest));
+                coupon = (await mediator.Send(query, cancellationToken)).Result;
+                
+                if (coupon != null)
+                {
+                    searchPassengerResponseString = JsonSerializer.Serialize(coupon);
+                    distributedCache.SetStringAsync("SearchByPassenger" + searchRequest.Name + searchRequest.Surname + searchRequest.Patronymic 
+                                                          + searchRequest.Gender + searchRequest.Birthdate, searchPassengerResponseString, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    });
+                }
+            }
+            else
+            {
+                coupon = searchPassengerResponse;
+            }
         }
         else if (searchRequest.SearchType == "ticket")
         {
-            var query = new SearchByTicket.Query(mapper.Map<SearchByTicketDTO>(searchRequest));
-            coupon = (await mediator.Send(query, cancellationToken)).Result;
+            SearchTicketResponseDTO? searchTicketResponseDto = null;
+            var searchTicketResponseString = await distributedCache.GetStringAsync("SearchByTicket" + searchRequest.TicketType + searchRequest.TicketNumber);
+            if (searchTicketResponseString != null) searchTicketResponseDto = JsonSerializer.Deserialize<SearchTicketResponseDTO>(searchTicketResponseString);
+            
+            if (searchTicketResponseDto == null)
+            {
+                var query = new SearchByTicket.Query(mapper.Map<SearchByTicketDTO>(searchRequest));
+                coupon = (await mediator.Send(query, cancellationToken)).Result;
+                
+                if (coupon != null)
+                {
+                    searchTicketResponseString = JsonSerializer.Serialize(coupon);
+                    distributedCache.SetStringAsync("SearchByTicket" + searchRequest.TicketType + searchRequest.TicketNumber
+                        , searchTicketResponseString, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    });
+                }
+            }
+            else
+            {
+                coupon = searchTicketResponseDto;
+            }
         }
         else
         {

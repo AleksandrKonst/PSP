@@ -28,8 +28,8 @@ public class CouponEventController(IMediator mediator) : ControllerBase
         var queryCount = new GetCouponEventCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetCouponEvents.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
+        var query = new GetCouponEvents.Query(index, count);
+        var couponEvents = await mediator.Send(query, cancellationToken);
 
         dynamic response = new ExpandoObject();
         
@@ -40,7 +40,7 @@ public class CouponEventController(IMediator mediator) : ControllerBase
             response_datetime = DateTime.Now,
             links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
         };
-        response.passengers = passengers.Result;
+        response.couponEvents = couponEvents.Result;
         
         return Ok(response);
     }
@@ -55,7 +55,7 @@ public class CouponEventController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetCouponEventById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var couponEvent = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +63,7 @@ public class CouponEventController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.couponEvent = couponEvent.Result;
         
         return Ok(response);
     }

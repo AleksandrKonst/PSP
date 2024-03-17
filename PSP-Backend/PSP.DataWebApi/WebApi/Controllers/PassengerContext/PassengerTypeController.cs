@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.PassengerContextDTO;
 using Application.MediatR.Commands.PassengerTypeCommands;
 using Application.MediatR.Queries.PassengerTypeQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,8 @@ namespace WebApi.Controllers.PassengerContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class PassengerTypeController(IMediator mediator) : ControllerBase
+public class PassengerTypeController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
+
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,20 +31,43 @@ public class PassengerTypeController(IMediator mediator) : ControllerBase
         var queryCount = new GetPassengerTypeCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetPassengerTypes.Query(index, count);
-        var passengerTypes = await mediator.Send(queryPassenger, cancellationToken);
-        
         dynamic result = new ExpandoObject();
         
-        result.service_data = new
-        {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        result.passengers = passengerTypes.Result;
+        IEnumerable<DocumentTypeDTO>? passengerTypeCache = null;
+        var passengerTypeCacheString = await distributedCache.GetStringAsync($"PassengerType-{index}-{count}");
+        if (passengerTypeCacheString != null) passengerTypeCache = JsonSerializer.Deserialize<IEnumerable<DocumentTypeDTO>>(passengerTypeCacheString);
         
+        if (passengerTypeCache == null)
+        {
+            var queryPassenger = new GetPassengerTypes.Query(index, count);
+            var passengerTypes = await mediator.Send(queryPassenger, cancellationToken);
+        
+            passengerTypeCacheString = JsonSerializer.Serialize(passengerTypes.Result);
+            distributedCache.SetStringAsync($"PassengerType-{index}-{count}", passengerTypeCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            result.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            result.passengers = passengerTypes.Result;
+        }
+        else
+        {
+            result.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            result.passengers = passengerTypeCache;
+        }
         return Ok(result);
     }
     
