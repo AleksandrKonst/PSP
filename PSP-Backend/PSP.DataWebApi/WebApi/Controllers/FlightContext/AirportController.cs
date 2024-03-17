@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.FlightContextDTO;
 using Application.MediatR.Commands.AirportCommands;
 using Application.MediatR.Queries.AirportQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.FlightContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class AirportController(IMediator mediator) : ControllerBase
+public class AirportController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet]
     [AllowAnonymous]
@@ -28,20 +30,43 @@ public class AirportController(IMediator mediator) : ControllerBase
         var queryCount = new GetAirportCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetAirports.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
-        {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        response.passengers = passengers.Result;
+        IEnumerable<AirportDTO>? airportCache = null;
+        var airportCacheString = await distributedCache.GetStringAsync($"Airport-{index}-{count}");
+        if (airportCacheString != null) airportCache = JsonSerializer.Deserialize<IEnumerable<AirportDTO>>(airportCacheString);
         
+        if (airportCache == null)
+        {
+            var query = new GetAirports.Query(index, count);
+            var airport = await mediator.Send(query, cancellationToken);
+            
+            airportCacheString = JsonSerializer.Serialize(airport.Result);
+            distributedCache.SetStringAsync($"Airport-{index}-{count}", airportCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.airports = airport.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.airports = airportCache;
+        }
         return Ok(response);
     }
     
@@ -55,7 +80,7 @@ public class AirportController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetAirportById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var airport = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -63,7 +88,7 @@ public class AirportController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.airport = airport.Result;
         
         return Ok(response);
     }

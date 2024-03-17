@@ -55,6 +55,10 @@ builder.Services.AddApiVersioning(config =>
     });
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddStackExchangeRedisCache(options => {
+    options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONNECT") ?? "localhost";
+    options.InstanceName = "PSP-Route";
+});
 
 //Add Any DI Configuration Block
 builder.Services.AddApplication(builder.Configuration);

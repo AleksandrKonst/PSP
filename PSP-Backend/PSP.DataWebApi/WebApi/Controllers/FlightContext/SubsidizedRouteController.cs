@@ -1,4 +1,5 @@
 using System.Dynamic;
+using System.Text.Json;
 using Application.DTO.FlightContextDTO;
 using Application.MediatR.Commands.SubsidizedRouteCommands;
 using Application.MediatR.Queries.SubsidizedRouteQueries;
@@ -6,6 +7,7 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using WebApi.Filters;
 using WebApi.Infrastructure;
 
@@ -15,7 +17,7 @@ namespace WebApi.Controllers.FlightContext;
 [ApiController]
 [TypeFilter(typeof(ResponseExceptionFilter))]
 [Route("v{version:apiVersion}/[controller]")]
-public class SubsidizedRouteController(IMediator mediator) : ControllerBase
+public class SubsidizedRouteController(IMediator mediator, IDistributedCache distributedCache) : ControllerBase
 {
     [HttpGet("appendix/{appendix}")]
     [AllowAnonymous]
@@ -25,19 +27,41 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
     {
         var requestDateTime = DateTime.Now;
 
-        var query = new GetSubsidizedRouteByAppendix.Query(appendix);
-        var routes = await mediator.Send(query, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
-        {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-        };
-        response.routes = routes.Result;
+        IEnumerable<SubsidizedRouteDTO>? subsidizedRouteCache = null;
+        var subsidizedRouteCacheString = await distributedCache.GetStringAsync($"SubsidizedRouteByAppendix-{appendix}");
+        if (subsidizedRouteCacheString != null) subsidizedRouteCache = JsonSerializer.Deserialize<IEnumerable<SubsidizedRouteDTO>>(subsidizedRouteCacheString);
         
+        if (subsidizedRouteCache == null)
+        {
+            var query = new GetSubsidizedRouteByAppendix.Query(appendix);
+            var routes = await mediator.Send(query, cancellationToken);
+            
+            subsidizedRouteCacheString = JsonSerializer.Serialize(routes.Result);
+            distributedCache.SetStringAsync($"SubsidizedRouteByAppendix-{appendix}", subsidizedRouteCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+            };
+            response.routes = routes.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+            };
+            response.routes = subsidizedRouteCache;
+        }
         return Ok(response);
     }
     
@@ -52,19 +76,43 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
         var queryCount = new GetSubsidizedRouteCount.Query(); 
         var total = await mediator.Send(queryCount, cancellationToken);
 
-        var queryPassenger = new GetSubsidizedRoutes.Query(index, count);
-        var passengers = await mediator.Send(queryPassenger, cancellationToken);
-
         dynamic response = new ExpandoObject();
         
-        response.service_data = new
+        IEnumerable<SubsidizedRouteDTO>? subsidizedRouteCache = null;
+        var subsidizedRouteCacheString = await distributedCache.GetStringAsync($"SubsidizedRoute-{index}-{count}");
+        if (subsidizedRouteCacheString != null) subsidizedRouteCache = JsonSerializer.Deserialize<IEnumerable<SubsidizedRouteDTO>>(subsidizedRouteCacheString);
+        
+        if (subsidizedRouteCache == null)
         {
-            request_id = Guid.NewGuid().ToString(),
-            request_datetime = requestDateTime,
-            response_datetime = DateTime.Now,
-            links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
-        };
-        response.passengers = passengers.Result;
+            var query = new GetSubsidizedRoutes.Query(index, count);
+            var subsidizedRoutes = await mediator.Send(query, cancellationToken);
+            
+            subsidizedRouteCacheString = JsonSerializer.Serialize(subsidizedRoutes.Result);
+            distributedCache.SetStringAsync($"SubsidizedRoute-{index}-{count}", subsidizedRouteCacheString, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
+            
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.route = subsidizedRoutes.Result;
+        }
+        else
+        {
+            response.service_data = new
+            {
+                request_id = Guid.NewGuid().ToString(),
+                request_datetime = requestDateTime,
+                response_datetime = DateTime.Now,
+                links = PaginationService.PaginateAsDynamic(HttpContext.Request.Path, index, count, total.Result)
+            };
+            response.route = subsidizedRouteCache;
+        }
         
         return Ok(response);
     }
@@ -79,7 +127,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
         dynamic response = new ExpandoObject();
 
         var query = new GetSubsidizedRouteById.Query(code);
-        var passenger = await mediator.Send(query, cancellationToken);
+        var subsidizedRoute = await mediator.Send(query, cancellationToken);
             
         response.service_data = new
         {
@@ -87,7 +135,7 @@ public class SubsidizedRouteController(IMediator mediator) : ControllerBase
             request_datetime = requestDateTime,
             response_datetime = DateTime.Now,
         };
-        response.passenger = passenger.Result;
+        response.route = subsidizedRoute.Result;
         
         return Ok(response);
     }

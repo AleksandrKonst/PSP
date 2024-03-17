@@ -11,9 +11,11 @@ services:
       - DbData
       - prometheus
       - elastic
+      - redis
     depends_on:
       - dbData
       - psp_auth
+      - redis
     volumes:
       - ./certs/DataApi/certs:/https/
       - type: bind
@@ -23,12 +25,13 @@ services:
       ASPNETCORE_HTTPS_PORTS: 443
       ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-data-api.pfx
       DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
       AUTH_ROUTE: https://psp_auth:443
       MAJOR_VERSION: 1
       MINOR_VERSION: 0
       ELASTIC_ROUTE: http://elasticsearch:9200
+      REDIS_CONNECT: redis:6379
       
   psp_route:
     container_name: psp_route
@@ -42,9 +45,11 @@ services:
       - DbData
       - prometheus
       - elastic
+      - redis
     depends_on:
       - dbData
       - psp_auth
+      - redis
     volumes:
       - ./certs/RouteApi/certs:/https/
       - type: bind
@@ -54,12 +59,13 @@ services:
       ASPNETCORE_HTTPS_PORTS: 443
       ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-route-api.pfx
       DB_ROUTE: Server=postgres_data;Port=5432;Database=PSP_Data;User Id=postgres;Password=1243
       AUTH_ROUTE: https://psp_auth:443
       MAJOR_VERSION: 1
       MINOR_VERSION: 0
       ELASTIC_ROUTE: http://elasticsearch:9200
+      REDIS_CONNECT: redis:6379
       
   psp_auth:
     container_name: psp_auth
@@ -99,7 +105,7 @@ services:
     depends_on:
       - psp_auth
     volumes:
-      - ./certs/Api/certs:/https/
+      - ./certs/Gateway/certs:/https/
       - type: bind
         source: ./certs/aspnetapp-root-cert.cer
         target: /https-root/aspnetapp-root-cert.cer
@@ -107,8 +113,17 @@ services:
       ASPNETCORE_HTTPS_PORTS: 443
       ASPNETCORE_URLS: "https://+;"
       ASPNETCORE_Kestrel__Certificates__Default__Password: 1703
-      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-web-api.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp-gateway-api.pfx
       AUTH_ROUTE: https://psp_auth:443
+  
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - redis
   
   dbData:
     container_name: postgres_data
@@ -216,6 +231,8 @@ services:
       - elastic
         
 networks:
+  redis:
+    driver: bridge
   elastic:
     driver: bridge
   prometheus:
