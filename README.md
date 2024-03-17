@@ -19,3 +19,8 @@
 
 # Prometheus
 ![image](https://github.com/AleksandrKonst/PSP/assets/40522320/0f584143-34b2-4241-9693-83ddb1789bb6)
+
+# Grafana
+![image](https://github.com/AleksandrKonst/PSP/assets/40522320/d887057d-2ee9-47e1-9934-7bb8b3a835a1)
+
+![image](https://github.com/AleksandrKonst/PSP/assets/40522320/ac857895-df4d-4a8b-a9d8-dace2c517c90)
