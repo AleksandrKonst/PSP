@@ -1,0 +1,116 @@
+.dialog-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dialog-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+  
+  .close-button {
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .dialog-body {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .datepicker-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  mat-datepicker-toggle {
+    margin-left: 5px;
+
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    align-items: center;
+  }
+  
+  .back-button {
+    border: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #0000ff;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .register-button {
+    border-radius: 30px;
+  }
+  
+  form div.form-group:not(.datepicker-container) {
+    position: relative;
+  }
+  
+  form div.form-group:not(.datepicker-container) input:focus + label,
+  form div.form-group:not(.datepicker-container) input:not(:placeholder-shown) + label,
+  form div.form-group:not(.datepicker-container) input:focus + label + ::after,
+  form div.form-group:not(.datepicker-container) input:not(:placeholder-shown) + label + ::after {
+    opacity: 1;
+  }
+  
+  form div.form-group:not(.datepicker-container) input:focus + label::after,
+  form div.form-group:not(.datepicker-container) input:not(:placeholder-shown) + label::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 6px;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background-color: #000;
+  }
+  .close-button {
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  

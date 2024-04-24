@@ -1,0 +1,23 @@
+<div class="search-container">
+  <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+    <div class="input-group">
+      <input type="text" formControlName="from" placeholder="Откуда">
+      <input type="text" formControlName="to" placeholder="Куда" >
+      <mat-datepicker #picker></mat-datepicker>
+      <div class="custom-datepicker-wrapper">
+        <input class="custom-datepicker-input" matInput [matDatepicker]="picker" 
+        placeholder="Когда" [(ngModel)]="date" 
+        (dateInput)="addEvent('input', $event)" 
+        (click)="picker.open()">
+        <mat-datepicker-toggle matSuffix [for]="picker">
+          <mat-icon>calendar_today</mat-icon>
+        </mat-datepicker-toggle>
+      </div>
+      <div class="passangersAmount">
+      <input class="adultPassengers" type="number" formControlName="adultPassengers" placeholder="Взрослых">
+      <input class="childPassengers"  type="number" formControlName="childPassengers" placeholder="Детей">
+      </div>
+      <button type="submit">Поиск</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,39 @@
+<div class="popup-container">
+    <div class="popup-header">
+      <span class="close-icon" (click)="closePopup()">X</span>
+    </div>
+    <div class="popup-content">
+      <h2>Регистрация</h2>
+      <form>
+        <div class="form-field">
+          <input type="text" placeholder="Логин (Почта)">
+        </div>
+        <div class="form-field">
+          <input type="text" placeholder="Имя">
+        </div>
+        <div class="form-field">
+          <input type="text" placeholder="Фамилия">
+        </div>
+        <div class="form-field">
+          <input type="text" placeholder="Отчество">
+        </div>
+        <div class="form-field">
+          <input type="text" placeholder="Дата рождения (ДД.ММ.ГГГГ)">
+        </div>
+        <div class="form-field">
+          <input type="password" placeholder="Пароль">
+        </div>
+        <div class="form-field">
+          <input type="password" placeholder="Подтверждение пароля">
+        </div>
+
+      
+        <div class="form-actions">
+          <button class="register-button" type="submit">Зарегистрироваться</button>
+          <button mat-button class="back-link" (click)="closePopup()" >Назад</button>
+          <!-- <span class="back-link" (click)="closePopup()">Назад</span> -->
+        </div>
+      </form>
+    </div>
+  </div>
+  

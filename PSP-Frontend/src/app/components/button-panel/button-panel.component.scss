@@ -1,0 +1,47 @@
+
+.button-panel {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin: 100 auto;
+  
+    
+  }
+    .flights-button {
+        display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 310px;
+    height: 350px;
+    margin-right: 8px; /* расстояние */
+  }
+  
+  .flights-button img {
+    width: 310px;
+    height: 350px;
+    margin-bottom: 24px;
+  }
+  
+  .info-routes-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .info-button,
+  .routes-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 469px;
+    height: 173px;
+    margin-bottom: 4px; /* маршруты и справки */
+  }
+  
+  .info-button img,
+  .routes-button img {
+    width: 469px;
+    height: 173px;
+    margin-bottom: 24px;
+  }
+  

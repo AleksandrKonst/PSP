@@ -1,0 +1,81 @@
+
+.custom-datepicker-wrapper {
+  position: relative;
+  width: fit-content;
+}
+.search-container {
+  padding: 7px;
+  border-radius: 1em;
+  border: 1px;
+  background-color: #949493; 
+  // background-color: #f8842c; 
+}
+.custom-datepicker-wrapper .custom-datepicker-input {
+  padding-right: 40px;
+}
+.custom-datepicker-wrapper .mat-datepicker-toggle {
+  position: absolute;
+  right: 40px; 
+  top: 40%;
+  transform: translateY(-50%);
+  height: calc(100% - 16px); 
+  width: 20px; 
+  min-width: auto; 
+  border-radius: 0 1px 1px 0; 
+}
+.custom-datepicker-wrapper .mat-icon {
+  color: #000000; 
+}
+.input-group {
+  display: flex;
+  align-items: center;
+}
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group input.custom-datepicker-input {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  height: 30px;
+  font-size: 16px;
+}
+.input-group input[type="text"]::placeholder,
+.input-group input[type="number"]::placeholder,
+.input-group input.custom-datepicker-input::placeholder {
+  color: #aaa;
+}
+.input-group input[type="text"]:focus,
+.input-group input[type="number"]:focus,
+.input-group input.custom-datepicker-input:focus {
+  border-color: #000;
+}
+
+.custom-datepicker-input {
+  padding: 8px;
+  width: 130px;
+}
+.custom-datepicker-input:focus {
+  border-color: #ccc; 
+}
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group button,
+.input-group input.custom-datepicker-input {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-size: 16px;
+  width: 150px;
+}
+.input-group button {
+  background-color: #4054b4;
+  background-color: #f8842c;
+  color: #fff;
+  border: none;
+  height: 53px;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}

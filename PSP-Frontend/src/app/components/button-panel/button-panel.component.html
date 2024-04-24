@@ -1,0 +1,21 @@
+<div class="button-panel" *ngIf="showButtonPanel">
+  <a>  
+  <button mat-icon-button class="flights-button" (click)="openFlights()">
+      <img src="assets/images/flights.svg" alt="Button Icon">
+    </button>
+  </a>
+    <div class="info-routes-buttons">
+      
+      <a> 
+        <button mat-icon-button class="info-button"  (click)="openInfo()">
+          <img src="assets/images/info.svg" alt="Button Icon">
+        </button>
+      </a>
+      <a>
+        <button mat-icon-button class="routes-button" (click)="openRoutes()">
+          <img src="assets/images/route.svg" alt="Button Icon">
+        </button>
+     </a>
+    </div>
+  </div>
+  
